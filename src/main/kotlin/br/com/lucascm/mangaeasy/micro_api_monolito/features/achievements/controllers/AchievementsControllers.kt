@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.*
 class AchievementsControllers(@Autowired val repository: AchievementsRepository) {
     @GetMapping("/list")
     @ResponseBody
-    fun list() : ResultEntity<AchievementsEntity> {
+    fun list(@RequestParam available: Boolean?) : ResultEntity<AchievementsEntity> {
         try {
-            val result: List<AchievementsEntity> = repository.findAll()
-            return ResultEntity<AchievementsEntity>(
+            val result: List<AchievementsEntity> = if (available == true){
+                repository.findAllByDisponivel(available)
+            }else{
+                repository.findAll()
+            }
+            return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
                 data = result,
@@ -37,7 +41,7 @@ class AchievementsControllers(@Autowired val repository: AchievementsRepository)
         try {
             val result: List<AchievementsEntity> = repository.findAllByUid(id)
 
-            return ResultEntity<AchievementsEntity>(
+            return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
                 data = result,

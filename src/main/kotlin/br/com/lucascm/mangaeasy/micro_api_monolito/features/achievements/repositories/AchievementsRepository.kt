@@ -9,4 +9,8 @@ interface AchievementsRepository : JpaRepository<AchievementsEntity, Long> {
     fun findAllByUid(
         uid: String
     ): List<AchievementsEntity>
+
+    fun findAllByDisponivel(
+        available: Boolean
+    ): List<AchievementsEntity>
 }
