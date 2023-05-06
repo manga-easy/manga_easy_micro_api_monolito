@@ -15,9 +15,13 @@ import java.util.Date
 class UsersAchievementsController(@Autowired val repository: UsersAchievementsRepository, @Autowired val achievementsRepository: AchievementsRepository) {
     @GetMapping("/{uid}/achievements")
     @ResponseBody
-    fun listAchievements(@PathVariable uid: String) : ResultEntity<UsersAchievementsEntity> {
+    fun listAchievements(@PathVariable uid: String, @RequestParam idEmblema: String?) : ResultEntity<UsersAchievementsEntity> {
         try {
-            val result: List<UsersAchievementsEntity> = repository.findAllByUserid(uid)
+            val result: List<UsersAchievementsEntity> = if (idEmblema == null){
+                repository.findAllByUserid(uid)
+            }else{
+                repository.findAllByUseridAndIdemblema(uid, idEmblema)
+            }
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
