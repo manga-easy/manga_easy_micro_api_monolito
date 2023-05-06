@@ -22,10 +22,10 @@ dependencies {
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	//implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	//implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 }
 
 tasks.withType<KotlinCompile> {
