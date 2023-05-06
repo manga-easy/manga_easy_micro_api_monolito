@@ -72,7 +72,7 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
                 total = 0,
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(resultSave),
-                message = "Listado com sucesso"
+                message = "Emblema adquirido com sucesso"
             )
         } catch (e: Exception) {
             return ResultEntity(
