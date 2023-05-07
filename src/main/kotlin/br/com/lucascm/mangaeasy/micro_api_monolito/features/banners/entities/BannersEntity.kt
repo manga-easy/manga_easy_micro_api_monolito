@@ -13,7 +13,7 @@ class BannersEntity
     var uid: String? = null
     var image: String? = null
     var link: String? = null
-    var `type`: String? = null
+    var type: String? = null
 
     @Column(name = "_createdat")
     var createdat: Long? = null
