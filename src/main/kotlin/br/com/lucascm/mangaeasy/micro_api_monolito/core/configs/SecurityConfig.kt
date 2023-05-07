@@ -24,7 +24,8 @@ class SecurityConfig (
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         // Define public and private routes
         http.authorizeHttpRequests()
-            .requestMatchers(HttpMethod.GET, "/v1/recommendations/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/v1/recommendations/list").permitAll()
+            .requestMatchers(HttpMethod.GET, "/v1/banners/list").permitAll()
             .requestMatchers("/v1/**").authenticated()
 
         // Configure JWT
