@@ -72,9 +72,9 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
             body.idemblema = emblema.uid!!
             body.timecria = Date().time
             body.userid = uid
-            body._createdat = Date().time
-            body._updatedat = Date().time
-            body._uid = UUIDGenerator().generateId("").toString()
+            body.createdat = Date().time
+            body.updatedat = Date().time
+            body.uid = UUIDGenerator().generateId("").toString()
 
             val resultSave = repository.save(body)
 
