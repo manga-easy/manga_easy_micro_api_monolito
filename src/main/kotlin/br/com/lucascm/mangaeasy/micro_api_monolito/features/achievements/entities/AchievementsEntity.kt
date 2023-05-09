@@ -7,47 +7,25 @@ import jakarta.persistence.*
 class AchievementsEntity {
     @Id
     @GeneratedValue
-    private val _id: Long? = null
-    @Column(nullable = false)
-    var _uid: String? = null
-        private set
-    @Column(nullable = false)
+    @Column(name = "_id")
+    private val id: Long? = null
+    @Column(name = "_uid")
+    var uid: String? = null
     var name: String? = null
-        private set
-    @Column(nullable = false)
     var rarity: String? = null
-        private set
-    @Column(nullable = false)
+
     var description: String? = null
-        private set
-    @Column(nullable = false)
     var percent: Float? = null
-        private set
-    @Column(nullable = false)
     var url: String? = null
-        private set
-    @Column(nullable = false)
     var adsoff: Boolean? = null
-        private set
-    @Column(nullable = false)
     var benefits: String? = null
-        private set
-    @Column(nullable = false)
     var disponivel: Boolean? = null
-        private set
-    @Column(nullable = false)
     var categoria: String? = null
-        private set
-    @Column(nullable = false)
     var type: String? = null
-        private set
-    @Column(nullable = false)
     var time_cria: Long? = null
         private set
-    @Column(nullable = false)
-    var _createdat: Long? = null
-        private set
-    @Column(nullable = false)
-    var _updatedat: Long? = null
-        private set
+    @Column(name = "_createdat")
+    var createdat: Long? = null
+    @Column(name = "_updatedat")
+    var updatedat: Long? = null
 }

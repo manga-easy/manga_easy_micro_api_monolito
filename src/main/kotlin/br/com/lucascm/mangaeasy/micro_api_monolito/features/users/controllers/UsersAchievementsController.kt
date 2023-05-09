@@ -53,13 +53,13 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
             if (!emblema.disponivel!!){
                 throw Exception("Emblema não disponível")
             }
-            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, emblema._uid!!)
+            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, emblema.uid!!)
 
             if (result.isNotEmpty()){
                 throw Exception("Emblema já adquirido")
             }
 
-            body.idemblema = emblema._uid!!
+            body.idemblema = emblema.uid!!
             body.timecria = Date().time
             body.userid = uid
             body._createdat = Date().time
