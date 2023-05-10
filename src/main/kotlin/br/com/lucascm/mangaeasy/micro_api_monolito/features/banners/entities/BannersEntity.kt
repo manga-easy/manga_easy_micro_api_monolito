@@ -7,7 +7,8 @@ class BannersEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var _id: Long? = null
+    @Column(name = "_id")
+    private var id: Long? = null
 
     @Column(name = "_uid")
     var uid: String? = null
