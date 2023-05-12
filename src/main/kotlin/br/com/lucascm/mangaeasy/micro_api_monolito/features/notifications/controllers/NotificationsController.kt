@@ -16,7 +16,7 @@ class NotificationsController(@Autowired val repository: NotificationsRepository
              @RequestParam idhost : Int?
     ) : ResultEntity<NotificationsEntity> {
         try {
-            val result: List<NotificationsEntity> = repository.findAll()
+            val result: List<NotificationsEntity> = repository.findTop25ByOrderByCreatedatDesc()
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
