@@ -9,5 +9,7 @@ interface UsersLevelsRepository : JpaRepository<UsersLevelsEntity, Long> {
        idSeason: String,
        userID: String
     ): List<UsersLevelsEntity>
-
+    fun findTop25ByTemporadaOrderByTotalDesc(
+        temporada: String
+    ): List<UsersLevelsEntity>
 }

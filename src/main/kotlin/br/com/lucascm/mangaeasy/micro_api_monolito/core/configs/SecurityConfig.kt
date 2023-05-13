@@ -27,7 +27,7 @@ class SecurityConfig (
             .requestMatchers(HttpMethod.GET, "/v1/recommendations/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/banners/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/hosts/list").permitAll()
-            .requestMatchers(HttpMethod.GET, "/v1/seasons/list").permitAll()
+            .requestMatchers(HttpMethod.GET, "/v1/seasons/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/notifications/list").permitAll()
             .requestMatchers("/v1/**").authenticated()
 
