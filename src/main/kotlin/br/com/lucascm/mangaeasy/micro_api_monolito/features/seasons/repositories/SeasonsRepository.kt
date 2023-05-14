@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface SeasonsRepository : JpaRepository<SeasonsEntity, Long> {
   fun findByUid(uid: String): SeasonsEntity?
+  fun findTop1ByOrderByNumberDesc(): SeasonsEntity
 }

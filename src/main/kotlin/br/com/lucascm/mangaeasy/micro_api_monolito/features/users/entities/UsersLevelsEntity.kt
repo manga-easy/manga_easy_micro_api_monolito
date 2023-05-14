@@ -8,7 +8,11 @@ class UsersLevelsEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "_id")
-    private var id: Long? = null
+    var id: Long? = null
+        get() = field
+        set(value) {
+            field = value
+        }
 
     @Column(name = "_uid")
     var uid: String? = null
