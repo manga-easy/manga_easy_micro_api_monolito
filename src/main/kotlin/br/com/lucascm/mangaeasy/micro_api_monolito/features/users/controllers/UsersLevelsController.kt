@@ -8,15 +8,19 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.seasons.repositories
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersLevelsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersLevelsRepository
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/v1/users")
 class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
                             @Autowired val verifyUserIdPermissionService: VerifyUserIdPermissionService,
-                            @Autowired val seasonsRepository: SeasonsRepository) {
+                            @Autowired val seasonsRepository: SeasonsRepository,
+                            val logger: KotlinLogging = KotlinLogging
+) {
     @GetMapping("/{uid}/levels")
     @ResponseBody
     fun list(@PathVariable uid: String,
@@ -87,6 +91,7 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
             }
             throw Exception("Nenhum condição foi atendida: $levelApp")
         } catch (e: Exception) {
+            logger.logger("levels-put").info(e.stackTrace.toString())
             return  ResultEntity(
                 StatusResultEnum.ERROR,
                 e.message,
@@ -122,6 +127,10 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
         levelNew.temporada = idSeason
         levelNew.minute = 0
         levelNew.total = 0
+        levelNew.timecria = Date().time
+        levelNew.timeup = Date().time
+        levelNew.updatedat = Date().time
+        levelNew.createdat = Date().time
         levelNew.userid = userId
         levelNew.uid = ObjectIdGenerators.UUIDGenerator().generateId("").toString()
         repository.save(levelNew)
@@ -136,6 +145,8 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
        var levelCurret = returnLevelSuperior(levelApp, levelDataBase)
        levelCurret.id = levelDataBase.id
        levelCurret.uid = levelDataBase.uid
+       levelCurret.timeup = Date().time
+       levelCurret.updatedat = Date().time
        repository.save(levelCurret)
        return levelCurret
    }
