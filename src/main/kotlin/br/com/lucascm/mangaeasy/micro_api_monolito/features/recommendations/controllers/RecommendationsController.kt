@@ -12,11 +12,16 @@ import org.springframework.web.bind.annotation.*
 class RecommendationsController(@Autowired val repository: RecommendationsRepository) {
     @GetMapping("/list")
     @ResponseBody
-    fun list(@RequestParam status : String?,
-             @RequestParam idhost : Int?
+    fun list(@RequestParam status: String?,
+             @RequestParam idhost: Int?,
+             @RequestParam isAll: Boolean?
     ) : ResultEntity<RecommendationsEntity> {
         try {
-            val result: List<RecommendationsEntity> = repository.findAll()
+            val result: List<RecommendationsEntity> = if (isAll != false){
+                repository.findAllByOrderByUpdatedatDesc()
+            }else{
+                repository.findTop5ByOrderByUpdatedatDesc()
+            }
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
