@@ -7,12 +7,16 @@ class RecommendationsEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var _id: Long? = null
-    var _uid: String? = null
+    @Column(name = "_id")
+    private var id: Long? = null
+    @Column(name = "_uid")
     var uniqueid: String? = null
     var title: String? = null
     var link: String? = null
     var datacria: Long? = null
-    var _createdat: Long? = null
-    var _updatedat: Long? = null
+    @Column(name = "_createdat")
+    var createdat: Long? = null
+
+    @Column(name = "_updatedat")
+    var updatedat: Long? = null
 }
