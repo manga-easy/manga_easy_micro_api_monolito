@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 
 interface RecommendationsRepository : JpaRepository<RecommendationsEntity, Long> {
-
+    fun findTop5ByOrderByUpdatedatDesc(): List<RecommendationsEntity>
+    fun findAllByOrderByUpdatedatDesc(): List<RecommendationsEntity>
 }
