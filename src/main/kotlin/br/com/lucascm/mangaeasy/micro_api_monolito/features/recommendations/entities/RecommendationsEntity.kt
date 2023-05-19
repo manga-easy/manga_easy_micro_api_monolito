@@ -10,6 +10,7 @@ class RecommendationsEntity
     @Column(name = "_id")
     private var id: Long? = null
     @Column(name = "_uid")
+    var uid: String? = null
     var uniqueid: String? = null
     var title: String? = null
     var link: String? = null
