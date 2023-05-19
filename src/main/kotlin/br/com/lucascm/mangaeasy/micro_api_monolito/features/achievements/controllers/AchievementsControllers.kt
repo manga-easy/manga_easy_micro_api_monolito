@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class AchievementsControllers(@Autowired val repository: AchievementsRepository) {
     @GetMapping("/list")
     @ResponseBody
-    fun list(@RequestParam available: Boolean?) : ResultEntity<AchievementsEntity> {
+    fun list(@RequestParam available: Boolean?): ResultEntity<AchievementsEntity> {
         try {
             val result: List<AchievementsEntity> = if (available == true){
                 repository.findAllByDisponivel(available)
