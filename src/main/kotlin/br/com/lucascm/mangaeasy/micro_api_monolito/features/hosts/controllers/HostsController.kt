@@ -21,9 +21,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
             val result: List<HostsEntity> = if (idhost == null) {
                 repository.findAllByStatus(status ?: "enable")
             }else{
-                repository.findAllByIdhost(
-                    idhost ?: 0
-                )
+                repository.findAllByIdhost(idhost)
             }
             return ResultEntity<HostsEntity>(
                 total = result.size,
