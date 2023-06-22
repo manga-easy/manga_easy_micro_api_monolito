@@ -2,6 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.users.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersAchievementsEntity
@@ -74,7 +75,7 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
             body.userid = uid
             body.createdat = Date().time
             body.updatedat = Date().time
-            body.uid = UUIDGenerator().generateId("").toString()
+            body.uid = GetUidByFeature().get("achievements")
 
             val resultSave = repository.save(body)
 
