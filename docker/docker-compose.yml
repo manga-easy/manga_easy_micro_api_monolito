@@ -1,4 +1,5 @@
-x-logging: &x-logging
+x-logging:
+  &x-logging
   logging:
     driver: 'json-file'
     options:
@@ -27,6 +28,7 @@ services:
   api:
     restart: always
     build: api
+    <<: *x-logging
     environment:
       DB_DATABASE: ${_API_DB_SCHEMA}
       DB_USER: ${_API_DB_USER}
@@ -41,6 +43,7 @@ services:
   nginx:
     restart: always
     build: nginx
+    <<: *x-logging
     ports:
       - "443:443"
     networks:
@@ -48,8 +51,9 @@ services:
 networks:
   appwrite:
 
+
 volumes:
   appwrite-mariadb:
 
-# compose up -d --no-build --remove-orphans
-# .\gradlew build -x test
+    # compose up -d --no-build --remove-orphans
+    # .\gradlew build -x test
