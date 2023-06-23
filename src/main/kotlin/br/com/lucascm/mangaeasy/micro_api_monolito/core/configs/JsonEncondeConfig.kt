@@ -17,12 +17,11 @@ class JwtEncodingConfig(
     @Value("\${security.key}")
     private val jwtKey: String
 
-) { private val logger: KotlinLogging = KotlinLogging
+) {
     private val secretKey = SecretKeySpec(jwtKey.toByteArray(), "HS256")
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
-        logger.logger("JwtEncodingConfig").info(jwtKey)
         return NimbusJwtDecoder.withSecretKey(secretKey).build()
     }
 

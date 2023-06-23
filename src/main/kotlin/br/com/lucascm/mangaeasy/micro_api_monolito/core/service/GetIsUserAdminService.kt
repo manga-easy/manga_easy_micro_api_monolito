@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service
 @Service
 class GetIsUserAdminService(@Autowired val repository: PermissionsRepository, val logger: KotlinLogging = KotlinLogging) {
     fun get(userId: String) : Boolean{
-        logger.logger("GetIsUserAdmin").info(userId)
-        val result = repository.findByUserid(userId)
-
-        return result?.value  == 90
+        try {
+            val result = repository.findByUserid(userId)
+            return result?.value  == 90//significa que é um admin
+        }catch (e: Exception){
+            KotlinLogging.logger("GetIsUserAdminService").catching(e)
+            return  false
+        }
     }
 }
