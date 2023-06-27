@@ -8,10 +8,10 @@ class VerifyUserIdPermissionService(private val getIsUserAdminService: GetIsUser
    fun get(authentication: Authentication, userIdUrl: String){
        val userIdToken = authentication.principal.toString()
        if (getIsUserAdminService.get(userIdToken)){
-           return;
+           return
        }
        if (userIdUrl == userIdToken){
-           return;
+           return
        }
        throw Exception("Usuario incorreto ao Token")
    }
