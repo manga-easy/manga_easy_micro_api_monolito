@@ -14,8 +14,8 @@ data class RecommendationsEntity(
     var uniqueid: String = "",
     var title: String = "",
     var link: String = "",
-    var artistid: String = "",
-    var artistname: String = "",
+    var artistid: String? = null,
+    var artistname: String? = null,
     var datacria: Long? = null,
     @Column(name = "_createdat")
     var createdat: Long? = null,
