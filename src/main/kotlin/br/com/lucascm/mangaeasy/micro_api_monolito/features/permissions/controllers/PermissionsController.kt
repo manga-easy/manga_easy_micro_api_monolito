@@ -34,7 +34,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
     @PostMapping
@@ -67,7 +67,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Criado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
@@ -86,19 +86,19 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
             }
             val permission = repository.findByUserid(body.userid!!) ?: throw BusinessException("O registro não encontrado")
 
-            permission.apply {
+            val permissionUpdated = permission.apply {
                 updatedat = Date().time
                 value = body.value
             }
-            repository.save(permission)
+            repository.save(permissionUpdated)
             return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(permission),
+                data = listOf(permissionUpdated),
                 message = "Update com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
@@ -121,7 +121,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
