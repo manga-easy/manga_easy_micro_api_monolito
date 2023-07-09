@@ -15,7 +15,7 @@ class TokenService(
             val jwt = jwtDecoder.decode(token)
            return  jwt.claims["userId"] as String?
         } catch (e: Exception) {
-            logger.logger("TokenService").info(e.message)
+            logger.logger("TokenService").catching(e)
             null
         }
     }
