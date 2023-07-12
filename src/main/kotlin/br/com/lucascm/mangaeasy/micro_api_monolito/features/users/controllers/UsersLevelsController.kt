@@ -57,13 +57,13 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
             val levelDataBase = repository.findByTemporadaAndUserid(seasonCurret.uid!!, uid)
             //1 case cria nivel
             if (levelApp == null && levelDataBase.isEmpty()) {
-                return createLevel(seasonCurret.uid!!, uid)
+                return createLevel(seasonCurret.uid, uid)
             }
             //se for de temporada diferente da atual cria um nivel novo
             if (levelApp != null) {
                 if (levelApp.temporada != seasonCurret.uid) {
                     saveLevel(levelApp, levelDataBase.first())
-                    return createLevel(seasonCurret.uid!!, uid)
+                    return createLevel(seasonCurret.uid, uid)
                 }
             }
             //2 caso existe na nuvem mas não exite no local
