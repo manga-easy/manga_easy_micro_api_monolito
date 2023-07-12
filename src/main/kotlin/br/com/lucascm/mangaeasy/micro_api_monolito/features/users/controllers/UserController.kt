@@ -36,5 +36,19 @@ class UserController {
         }
     }
 
+    @GetMapping("/{userid}")
+    fun get(@PathVariable userid: String) : ResultEntity<UserEntity> {
+        try {
+            val result = repository.serachUser(userid)
+            return ResultEntity(
+                total = result.size,
+                status = StatusResultEnum.SUCCESS,
+                data = result,
+                message = "Listado com sucesso"
+            )
+        } catch (e: Exception) {
+            return HandleExceptions<UserEntity>().handleCatch(e)
+        }
+    }
 
 }
