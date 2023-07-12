@@ -48,12 +48,16 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
             if (body.userid == null){
                 throw BusinessException("O userid não pode ser nulo")
             }
+
             val permission = repository.findByUserid(body.userid!!)
             if (permission != null){
                throw BusinessException("O usuario ja tem um nivel de permissão")
             }
             if (body.value == null){
                 throw BusinessException("O value não pode ser nulo")
+            }
+            if (body.value!! >= 90){
+                throw BusinessException("Permissão é maior que o permitido")
             }
 
             body.uid = GetUidByFeature().get("permissions")
