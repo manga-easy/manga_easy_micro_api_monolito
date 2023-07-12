@@ -46,6 +46,40 @@ class UsersAchievementsController() {
             return handleExceptions.handleCatch(e)
         }
     }
+    @DeleteMapping("/{uid}/achievements/{idAchieviment}")
+    @ResponseBody
+    fun removeAchievement(@PathVariable uid: String,
+                          @PathVariable idAchieviment: String,
+                          authentication: Authentication)
+    : ResultEntity<UsersAchievementsEntity> {
+        try {
+            val isUserAdmin = getIsUserAdminService.get(
+                authentication.principal.toString()
+            )
+            if (!isUserAdmin){
+                throw BusinessException("O usuario não tem permissão")
+            }
+            val resultAchievements = repository.findAllByUseridAndIdemblema(
+                userId = uid,
+                idemblema = idAchieviment,
+                )
+            if (resultAchievements.isEmpty()){
+                throw BusinessException("Emblema não encontrado")
+            }
+            repository.delete(
+                resultAchievements.first()
+            )
+
+            return ResultEntity(
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(),
+                message = "Removido com sucesso"
+            )
+        } catch (e: Exception) {
+            return handleExceptions.handleCatch(e)
+        }
+    }
 
     @PostMapping("/{uid}/achievements")
     @ResponseBody
