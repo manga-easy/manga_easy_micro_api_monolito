@@ -17,7 +17,7 @@ import java.util.Date
 
 @RestController
 @RequestMapping("/v1/users")
-class UsersAchievementsController() {
+class UsersAchievementsController {
     @Autowired lateinit var repository: UsersAchievementsRepository
     @Autowired lateinit var achievementsRepository: AchievementsRepository
     @Autowired lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
@@ -93,13 +93,13 @@ class UsersAchievementsController() {
             if (!isUserAdmin){
                 throw BusinessException("O usuario não tem permissão")
             }
-            val resultAchievements = achievementsRepository.findAllByUid(body.idemblema)
-            if (resultAchievements.isEmpty()){
+            val resultAchievements = achievementsRepository.findByUid(body.idemblema)
+            if (resultAchievements == null){
                 throw BusinessException("Emblema não encontrado")
             }
             val resultUsers = repository.findAllByUseridAndIdemblema(
                 uid,
-                resultAchievements.first().uid!!
+                resultAchievements.uid!!
             )
 
             if (resultUsers.isNotEmpty()){
@@ -130,25 +130,24 @@ class UsersAchievementsController() {
                 authentication: Authentication) : ResultEntity<UsersAchievementsEntity> {
         try {
             verifyUserIdPermissionService.get(authentication, uid);
-            val resultEmblema =  achievementsRepository.findAllByUid(body.idemblema)
-            if (resultEmblema.isEmpty()){
+            val resultEmblema =  achievementsRepository.findByUid(body.idemblema)
+            if (resultEmblema == null){
                 throw BusinessException("Emblema não encontrado")
             }
-            val emblema = resultEmblema.first()
-            if (emblema.categoria != "evento"){
+            if (resultEmblema.categoria != "evento"){
                 throw BusinessException("Este tipo de emblema não pode ser resgatado")
             }
-            if (!emblema.disponivel!!){
+            if (!resultEmblema.disponivel){
                 throw BusinessException("Emblema não disponível")
             }
-            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, emblema.uid!!)
+            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, resultEmblema.uid!!)
 
             if (result.isNotEmpty()){
                 throw BusinessException("Emblema já adquirido")
             }
 
             val resultSave = repository.save(body.copy(
-                idemblema = emblema.uid!!,
+                idemblema = resultEmblema.uid!!,
                 timecria = Date().time,
                 userid = uid,
                 createdat = Date().time,

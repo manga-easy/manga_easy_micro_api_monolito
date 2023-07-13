@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class HandlerUserAdmin(@Autowired val repository: PermissionsRepository, val logger: KotlinLogging = KotlinLogging) {
+    @Deprecated("User handleIsAdmin")
     fun get(userId: String) : Boolean{
         try {
             val result = repository.findByUserid(userId)

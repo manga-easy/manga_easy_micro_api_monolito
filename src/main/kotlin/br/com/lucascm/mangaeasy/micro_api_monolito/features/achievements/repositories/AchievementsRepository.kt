@@ -2,14 +2,13 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.reposi
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsEntity
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Query
 
 interface AchievementsRepository : JpaRepository<AchievementsEntity, Long> {
-    fun findAllByUid(
+    fun findByUid(
         uid: String
-    ): List<AchievementsEntity>
+    ): AchievementsEntity?
 
-    fun findAllByDisponivel(
+    fun findByDisponivelOrderByCreatedatDesc(
         available: Boolean
     ): List<AchievementsEntity>
 }

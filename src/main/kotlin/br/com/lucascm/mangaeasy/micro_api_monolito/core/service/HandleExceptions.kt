@@ -13,7 +13,7 @@ class HandleExceptions<T> {
         if (e is BusinessException){
             message = e.message
         }else{
-            KotlinLogging.logger("permissions").catching(e)
+            KotlinLogging.logger("HandleExceptions").catching(e)
         }
         return ResultEntity(
             total = 0,

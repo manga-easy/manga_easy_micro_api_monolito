@@ -4,28 +4,26 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "_1_database_1_collection_5")
-class AchievementsEntity {
+data class AchievementsEntity(
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "_id")
-    private val id: Long? = null
+    private val id: Long? = null,
     @Column(name = "_uid")
-    var uid: String? = null
-    var name: String? = null
-    var rarity: String? = null
-
-    var description: String? = null
-    var percent: Float? = null
-    var url: String? = null
-    var adsoff: Boolean? = null
-    var benefits: String? = null
-    var disponivel: Boolean? = null
-    var categoria: String? = null
-    var type: String? = null
-    var time_cria: Long? = null
-        private set
+    var uid: String? = null,
+    var name: String = "",
+    var rarity: String = "",
+    var description: String = "",
+    var percent: Double = 0.0,
+    var url: String = "",
+    var adsoff: Boolean = false,
+    var benefits: String = "",
+    var disponivel: Boolean = false,
+    var categoria: String = "",
+    var type: String = "",
+    var time_cria: Long = 0,
     @Column(name = "_createdat")
-    var createdat: Long? = null
+    var createdat: Long? = null,
     @Column(name = "_updatedat")
-    var updatedat: Long? = null
-}
+    var updatedat: Long? = null,
+)
