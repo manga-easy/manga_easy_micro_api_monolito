@@ -3,14 +3,13 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.users.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetIsUserAdminService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersAchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -22,7 +21,7 @@ class UsersAchievementsController() {
     @Autowired lateinit var repository: UsersAchievementsRepository
     @Autowired lateinit var achievementsRepository: AchievementsRepository
     @Autowired lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
-    @Autowired lateinit var getIsUserAdminService: GetIsUserAdminService
+    @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @Autowired lateinit var handleExceptions: HandleExceptions<UsersAchievementsEntity>
     @GetMapping("/{uid}/achievements")
     @ResponseBody
@@ -53,7 +52,7 @@ class UsersAchievementsController() {
                           authentication: Authentication)
     : ResultEntity<UsersAchievementsEntity> {
         try {
-            val isUserAdmin = getIsUserAdminService.get(
+            val isUserAdmin = handlerUserAdmin.get(
                 authentication.principal.toString()
             )
             if (!isUserAdmin){
@@ -88,7 +87,7 @@ class UsersAchievementsController() {
                            authentication: Authentication
     ) : ResultEntity<UsersAchievementsEntity> {
         try {
-            val isUserAdmin = getIsUserAdminService.get(
+            val isUserAdmin = handlerUserAdmin.get(
                 authentication.principal.toString()
             )
             if (!isUserAdmin){

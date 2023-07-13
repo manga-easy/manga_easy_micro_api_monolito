@@ -3,7 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.con
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetIsUserAdminService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
@@ -16,7 +16,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/recommendations")
 class RecommendationsController(@Autowired val repository: RecommendationsRepository,
-                                @Autowired val getIsUserAdmin: GetIsUserAdminService
+                                @Autowired val getIsUserAdmin: HandlerUserAdmin
 ) {
     @GetMapping("/list")
     @ResponseBody

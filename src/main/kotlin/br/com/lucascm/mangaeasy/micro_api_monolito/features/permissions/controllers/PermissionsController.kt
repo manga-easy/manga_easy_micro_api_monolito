@@ -3,12 +3,11 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.control
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetIsUserAdminService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.entities.PermissionsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.repositories.PermissionsRepository
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -17,7 +16,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/permissions")
 class PermissionsController(@Autowired val repository: PermissionsRepository,
-                            @Autowired val getIsUserAdmin: GetIsUserAdminService) {
+                            @Autowired val getIsUserAdmin: HandlerUserAdmin) {
     @GetMapping("/list")
     @ResponseBody
     fun list(authentication: Authentication) : ResultEntity<PermissionsEntity> {
