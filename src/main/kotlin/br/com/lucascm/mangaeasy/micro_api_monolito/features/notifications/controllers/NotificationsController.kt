@@ -92,14 +92,14 @@ class NotificationsController(@Autowired val repository: NotificationsRepository
     }
     private fun sendNotification(entity: NotificationsEntity){
         // This registration token comes from the client FCM SDKs.
-        //val registrationToken = "cKXGsw9TTWaxjRxij1N2W0:APA91bG8udhZY2e59YQq5K7O0F3drMxOS3kTBKvY3V8ld6iOwoHo_ATguyStaOuAT2DIjWMeM2msiYmVXVuI8alEieQlPGBY_tOS_n_g9CE-4HM8fLRP75_0R4RjW3RwZef8R4DhL-yz"
+        val registrationToken = "cKXGsw9TTWaxjRxij1N2W0:APA91bG8udhZY2e59YQq5K7O0F3drMxOS3kTBKvY3V8ld6iOwoHo_ATguyStaOuAT2DIjWMeM2msiYmVXVuI8alEieQlPGBY_tOS_n_g9CE-4HM8fLRP75_0R4RjW3RwZef8R4DhL-yz"
         val notification = Notification.builder()
             .setTitle(entity.titulo)
             .setBody(entity.menssege)
             .setImage(entity.image)
             .build()
         val message = Message.builder()
-            .setTopic("avisos")
+            .setToken(registrationToken)
             .setNotification(notification)
             .build()
 

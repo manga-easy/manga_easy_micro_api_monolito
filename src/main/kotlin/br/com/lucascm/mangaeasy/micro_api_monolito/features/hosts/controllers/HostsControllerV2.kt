@@ -15,8 +15,8 @@ import java.util.Date
 
 
 @RestController
-@RequestMapping("/v1/hosts")
-class HostsController(@Autowired val repository: HostsRepository) {
+@RequestMapping("/v2/hosts")
+class HostsControllerV2(@Autowired val repository: HostsRepository) {
     @Autowired lateinit var handleExceptions: HandleExceptions<HostsEntity>
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @GetMapping("/list")
@@ -27,7 +27,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
     ) : ResultEntity<HostsEntity> {
         try {
             val result = handlerFilters(status, isAll, idhost)
-            return ResultEntity<HostsEntity>(
+            return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
                 data = result,
@@ -45,7 +45,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
         if(isAll){
             return repository.findAll()
         }
-        if (idhost != null) {
+        if(idhost != null) {
             return repository.findByIdhost(idhost)
         }
         return repository.findByStatus(status ?: "enable")
@@ -63,7 +63,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
                 createdat = Date().time,
                 uid = GetUidByFeature().get("hosts")
             ))
-            return  ResultEntity<HostsEntity>(
+            return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
@@ -84,7 +84,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             val resultfind = repository.findByUid(uid)
             if (resultfind == null){
-                throw  BusinessException("Host não encontrado")
+                throw BusinessException("Host não encontrado")
             }
             handlerValidation(body)
             val result = repository.save(resultfind.copy(
@@ -96,7 +96,7 @@ class HostsController(@Autowired val repository: HostsRepository) {
                 interstitialadunitid = body.interstitialadunitid,
                 updatedat = Date().time,
             ))
-            return  ResultEntity<HostsEntity>(
+            return  ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
