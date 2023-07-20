@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*
 import java.util.Date
 
 @RestController
-@RequestMapping("/v1/banners")
-class BannersController(@Autowired val repository: BannersRepository,
-                        @Autowired val getIsUserAdmin: HandlerUserAdmin
+@RequestMapping("/v2/banners")
+class BannersControllerV2(@Autowired val repository: BannersRepository,
+                          @Autowired val getIsUserAdmin: HandlerUserAdmin
 ) {
     @GetMapping("/list")
     @ResponseBody
@@ -32,12 +32,7 @@ class BannersController(@Autowired val repository: BannersRepository,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return ResultEntity(
-                total = 0,
-                status = StatusResultEnum.ERROR,
-                data = listOf(),
-                message = e.message
-            )
+            return HandleExceptions<BannersEntity>().handleCatch(e)
         }
     }
 
