@@ -36,6 +36,10 @@ services:
       DB_PORT: ${_API_DB_PORT}
       JWT_key: ${_API_JWT}
       DB_HOST: ${_API_DB_HOST}
+      auth_key: ${_auth_key}
+      auth_endpoint: ${_auth_endpoint}
+      auth_idproject: ${_auth_idproject}
+      GOOGLE_APPLICATION_CREDENTIALS: ${_GOOGLE_APPLICATION_CREDENTIALS}
     networks:
       - appwrite
     ports:
