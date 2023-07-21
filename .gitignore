@@ -37,5 +37,6 @@ out/
 .vscode/
 
 gradle/
-.env
+.env*
 *.pem
+adc.json

@@ -4,10 +4,10 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
-class VerifyUserIdPermissionService(private val getIsUserAdminService: GetIsUserAdminService) {
+class VerifyUserIdPermissionService(private val handlerUserAdmin: HandlerUserAdmin) {
    fun get(authentication: Authentication, userIdUrl: String){
        val userIdToken = authentication.principal.toString()
-       if (getIsUserAdminService.get(userIdToken)){
+       if (handlerUserAdmin.get(userIdToken)){
            return
        }
        if (userIdUrl == userIdToken){

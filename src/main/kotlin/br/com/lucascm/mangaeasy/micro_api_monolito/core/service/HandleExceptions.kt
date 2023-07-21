@@ -4,14 +4,16 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
 
+@Service
 class HandleExceptions<T> {
     fun handleCatch(e: Exception): ResultEntity<T>{
         var message = "Ocorreu um erro no serviço"
         if (e is BusinessException){
             message = e.message
         }else{
-            KotlinLogging.logger("permissions").catching(e)
+            KotlinLogging.logger("HandleExceptions").catching(e)
         }
         return ResultEntity(
             total = 0,

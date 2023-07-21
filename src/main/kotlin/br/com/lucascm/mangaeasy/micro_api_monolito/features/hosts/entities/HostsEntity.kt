@@ -1,44 +1,24 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import java.io.Serializable
+import jakarta.persistence.*
 @Entity
 @Table(name = "_1_database_1_collection_3")
-class HostsEntity: Serializable {
-
+data class HostsEntity(
     @Id
-    @GeneratedValue
-    private val _id: Long? = null
-
-    @Column(nullable = false)
-    var _uid: String? = null
-        private set
-    @Column(nullable = false)
-    var idhost: Int? = null
-        private set
-    @Column(nullable = false)
-    var order: Long? = null
-        private set
-    @Column(nullable = false)
-    var name: String? = null
-        private set
-    @Column(nullable = false)
-    var host: String? = null
-        private set
-    @Column(nullable = false)
-    var status: String? = null
-        private set
-    @Column(nullable = false)
-    var interstitialadunitid: String? = null
-        private set
-    @Column(nullable = false)
-    var _createdat: Long? = null
-        private set
-    @Column(nullable = false)
-    var _updatedat: Long? = null
-        private set
-}
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "_id")
+    private val id: Long? = null,
+    @Column(name = "_uid")
+    val uid: String? = null,
+    val idhost: Int = 0,
+    @Column(name = "`order`")
+    val order: Int = 0,
+    val name: String = "",
+    val host: String = "",
+    val status: String = "",
+    val interstitialadunitid: String = "",
+    @Column(name = "_createdat")
+    val createdat: Long? = null,
+    @Column(name = "_updatedat")
+    val updatedat: Long? = null,
+)

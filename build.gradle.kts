@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "br.com.lucas-cm.manga-easy"
-version = "1.0.0"
+version = "1.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -20,7 +20,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("com.google.firebase:firebase-admin:9.2.0")
+    implementation("io.appwrite:sdk-for-kotlin:1.2.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")

@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface NotificationsRepository : JpaRepository<NotificationsEntity, Long> {
     fun findTop25ByOrderByCreatedatDesc(): List<NotificationsEntity>
+    fun findByUid(uid: String): NotificationsEntity?
 }

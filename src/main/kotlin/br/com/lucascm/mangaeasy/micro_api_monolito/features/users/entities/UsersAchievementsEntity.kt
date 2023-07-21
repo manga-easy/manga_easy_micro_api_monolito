@@ -5,22 +5,21 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "_1_database_1_collection_4")
-class UsersAchievementsEntity
- {
+data class UsersAchievementsEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "_id")
-    private var id: Long? = null
+    private val id: Long? = null,
 
     @Column(name = "_uid")
-    var uid: String? = null
-    var idemblema: String? = null
-    var timecria: Long? = null
-    var userid: String? = null
+    val uid: String? = null,
+    val idemblema: String = "",
+    val timecria: Long? = null,
+    val userid: String = "",
 
     @Column(name = "_createdat")
-    var createdat: Long? = null
+    val createdat: Long? = null,
 
     @Column(name = "_updatedat")
-    var updatedat: Long? = null
-}
+    val updatedat: Long? = null,
+)

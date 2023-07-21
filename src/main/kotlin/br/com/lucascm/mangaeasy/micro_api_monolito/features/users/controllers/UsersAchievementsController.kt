@@ -1,13 +1,15 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.users.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersAchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -15,9 +17,12 @@ import java.util.Date
 
 @RestController
 @RequestMapping("/v1/users")
-class UsersAchievementsController(@Autowired val repository: UsersAchievementsRepository,
-                                  @Autowired val achievementsRepository: AchievementsRepository,
-                                  @Autowired val verifyUserIdPermissionService: VerifyUserIdPermissionService) {
+class UsersAchievementsController {
+    @Autowired lateinit var repository: UsersAchievementsRepository
+    @Autowired lateinit var achievementsRepository: AchievementsRepository
+    @Autowired lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
+    @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
+    @Autowired lateinit var handleExceptions: HandleExceptions<UsersAchievementsEntity>
     @GetMapping("/{uid}/achievements")
     @ResponseBody
     fun listAchievements(@PathVariable uid: String,
@@ -37,12 +42,84 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return ResultEntity(
-                total = 0,
-                status = StatusResultEnum.ERROR,
-                data = listOf(),
-                message = e.message
+            return handleExceptions.handleCatch(e)
+        }
+    }
+    @DeleteMapping("/{uid}/achievements/{idAchieviment}")
+    @ResponseBody
+    fun removeAchievement(@PathVariable uid: String,
+                          @PathVariable idAchieviment: String,
+                          authentication: Authentication)
+    : ResultEntity<UsersAchievementsEntity> {
+        try {
+            val isUserAdmin = handlerUserAdmin.get(
+                authentication.principal.toString()
             )
+            if (!isUserAdmin){
+                throw BusinessException("O usuario não tem permissão")
+            }
+            val resultAchievements = repository.findAllByUseridAndIdemblema(
+                userId = uid,
+                idemblema = idAchieviment,
+                )
+            if (resultAchievements.isEmpty()){
+                throw BusinessException("Emblema não encontrado")
+            }
+            repository.delete(
+                resultAchievements.first()
+            )
+
+            return ResultEntity(
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(),
+                message = "Removido com sucesso"
+            )
+        } catch (e: Exception) {
+            return handleExceptions.handleCatch(e)
+        }
+    }
+
+    @PostMapping("/{uid}/achievements")
+    @ResponseBody
+    fun addUserAchievement(@PathVariable uid: String,
+                           @RequestBody body: UsersAchievementsEntity,
+                           authentication: Authentication
+    ) : ResultEntity<UsersAchievementsEntity> {
+        try {
+            val isUserAdmin = handlerUserAdmin.get(
+                authentication.principal.toString()
+            )
+            if (!isUserAdmin){
+                throw BusinessException("O usuario não tem permissão")
+            }
+            val resultAchievements = achievementsRepository.findByUid(body.idemblema)
+            if (resultAchievements == null){
+                throw BusinessException("Emblema não encontrado")
+            }
+            val resultUsers = repository.findAllByUseridAndIdemblema(
+                uid,
+                resultAchievements.uid!!
+            )
+
+            if (resultUsers.isNotEmpty()){
+                throw BusinessException("Emblema já adquirido")
+            }
+            val result = repository.save(body.copy(
+                uid = GetUidByFeature().get("users-achievements"),
+                createdat = Date().time,
+                timecria = Date().time,
+                updatedat = Date().time,
+                userid = uid,
+            ))
+            return ResultEntity(
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(result),
+                message = "Adicionado com sucesso"
+            )
+        } catch (e: Exception) {
+            return handleExceptions.handleCatch(e)
         }
     }
 
@@ -53,31 +130,30 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
                 authentication: Authentication) : ResultEntity<UsersAchievementsEntity> {
         try {
             verifyUserIdPermissionService.get(authentication, uid);
-            val resultEmblema =  achievementsRepository.findAllByUid(body.idemblema!!)
-            if (resultEmblema.isEmpty()){
-                throw Exception("Emblema não encontrado")
+            val resultEmblema =  achievementsRepository.findByUid(body.idemblema)
+            if (resultEmblema == null){
+                throw BusinessException("Emblema não encontrado")
             }
-            val emblema = resultEmblema.first()
-            if (emblema.categoria != "evento"){
-                throw Exception("Este tipo de emblema não pode ser resgatado")
+            if (resultEmblema.categoria != "evento"){
+                throw BusinessException("Este tipo de emblema não pode ser resgatado")
             }
-            if (!emblema.disponivel!!){
-                throw Exception("Emblema não disponível")
+            if (!resultEmblema.disponivel){
+                throw BusinessException("Emblema não disponível")
             }
-            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, emblema.uid!!)
+            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, resultEmblema.uid!!)
 
             if (result.isNotEmpty()){
-                throw Exception("Emblema já adquirido")
+                throw BusinessException("Emblema já adquirido")
             }
 
-            body.idemblema = emblema.uid!!
-            body.timecria = Date().time
-            body.userid = uid
-            body.createdat = Date().time
-            body.updatedat = Date().time
-            body.uid = GetUidByFeature().get("achievements")
-
-            val resultSave = repository.save(body)
+            val resultSave = repository.save(body.copy(
+                idemblema = resultEmblema.uid!!,
+                timecria = Date().time,
+                userid = uid,
+                createdat = Date().time,
+                updatedat = Date().time,
+                uid = GetUidByFeature().get("achievements"),
+            ))
 
             return ResultEntity(
                 total = 0,
@@ -86,12 +162,7 @@ class UsersAchievementsController(@Autowired val repository: UsersAchievementsRe
                 message = "Emblema adquirido com sucesso"
             )
         } catch (e: Exception) {
-            return ResultEntity(
-                total = 0,
-                status = StatusResultEnum.ERROR,
-                data = listOf(body),
-                message = e.message
-            )
+            return handleExceptions.handleCatch(e)
         }
     }
 }

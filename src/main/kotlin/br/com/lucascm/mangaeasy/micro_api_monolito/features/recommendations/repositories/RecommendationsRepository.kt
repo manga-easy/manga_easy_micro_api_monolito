@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository
 interface RecommendationsRepository : JpaRepository<RecommendationsEntity, Long> {
     fun findTop5ByOrderByUpdatedatDesc(): List<RecommendationsEntity>
     fun findAllByOrderByUpdatedatDesc(): List<RecommendationsEntity>
+    fun findByUid(uid: String): RecommendationsEntity?
+
+    fun findByUniqueid(uniqueid: String): RecommendationsEntity?
+
 }

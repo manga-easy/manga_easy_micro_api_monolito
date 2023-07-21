@@ -3,12 +3,11 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.control
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetIsUserAdminService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.entities.PermissionsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.repositories.PermissionsRepository
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -17,7 +16,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/permissions")
 class PermissionsController(@Autowired val repository: PermissionsRepository,
-                            @Autowired val getIsUserAdmin: GetIsUserAdminService) {
+                            @Autowired val getIsUserAdmin: HandlerUserAdmin) {
     @GetMapping("/list")
     @ResponseBody
     fun list(authentication: Authentication) : ResultEntity<PermissionsEntity> {
@@ -34,7 +33,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
     @PostMapping
@@ -48,12 +47,16 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
             if (body.userid == null){
                 throw BusinessException("O userid não pode ser nulo")
             }
+
             val permission = repository.findByUserid(body.userid!!)
             if (permission != null){
                throw BusinessException("O usuario ja tem um nivel de permissão")
             }
             if (body.value == null){
                 throw BusinessException("O value não pode ser nulo")
+            }
+            if (body.value!! >= 90){
+                throw BusinessException("Permissão é maior que o permitido")
             }
 
             body.uid = GetUidByFeature().get("permissions")
@@ -67,7 +70,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Criado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
@@ -86,19 +89,19 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
             }
             val permission = repository.findByUserid(body.userid!!) ?: throw BusinessException("O registro não encontrado")
 
-            permission.apply {
+            val permissionUpdated = permission.apply {
                 updatedat = Date().time
                 value = body.value
             }
-            repository.save(permission)
+            repository.save(permissionUpdated)
             return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(permission),
+                data = listOf(permissionUpdated),
                 message = "Update com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
@@ -121,7 +124,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return  HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions<PermissionsEntity>().handleCatch(e)
         }
     }
 
