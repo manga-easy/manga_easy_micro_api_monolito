@@ -27,8 +27,11 @@ class SecurityConfig (
             .requestMatchers(HttpMethod.GET, "/v1/recommendations/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/banners/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/hosts/list").permitAll()
+            .requestMatchers(HttpMethod.GET, "/v2/banners/list").permitAll()
+            .requestMatchers(HttpMethod.GET, "/v2/hosts/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/seasons/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/notifications/list").permitAll()
+            .requestMatchers("/v2/**").authenticated()
             .requestMatchers("/v1/**").authenticated()
 
         // Configure JWT
