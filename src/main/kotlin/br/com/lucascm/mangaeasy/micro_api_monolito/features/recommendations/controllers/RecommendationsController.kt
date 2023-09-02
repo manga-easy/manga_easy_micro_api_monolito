@@ -23,7 +23,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
     fun list(@RequestParam status: String?,
              @RequestParam idhost: Int?,
              @RequestParam isAll: Boolean?
-    ) : ResultEntity<RecommendationsEntity> {
+    ) : ResultEntity {
         try {
             val result: List<RecommendationsEntity> = if (isAll != false){
                 repository.findAllByOrderByUpdatedatDesc()
@@ -37,7 +37,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<RecommendationsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
@@ -45,7 +45,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
     @ResponseBody
     fun delete(authentication: Authentication,
                @PathVariable uid : String
-    ) : ResultEntity<RecommendationsEntity> {
+    ) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
 
@@ -65,7 +65,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<RecommendationsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
@@ -73,7 +73,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
     @ResponseBody
     fun create(authentication: Authentication,
                @RequestBody body : RecommendationsEntity
-    ) : ResultEntity<RecommendationsEntity> {
+    ) : ResultEntity {
         try {
             handleValidatorWrite(authentication, body)
             val resultVCheck = repository.findByUniqueid(body.uniqueid)
@@ -93,7 +93,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
                 message = "Criado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<RecommendationsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
     @PutMapping("/{uid}")
@@ -101,7 +101,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
     fun update(authentication: Authentication,
                @RequestBody body : RecommendationsEntity,
                @PathVariable uid: String
-    ) : ResultEntity<RecommendationsEntity> {
+    ) : ResultEntity {
         try {
             handleValidatorWrite(authentication, body)
             val result = repository.findByUid(uid)
@@ -124,7 +124,7 @@ class RecommendationsController(@Autowired val repository: RecommendationsReposi
                 message = "Alterado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<RecommendationsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 

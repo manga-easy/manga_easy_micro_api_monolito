@@ -22,7 +22,7 @@ class UserController {
     @Autowired lateinit var repository: UserRepository
 
     @GetMapping()
-    fun getUsers(@RequestParam search: String?) : ResultEntity<UserEntity> {
+    fun getUsers(@RequestParam search: String?) : ResultEntity {
         try {
             val result = repository.serachUser(search)
             return ResultEntity(
@@ -32,12 +32,12 @@ class UserController {
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<UserEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
     @GetMapping("/{userid}")
-    fun get(@PathVariable userid: String) : ResultEntity<UserEntity> {
+    fun get(@PathVariable userid: String) : ResultEntity {
         try {
             val result = repository.serachUser(userid)
             return ResultEntity(
@@ -47,7 +47,7 @@ class UserController {
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<UserEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 

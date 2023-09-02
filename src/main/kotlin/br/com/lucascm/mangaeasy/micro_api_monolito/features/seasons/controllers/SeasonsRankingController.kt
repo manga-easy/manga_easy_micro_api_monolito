@@ -16,7 +16,7 @@ class SeasonsRankingController(@Autowired val repository: UsersLevelsRepository,
                                @Autowired val seasonsRepository: SeasonsRepository) {
     @GetMapping("/{idSeason}/ranking")
     @ResponseBody
-    fun list(@PathVariable idSeason : String) : ResultEntity<UsersLevelsEntity> {
+    fun list(@PathVariable idSeason : String) : ResultEntity {
         try {
             val resultSeasons = seasonsRepository.findByUid(idSeason)
             if (resultSeasons == null){

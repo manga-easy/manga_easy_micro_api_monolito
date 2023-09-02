@@ -22,12 +22,12 @@ class UsersAchievementsController {
     @Autowired lateinit var achievementsRepository: AchievementsRepository
     @Autowired lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
-    @Autowired lateinit var handleExceptions: HandleExceptions<UsersAchievementsEntity>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @GetMapping("/{uid}/achievements")
     @ResponseBody
     fun listAchievements(@PathVariable uid: String,
                          @RequestParam idEmblema: String?,
-                         authentication: Authentication) : ResultEntity<UsersAchievementsEntity> {
+                         authentication: Authentication) : ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, uid);
             val result: List<UsersAchievementsEntity> = if (idEmblema == null){
@@ -50,7 +50,7 @@ class UsersAchievementsController {
     fun removeAchievement(@PathVariable uid: String,
                           @PathVariable idAchieviment: String,
                           authentication: Authentication)
-    : ResultEntity<UsersAchievementsEntity> {
+    : ResultEntity {
         try {
             val isUserAdmin = handlerUserAdmin.get(
                 authentication.principal.toString()
@@ -85,7 +85,7 @@ class UsersAchievementsController {
     fun addUserAchievement(@PathVariable uid: String,
                            @RequestBody body: UsersAchievementsEntity,
                            authentication: Authentication
-    ) : ResultEntity<UsersAchievementsEntity> {
+    ) : ResultEntity {
         try {
             val isUserAdmin = handlerUserAdmin.get(
                 authentication.principal.toString()
@@ -127,7 +127,7 @@ class UsersAchievementsController {
     @ResponseBody
     fun acquire(@PathVariable uid: String,
                 @RequestBody body: UsersAchievementsEntity,
-                authentication: Authentication) : ResultEntity<UsersAchievementsEntity> {
+                authentication: Authentication) : ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, uid);
             val resultEmblema =  achievementsRepository.findByUid(body.idemblema)

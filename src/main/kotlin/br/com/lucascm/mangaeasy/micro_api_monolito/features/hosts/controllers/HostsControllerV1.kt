@@ -18,13 +18,13 @@ import java.util.Date
 @RestController
 @RequestMapping("/v1/hosts")
 class HostsControllerV1(@Autowired val repository: HostsRepository) {
-    @Autowired lateinit var handleExceptions: HandleExceptions<HostDtoV1>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @GetMapping("/list")
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam isAll: Boolean = false,
              @RequestParam idhost : Int?
-    ) : ResultEntity<HostDtoV1> {
+    ) : ResultEntity {
         try {
             val result = handlerFilters(status, isAll, idhost)
             return ResultEntity(

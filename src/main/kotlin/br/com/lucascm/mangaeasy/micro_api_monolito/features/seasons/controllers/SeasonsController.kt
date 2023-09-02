@@ -17,13 +17,13 @@ import java.util.Date
 @RequestMapping("/v1/seasons")
 class SeasonsController(@Autowired val repository: SeasonsRepository) {
     @Autowired lateinit var getUidByFeature: GetUidByFeature
-    @Autowired lateinit var handleExceptions: HandleExceptions<SeasonsEntity>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @GetMapping("/list")
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam idhost : Int?
-    ) : ResultEntity<SeasonsEntity> {
+    ) : ResultEntity {
         try {
             val result: List<SeasonsEntity> = repository.findAll()
             return ResultEntity(
@@ -41,7 +41,7 @@ class SeasonsController(@Autowired val repository: SeasonsRepository) {
     fun create(
         @RequestBody body: SeasonsEntity,
         authentication: Authentication
-    ) : ResultEntity<SeasonsEntity> {
+    ) : ResultEntity {
         try {
             val isAdmin = handlerUserAdmin.get(authentication.principal.toString());
             if (!isAdmin){
@@ -75,7 +75,7 @@ class SeasonsController(@Autowired val repository: SeasonsRepository) {
         @RequestBody body: SeasonsEntity,
         authentication: Authentication,
         @PathVariable uid: String
-    ) : ResultEntity<SeasonsEntity> {
+    ) : ResultEntity {
         try {
             val isAdmin = handlerUserAdmin.get(authentication.principal.toString());
             if (!isAdmin){

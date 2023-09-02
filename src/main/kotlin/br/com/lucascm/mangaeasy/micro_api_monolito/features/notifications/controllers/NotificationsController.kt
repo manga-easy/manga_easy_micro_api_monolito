@@ -20,13 +20,13 @@ import java.util.Date
 @RestController
 @RequestMapping("/v1/notifications")
 class NotificationsController(@Autowired val repository: NotificationsRepository) {
-    @Autowired lateinit var handleExceptions: HandleExceptions<NotificationsEntity>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @GetMapping("/list")
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam idhost : Int?
-    ) : ResultEntity<NotificationsEntity> {
+    ) : ResultEntity {
         try {
             val result: List<NotificationsEntity> = repository.findTop25ByOrderByCreatedatDesc()
             return ResultEntity(
@@ -43,7 +43,7 @@ class NotificationsController(@Autowired val repository: NotificationsRepository
     @DeleteMapping("/{uid}")
     @ResponseBody
     fun delete(@PathVariable uid : String,
-               authentication: Authentication) : ResultEntity<NotificationsEntity> {
+               authentication: Authentication) : ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             val result = repository.findByUid(uid)
@@ -67,7 +67,7 @@ class NotificationsController(@Autowired val repository: NotificationsRepository
         @RequestBody body: NotificationsEntity,
         authentication: Authentication
     )
-    : ResultEntity<NotificationsEntity> {
+    : ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             if (body.titulo.isEmpty()){

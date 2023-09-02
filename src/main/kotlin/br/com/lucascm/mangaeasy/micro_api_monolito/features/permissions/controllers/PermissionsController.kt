@@ -19,7 +19,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                             @Autowired val getIsUserAdmin: HandlerUserAdmin) {
     @GetMapping("/list")
     @ResponseBody
-    fun list(authentication: Authentication) : ResultEntity<PermissionsEntity> {
+    fun list(authentication: Authentication) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
             if (!isUserAdmin){
@@ -33,12 +33,12 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
     @PostMapping
     @ResponseBody
-    fun create(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity<PermissionsEntity> {
+    fun create(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
             if (!isUserAdmin){
@@ -70,13 +70,13 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Criado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
     @PutMapping
     @ResponseBody
-    fun update(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity<PermissionsEntity> {
+    fun update(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
 
@@ -101,13 +101,13 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Update com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
     @DeleteMapping("/{uid}")
     @ResponseBody
-    fun delete(authentication: Authentication, @PathVariable uid: String) : ResultEntity<PermissionsEntity> {
+    fun delete(authentication: Authentication, @PathVariable uid: String) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
 
@@ -124,7 +124,7 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<PermissionsEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 

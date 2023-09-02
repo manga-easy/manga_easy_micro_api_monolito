@@ -17,12 +17,12 @@ class ChapterNotificationsController(@Autowired val repository: ChapterNotificat
     fun list(@RequestParam uniqueid : String,
              @RequestParam idhost : Int,
              @RequestParam datetime : Long
-    ) : ResultEntity<ChapterNotificationsEntity> {
+    ) : ResultEntity {
         try {
             val result: List<ChapterNotificationsEntity> = repository.findAllByUniqueidAndIdhostAndDatetime(
                 uniqueid, idhost, datetime
             )
-            return ResultEntity<ChapterNotificationsEntity>(
+            return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
                 data = result,

@@ -21,7 +21,7 @@ class BannersControllerV1(@Autowired val repository: BannersRepository) {
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam idhost : Int?
-    ) : ResultEntity<BannerDtoV1> {
+    ) : ResultEntity {
         try {
             val result = repository.findAll()
             return ResultEntity(
@@ -38,7 +38,7 @@ class BannersControllerV1(@Autowired val repository: BannersRepository) {
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<BannerDtoV1>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 }

@@ -17,14 +17,14 @@ import java.util.Date
 @RestController
 @RequestMapping("/v2/hosts")
 class HostsControllerV2(@Autowired val repository: HostsRepository) {
-    @Autowired lateinit var handleExceptions: HandleExceptions<HostsEntity>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @GetMapping("/list")
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam isAll: Boolean = false,
              @RequestParam idhost : Int?
-    ) : ResultEntity<HostsEntity> {
+    ) : ResultEntity {
         try {
             val result = handlerFilters(status, isAll, idhost)
             return ResultEntity(
@@ -54,7 +54,7 @@ class HostsControllerV2(@Autowired val repository: HostsRepository) {
     @ResponseBody
     fun create(@RequestBody body: HostsEntity,
                authentication: Authentication
-    ): ResultEntity<HostsEntity>{
+    ): ResultEntity{
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             handlerValidation(body)
@@ -79,7 +79,7 @@ class HostsControllerV2(@Autowired val repository: HostsRepository) {
     fun update(@RequestBody body: HostsEntity,
                @PathVariable uid: String,
                authentication: Authentication
-    ): ResultEntity<HostsEntity>{
+    ): ResultEntity{
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             val resultfind = repository.findByUid(uid)

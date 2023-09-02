@@ -22,7 +22,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
     @ResponseBody
     fun list(@RequestParam status : String?,
              @RequestParam idhost : Int?
-    ) : ResultEntity<BannersEntity> {
+    ) : ResultEntity {
         try {
             val result: List<BannersEntity> = repository.findAll()
             return ResultEntity(
@@ -32,7 +32,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<BannersEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
@@ -40,7 +40,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
     @ResponseBody
     fun delete(authentication: Authentication,
                @PathVariable uid : String
-    ) : ResultEntity<BannersEntity> {
+    ) : ResultEntity {
         try {
             val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
 
@@ -60,7 +60,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<BannersEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 
@@ -68,7 +68,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
     @ResponseBody
     fun create(authentication: Authentication,
                @RequestBody body : BannersEntity
-    ) : ResultEntity<BannersEntity> {
+    ) : ResultEntity {
         try {
             handleValidatorWrite(authentication, body)
             val result = repository.save(body.apply {
@@ -83,7 +83,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
                 message = "Criado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<BannersEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
     @PutMapping("/{uid}")
@@ -91,7 +91,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
     fun update(authentication: Authentication,
                @RequestBody body : BannersEntity,
                @PathVariable uid: String
-    ) : ResultEntity<BannersEntity> {
+    ) : ResultEntity {
         try {
             handleValidatorWrite(authentication, body)
             val result = repository.findByUid(uid)
@@ -111,7 +111,7 @@ class BannersControllerV2(@Autowired val repository: BannersRepository,
                 message = "Alterado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions<BannersEntity>().handleCatch(e)
+            return HandleExceptions().handleCatch(e)
         }
     }
 

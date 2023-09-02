@@ -25,7 +25,7 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
     @ResponseBody
     fun list(@PathVariable uid: String,
              @RequestParam idSeason: String?,
-             authentication: Authentication) : ResultEntity<UsersLevelsEntity> {
+             authentication: Authentication) : ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, uid)
             var season = idSeason ?: seasonsRepository.findTop1ByOrderByNumberDesc().uid!!
@@ -49,7 +49,7 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
     @ResponseBody
     fun updateLevel(@PathVariable uid: String,
                     @RequestBody levelApp: UsersLevelsEntity?,
-                    authentication: Authentication): ResultEntity<UsersLevelsEntity>  {
+                    authentication: Authentication): ResultEntity  {
         try {
             verifyUserIdPermissionService.get(authentication, uid)
             val seasonCurret = seasonsRepository.findTop1ByOrderByNumberDesc()
@@ -120,7 +120,7 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
             }
         }
     }
-   private fun createLevel(idSeason: String, userId: String): ResultEntity<UsersLevelsEntity>{
+   private fun createLevel(idSeason: String, userId: String): ResultEntity{
         var levelNew = UsersLevelsEntity()
         levelNew.lvl = 0
         levelNew.quantity = 0

@@ -17,11 +17,11 @@ import java.util.Date
 @RestController
 @RequestMapping("/v1/achievements")
 class AchievementsControllers(@Autowired val repository: AchievementsRepository) {
-    @Autowired lateinit var handleExceptions: HandleExceptions<AchievementsEntity>
+    @Autowired lateinit var handleExceptions: HandleExceptions
     @Autowired lateinit var handlerUserAdmin: HandlerUserAdmin
     @GetMapping("/list")
     @ResponseBody
-    fun list(@RequestParam available: Boolean?): ResultEntity<AchievementsEntity> {
+    fun list(@RequestParam available: Boolean?): ResultEntity {
         try {
             val result: List<AchievementsEntity> = if (available == true){
                 repository.findByDisponivelOrderByCreatedatDesc(available)
@@ -41,7 +41,7 @@ class AchievementsControllers(@Autowired val repository: AchievementsRepository)
 
     @GetMapping("/{id}")
     @ResponseBody
-    fun getOne(@PathVariable  id: String) : ResultEntity<AchievementsEntity> {
+    fun getOne(@PathVariable  id: String) : ResultEntity {
         try {
             val result = repository.findByUid(id)
             if (result == null){
@@ -60,7 +60,7 @@ class AchievementsControllers(@Autowired val repository: AchievementsRepository)
 
     @PostMapping
     @ResponseBody
-    fun create(@RequestBody body: AchievementsEntity, authentication: Authentication) : ResultEntity<AchievementsEntity> {
+    fun create(@RequestBody body: AchievementsEntity, authentication: Authentication) : ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             handlerValidateEntity(body)
@@ -86,7 +86,7 @@ class AchievementsControllers(@Autowired val repository: AchievementsRepository)
         @RequestBody body: AchievementsEntity,
         authentication: Authentication,
         @PathVariable uid: String,
-    ) : ResultEntity<AchievementsEntity> {
+    ) : ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             handlerValidateEntity(body)
