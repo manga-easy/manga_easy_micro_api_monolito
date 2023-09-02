@@ -28,6 +28,7 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 }
 
 tasks.withType<KotlinCompile> {
@@ -37,6 +38,14 @@ tasks.withType<KotlinCompile> {
 	}
 }
 
+tasks.jar {
+	archiveFileName.set("build.jar")
+}
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+gradle.beforeProject {
+	// Set a default value
+	project.ext.set("hasTests", false)
 }

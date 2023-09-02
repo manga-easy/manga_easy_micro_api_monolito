@@ -1,0 +1,21 @@
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
+
+data class DetailsEntity(
+    val id: String?,
+    val title: String,
+    val uniqueid: String,
+    val capa: String,
+    val sinopse: String,
+    val generos: List<GenderEntity>,
+    val autor: String,
+    val artista: String,
+    val capitulos: List<ChapterEntity>,
+    val ano: String,
+    val scans: String,
+    val status: String,
+    val idHost: Int
+)
+
+
+
+
