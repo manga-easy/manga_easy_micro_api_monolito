@@ -40,6 +40,7 @@ services:
       auth_endpoint: ${_auth_endpoint}
       auth_idproject: ${_auth_idproject}
       GOOGLE_APPLICATION_CREDENTIALS: ${_GOOGLE_APPLICATION_CREDENTIALS}
+      MONGODB_URL: ${_MONGODB_URL}
     networks:
       - appwrite
     ports:
@@ -52,6 +53,17 @@ services:
       - "443:443"
     networks:
       - appwrite
+  mongo:
+    image: mongo:7.0.0
+    restart: always
+    <<: *x-logging
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
+    networks:
+      - appwrite
+    ports:
+      - "27017:27017"
 networks:
   appwrite:
 
