@@ -41,7 +41,7 @@ jobs:
         with:
           push: true
           platforms: linux/amd64, linux/arm64, linux/arm/v7
-          tags: registry.karc.io/$GITHUB_REPOSITORY
+          tags: registry.karc.io/manga_easy/api_monolito
 
       - name: Notify build success
         if: success()
@@ -49,7 +49,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '🛠️ 🛠️ Build success under construction for $GITHUB_REPOSITORY 🛠️ 🛠️'
+          args: '🛠️ 🛠️ Build success under construction for {{ EVENT_PAYLOAD.repository.full_name }} 🛠️ 🛠️'
       
       - name: Notify build fail
         if: failure()
@@ -57,5 +57,5 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '🔥 🔥 Build failure under construction for $GITHUB_REPOSITORY 🔥 🔥'
+          args: '🔥 🔥 Build failure under construction for {{ EVENT_PAYLOAD.repository.full_name }} 🔥 🔥'
 
