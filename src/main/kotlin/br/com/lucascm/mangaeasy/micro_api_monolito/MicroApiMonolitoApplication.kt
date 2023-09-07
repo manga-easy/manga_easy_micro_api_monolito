@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import javax.annotation.PostConstruct
@@ -11,11 +12,15 @@ import javax.annotation.PostConstruct
 class MicroApiMonolitoApplication {
 	@PostConstruct
 	fun init() {
-		// Inicialização do FirebaseApp
-		val options = FirebaseOptions.builder()
-			.setCredentials(GoogleCredentials.getApplicationDefault())
-			.build()
-		FirebaseApp.initializeApp(options)
+		try {
+			// Inicialização do FirebaseApp
+			val options = FirebaseOptions.builder()
+				.setCredentials(GoogleCredentials.getApplicationDefault())
+				.build()
+			FirebaseApp.initializeApp(options)
+		} catch(e: Exception){
+			KotlinLogging.logger("MicroApiMonolitoApplication").catching(e)
+		}
 	}
 }
 fun main(args: Array<String>) {
