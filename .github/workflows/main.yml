@@ -44,6 +44,7 @@ jobs:
           tags: registry.karc.io/$GITHUB_REPOSITORY
 
       - name: Notify build success
+        if: success()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
@@ -51,6 +52,7 @@ jobs:
           args: '🛠️ 🛠️ Build success under construction for $GITHUB_REPOSITORY 🛠️ 🛠️'
       
       - name: Notify build fail
+        if: failure()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
