@@ -1,9 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities
-
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.ChapterEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaEntity
 import jakarta.persistence.*
-import java.io.Serializable
 
 @Entity
 @Table(name = "_1_database_1_collection_6")
@@ -16,15 +12,15 @@ data class HistoriesEntity(
         @Column(name = "_uid")
         val uid: String? = null,
 
-        val uniqueid: String,
-        val manga: MangaEntity,
-        val idUser: String,
+        val uniqueid: String = "",
+        val manga: String = "",
+        val iduser: String= "",
         @Deprecated(message = "User currentChapter 0.13.0 -> 0.15.0")
-        val capAtual: ChapterEntity?,
-        var currentChapter: String?,
-        val updatedAt: Int,
-        val createdAt: Int,
-        val isDeleted: Boolean,
-        val chapterLidos: List<String>,
-        val isSync: Boolean
+        val capatual: String?= "",
+        var currentchapter: String?= "",
+        val updatedat: Long? = null,
+        val createdat: Long? = null,
+        val isdeleted: Boolean = false,
+        val chapterlidos: String= "",
+        val issync: Boolean = false,
 )
