@@ -36,10 +36,13 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up GCP credentials
-        run: echo "$GOOGLE_APPLICATION_CREDENTIALS" > /app/src/main/resources/adc.json
+      - name: Create adc.json
+        run: echo "$GOOGLE_APPLICATION_CREDENTIALS" > adc.json
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Move adc.json to the correct directory
+        run: mv adc.json /app/src/main/resources/
 
       - name: Build and push
         uses: docker/build-push-action@v3
