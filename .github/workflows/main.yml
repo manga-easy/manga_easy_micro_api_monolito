@@ -3,12 +3,19 @@ name: Docker Image CI
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+
+env:
+  REGISTRY_IMAGE: registry.karc.io/manga_easy/api_monolito
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
 
     steps:
       - name: Notify build
@@ -21,16 +28,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-        with:
-          platforms: "arm64,arm"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        with:
-          driver-opts: |
-            image=moby/buildkit:v0.12.0
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -47,12 +55,28 @@ jobs:
       - name: Move adc.json to the correct directory
         run: mv adc.json ./src/main/resources/
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v4
         with:
-          push: true
-          platforms: linux/amd64, linux/arm64
-          tags: registry.karc.io/manga_easy/api_monolito
+          context: .
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}" 
+         
+      - name: Upload digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Notify build success
         if: success()
@@ -70,3 +94,54 @@ jobs:
         with:
           args: '🔥 🔥 Build failure under construction for {{ EVENT_PAYLOAD.repository.full_name }} 🔥 🔥'
 
+  merge:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)          
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+
+      - name: Notify upload success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '🛠️ 🛠️ Upload artifact success for ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }} 🛠️ 🛠️'
+      
+      - name: Notify upload fail
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '🔥 🔥 Upload artifact Failed for ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }} 🔥 🔥'
