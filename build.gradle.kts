@@ -40,7 +40,21 @@ tasks.withType<KotlinCompile> {
 
 tasks.jar {
 	archiveFileName.set("build.jar")
+	manifest {
+        attributes["Main-Class"] = "br.com.lucascm.mangaeasy.micro_api_monolito.MicroApiMonolitoApplicationKt"
+    }
+
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+	
+	from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+
+	exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
