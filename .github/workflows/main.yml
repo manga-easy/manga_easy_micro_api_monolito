@@ -42,7 +42,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Move adc.json to the correct directory
-        run: mv adc.json /app/src/main/resources/
+        run: mv adc.json ./src/main/resources/
 
       - name: Build and push
         uses: docker/build-push-action@v3
