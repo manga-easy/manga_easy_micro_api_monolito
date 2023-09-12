@@ -22,11 +22,11 @@ class LibrariesControllerV1  {
     @GetMapping
     @ResponseBody
     fun list(
-            @RequestParam idUser: String,
-            @RequestParam uniqueId: String?,
-            @RequestParam limit: Int?,
-            @RequestParam offset: Int?,
-            authentication: Authentication
+        @RequestParam idUser: String,
+        @RequestParam uniqueId: String?,
+        @RequestParam limit: Int?,
+        @RequestParam offset: Int?,
+        authentication: Authentication
     ): ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, idUser)
@@ -34,15 +34,15 @@ class LibrariesControllerV1  {
                 repository.findByIduserAndUniqueid(iduser = idUser, uniqueid = uniqueId)
             } else {
                 repository.findByIduser(
-                        iduser = idUser,
-                        pageable = PageRequest.of(offset ?: 0, limit ?: 25)
+                    iduser = idUser,
+                    pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
             }
             return ResultEntity(
-                    total =  result.size,
-                    status = StatusResultEnum.SUCCESS,
-                    data = result,
-                    message = "Listado com sucesso"
+                total =  result.size,
+                status = StatusResultEnum.SUCCESS,
+                data = result,
+                message = "Listado com sucesso"
             )
         } catch (e: Exception) {
             return handleExceptions.handleCatch(e)
@@ -52,35 +52,35 @@ class LibrariesControllerV1  {
     @PutMapping
     @ResponseBody
     fun update(
-            @RequestBody body: LibrariesEntity,
-            authentication: Authentication
+        @RequestBody body: LibrariesEntity,
+        authentication: Authentication
     ) : ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, body.iduser)
             val result = repository.findByIduserAndUniqueid(
-                    iduser = body.iduser,
-                    uniqueid = body.uniqueid
+                iduser = body.iduser,
+                uniqueid = body.uniqueid
             )
             if (result.isEmpty()) {
                 repository.save(body.copy(
-                        uid = GetUidByFeature().get("users-libraries"),
-                        createdat = Date().time,
-                        updatedat = Date().time,
+                    uid = GetUidByFeature().get("users-libraries"),
+                    createdat = Date().time,
+                    updatedat = Date().time,
                 ))
             } else {
                 val first = result.first()
                 repository.save(first.copy(updatedat = Date().time,
-                        status  = body.status,
-                        isdeleted = body.isdeleted,
-                        issync = body.issync,
-                        manga = body.manga
+                    status  = body.status,
+                    isdeleted = body.isdeleted,
+                    issync = body.issync,
+                    manga = body.manga
                 ))
             }
             return ResultEntity(
-                    total = 1,
-                    status = StatusResultEnum.SUCCESS,
-                    data = listOf(body),
-                    message = "Adicionado com sucesso"
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(body),
+                message = "Adicionado com sucesso"
             )
         } catch (e: Exception) {
             return handleExceptions.handleCatch(e)
