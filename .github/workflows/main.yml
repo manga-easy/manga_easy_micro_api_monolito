@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - dev
 
 env:
   REGISTRY_IMAGE: registry.karc.io/manga_easy/api_monolito
