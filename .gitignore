@@ -40,3 +40,4 @@ gradle/
 .env*
 *.pem
 adc.json
+create.sql

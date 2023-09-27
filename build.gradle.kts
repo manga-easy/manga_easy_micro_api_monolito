@@ -19,7 +19,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.postgresql:postgresql")
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
     implementation("io.appwrite:sdk-for-kotlin:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
