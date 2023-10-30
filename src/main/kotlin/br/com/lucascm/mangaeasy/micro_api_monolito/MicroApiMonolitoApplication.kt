@@ -6,9 +6,11 @@ import com.google.firebase.FirebaseOptions
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.scheduling.annotation.EnableScheduling
 import javax.annotation.PostConstruct
 
 @SpringBootApplication
+@EnableScheduling
 class MicroApiMonolitoApplication {
 	@PostConstruct
 	fun init() {
