@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MangaDetailsRepository : MongoRepository<MandaDetailsEntity, Long> {
-    fun findByIdhostAndUniqueidAndversionApp(idhost: Int, uniqueid: String, versionApp: String?): MandaDetailsEntity?
+    fun findByIdhostAndUniqueidAndVersionApp(idhost: Int, uniqueid: String, versionApp: String?): MandaDetailsEntity?
 }

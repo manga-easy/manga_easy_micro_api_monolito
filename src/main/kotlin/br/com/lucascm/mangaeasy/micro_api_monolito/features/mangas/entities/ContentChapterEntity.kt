@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
 
+import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -16,5 +17,6 @@ data class ContentChapterEntity(
     val chapter: String,
     val data: List<ImageChapterEntity>,
     val creatAt: Date?,
+    @Column(name = "version_app")
     val versionApp: String?,
 )

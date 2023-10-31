@@ -28,7 +28,7 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.postgresql:postgresql")
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
 }
 
 tasks.withType<KotlinCompile> {

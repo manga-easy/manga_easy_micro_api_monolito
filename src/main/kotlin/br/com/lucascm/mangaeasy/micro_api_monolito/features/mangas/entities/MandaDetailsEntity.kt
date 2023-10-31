@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
 
+import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -14,6 +15,7 @@ data class MandaDetailsEntity(
     val idhost: Int,
     val uniqueid: String,
     val data: DetailsEntity,
+    @Column(name = "version_app")
     val versionApp: String?,
     val creatAt: Date?
 )

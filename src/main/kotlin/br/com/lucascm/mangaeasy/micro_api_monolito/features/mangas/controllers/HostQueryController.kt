@@ -90,7 +90,7 @@ class HostQueryController {
                         @RequestParam versionApp: String?)
             : ResultEntity{
         try {
-            val result = mangaDetailsRepository.findByIdhostAndUniqueidAndversionApp(idHost, uniqueid, versionApp)
+            val result = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(idHost, uniqueid, versionApp)
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -125,7 +125,7 @@ class HostQueryController {
             if (body.data.capa.isEmpty()){
                 throw BusinessException("Capa do mangá não pode ser vazio")
             }
-            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueidAndversionApp(body.idhost, body.uniqueid, body.versionApp)
+            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(body.idhost, body.uniqueid, body.versionApp)
             val result = if (resultFind == null){
                 mangaDetailsRepository.save(body.copy(creatAt = Date()))
             }else{
