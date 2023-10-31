@@ -14,5 +14,6 @@ data class MandaDetailsEntity(
     val idhost: Int,
     val uniqueid: String,
     val data: DetailsEntity,
+    val versionApp: String?,
     val creatAt: Date?
 )

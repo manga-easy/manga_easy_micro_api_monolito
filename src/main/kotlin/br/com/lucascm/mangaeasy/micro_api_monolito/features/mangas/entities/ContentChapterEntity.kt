@@ -15,5 +15,6 @@ data class ContentChapterEntity(
     val uniqueid: String,
     val chapter: String,
     val data: List<ImageChapterEntity>,
-    val creatAt: Date?
+    val creatAt: Date?,
+    val versionApp: String?,
 )
