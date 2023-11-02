@@ -22,4 +22,6 @@ interface CatalogRepository : JpaRepository<CatalogEntity, Long> {
         yearAt: Int?,
         pageable: Pageable
     ): Page<CatalogEntity>
+
+    fun findByUniqueid(uniqueid: String): CatalogEntity?
 }

@@ -8,22 +8,22 @@ data class CatalogEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long? = null,
-    val uid: String?,
-    val name: String,
-    val uniqueid: String,
+    val uid: String? = null,
+    val name: String = "",
+    val uniqueid: String = "",
     @Column(name = "last_chapter")
-    val lastChapter: String,
+    val lastChapter: String = "",
     @Column(name = "total_views")
-    val totalViews: Long,
-    val author: String,
-    val thumb: String,
-    val synopsis: String,
-    val ratio: Float,
-    val scans: String,
+    val totalViews: Long = 0,
+    val author: String = "",
+    val thumb: String = "",
+    val synopsis: String = "",
+    val ratio: Double = 0.0,
+    val scans: String = "",
     @Column(name = "updated_at")
-    val updatedAt: Long,
+    val updatedAt: Long = 0,
     @Column(name = "created_at")
-    val createdAt: Long,
-    val genres: String,
-    val year: Long?
+    val createdAt: Long = 0,
+    val genres: String = "",
+    val year: Long? = null
 )
