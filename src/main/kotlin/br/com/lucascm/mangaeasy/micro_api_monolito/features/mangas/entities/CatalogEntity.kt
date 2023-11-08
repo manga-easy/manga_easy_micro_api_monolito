@@ -21,9 +21,9 @@ data class CatalogEntity (
     val ratio: Double = 0.0,
     val scans: String = "",
     @Column(name = "updated_at")
-    val updatedAt: Long = 0,
+    val updatedAt: Long? = 0,
     @Column(name = "created_at")
-    val createdAt: Long = 0,
+    val createdAt: Long? = 0,
     val genres: String = "",
     val year: Long? = null
 )

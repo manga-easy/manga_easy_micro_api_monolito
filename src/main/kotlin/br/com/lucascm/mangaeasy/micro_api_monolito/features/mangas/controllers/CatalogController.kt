@@ -2,41 +2,43 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/catalog")
 class CatalogController {
     @Autowired
-    lateinit var catalogRepository: CatalogRepository
-    @GetMapping("/search")
+    lateinit var catalogService: CatalogService
+    @GetMapping
     @ResponseBody
-    fun search(@RequestParam genres: String,
+    fun search(@RequestParam genres: String?,
                @RequestParam search: String?,
                @RequestParam author: String?,
-               @RequestParam offset: Int?,
+               @RequestParam page: Int?,
                @RequestParam uniqueid: String?,
                @RequestParam limit: Int?,
                @RequestParam yearAt: Int?,
-               @RequestParam yearFrom: Int?
+               @RequestParam yearFrom: Int?,
+               @RequestParam scans: String?,
+               @RequestParam isAdult: Boolean?
     ): ResultEntity {
-        val result = catalogRepository.list(
-            genres = genres.split("<>"),
+        val result = catalogService.list(
+            genres = genres?.split("<>") ?: listOf(),
             search = search,
             author = author,
-            isAdult = false,
-            pageable = PageRequest.of(offset ?: 0, limit?: 25),
+            isAdult = isAdult ?: false,
+            limit = limit,
+            page = page,
             uniqueid = uniqueid,
             yearAt = yearAt,
-            yearFrom = yearFrom
+            yearFrom = yearFrom,
+            scans = scans,
         )
         return ResultEntity(
            message = "Sucesso",
-           total = result.totalPages,
+           total = result.content.size,
            data = result.content,
            status = StatusResultEnum.SUCCESS,
         )

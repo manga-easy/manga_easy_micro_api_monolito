@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
+
 @Component
 class CatalogTask{
     private val log = LoggerFactory.getLogger(CatalogTask::class.java)
@@ -22,7 +24,7 @@ class CatalogTask{
     lateinit var catalogRepository: CatalogRepository
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 3)
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
         val result = mangaDetailsRepository.findByOrderByCreatAtDesc()
@@ -32,7 +34,7 @@ class CatalogTask{
 
     fun updateCatalog(manga: MandaDetailsEntity){
         try {
-            log.info("Update manga: {}", dateFormat.format(Date()))
+            log.info("Update manga: {}", manga.data.title)
             var catalog = catalogRepository.findByUniqueid(manga.uniqueid)
             if (catalog == null){
                 catalogRepository.save(CatalogEntity(
