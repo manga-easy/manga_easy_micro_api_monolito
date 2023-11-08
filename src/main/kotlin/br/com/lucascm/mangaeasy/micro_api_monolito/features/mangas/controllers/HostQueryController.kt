@@ -28,10 +28,10 @@ class HostQueryController {
 
     @GetMapping("/latest-manga")
     @ResponseBody
-    fun getManga(@RequestParam idHost: Int)
+    fun getManga(@RequestParam idHost: Int, @RequestParam versionApp: String?)
     : ResultEntity{
         try {
-            val result = repository.findByIdhost(idHost)
+            val result = repository.findByIdhostAndVersionApp(idHost, versionApp)
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -66,7 +66,7 @@ class HostQueryController {
             if (body.data.isEmpty()){
                 throw BusinessException("Data não pode ser vazio")
             }
-            val resultFind = repository.findByIdhost(body.idhost)
+            val resultFind = repository.findByIdhostAndVersionApp(body.idhost, body.versionApp)
             val result = if (resultFind == null){
                 repository.save(body.copy(creatAt = Date()))
             }else{
@@ -86,10 +86,11 @@ class HostQueryController {
     @GetMapping("/manga-details")
     @ResponseBody
     fun getMangaDetails(@RequestParam idHost: Int,
-                        @RequestParam uniqueid: String)
+                        @RequestParam uniqueid: String,
+                        @RequestParam versionApp: String?)
             : ResultEntity{
         try {
-            val result = mangaDetailsRepository.findByIdhostAndUniqueid(idHost, uniqueid)
+            val result = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(idHost, uniqueid, versionApp)
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -124,7 +125,7 @@ class HostQueryController {
             if (body.data.capa.isEmpty()){
                 throw BusinessException("Capa do mangá não pode ser vazio")
             }
-            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueid(body.idhost, body.uniqueid)
+            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(body.idhost, body.uniqueid, body.versionApp)
             val result = if (resultFind == null){
                 mangaDetailsRepository.save(body.copy(creatAt = Date()))
             }else{
@@ -145,10 +146,16 @@ class HostQueryController {
     @ResponseBody
     fun getContentChapter(@RequestParam idHost: Int,
                           @RequestParam uniqueid: String,
-                          @RequestParam chapter: String)
+                          @RequestParam chapter: String,
+                          @RequestParam versionApp: String?)
             : ResultEntity{
         try {
-            val result = contentChapterRepository.findByIdhostAndUniqueidAndChapter(idHost, uniqueid, chapter)
+            val result = contentChapterRepository.findByIdhostAndUniqueidAndChapterAndVersionApp(
+                idHost,
+                uniqueid,
+                chapter,
+                versionApp
+            )
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -180,7 +187,7 @@ class HostQueryController {
             if (body.chapter.isEmpty()){
                 throw BusinessException("chapter não pode ser vazio")
             }
-            val resultFind = contentChapterRepository.findByIdhostAndUniqueidAndChapter(body.idhost, body.uniqueid, body.chapter)
+            val resultFind = contentChapterRepository.findByIdhostAndUniqueidAndChapterAndVersionApp(body.idhost, body.uniqueid, body.chapter, body.versionApp)
             val result = if (resultFind == null){
                 contentChapterRepository.save(body.copy(creatAt = Date()))
             }else{

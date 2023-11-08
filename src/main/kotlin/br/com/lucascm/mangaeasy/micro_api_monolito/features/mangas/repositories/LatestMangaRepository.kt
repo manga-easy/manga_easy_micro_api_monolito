@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface LatestMangaRepository : MongoRepository<LatestMangaEntity, Long> {
-    fun findByIdhost(idHost: Int): LatestMangaEntity?
+    fun findByIdhostAndVersionApp(idHost: Int, versionApp: String?): LatestMangaEntity?
 }

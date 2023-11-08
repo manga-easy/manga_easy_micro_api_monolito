@@ -12,5 +12,7 @@ data class LatestMangaEntity(
     val id: ObjectId?,
     val idhost: Int,
     val data: List<MangaEntity>,
-    val creatAt: Date?
+    val creatAt: Date?,
+    @Column(name = "version_app")
+    val versionApp: String?,
 )
