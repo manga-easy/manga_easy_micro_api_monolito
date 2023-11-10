@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface MangaDetailsRepository : MongoRepository<MandaDetailsEntity, Long> {
     fun findByIdhostAndUniqueid(idhost: Int, uniqueid: String): MandaDetailsEntity?
     fun findByOrderByCreatAtDesc(): List<MandaDetailsEntity>
+    fun findByIdhostAndUniqueidAndVersionApp(idhost: Int, uniqueid: String, versionApp: String?): MandaDetailsEntity?
 }
