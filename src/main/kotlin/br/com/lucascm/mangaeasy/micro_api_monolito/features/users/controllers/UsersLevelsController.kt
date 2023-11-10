@@ -91,7 +91,7 @@ class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
             }
             throw Exception("Nenhum condição foi atendida: $levelApp")
         } catch (e: Exception) {
-            logger.logger("levels-put").info(e.stackTrace.toString())
+            logger.logger("levels-put").catching(e)
             return ResultEntity(
                 StatusResultEnum.ERROR,
                 e.message,
