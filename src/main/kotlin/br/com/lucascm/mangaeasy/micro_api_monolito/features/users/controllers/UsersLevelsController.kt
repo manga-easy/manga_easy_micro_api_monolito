@@ -16,11 +16,12 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/users")
-class UsersLevelsController(@Autowired val repository: UsersLevelsRepository,
-                            @Autowired val verifyUserIdPermissionService: VerifyUserIdPermissionService,
-                            @Autowired val seasonsRepository: SeasonsRepository,
-                            val logger: KotlinLogging = KotlinLogging
+class UsersLevelsController(
 ) {
+    @Autowired lateinit var repository: UsersLevelsRepository
+    @Autowired lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
+    @Autowired lateinit var seasonsRepository: SeasonsRepository
+    val logger: KotlinLogging = KotlinLogging
     @GetMapping("/{uid}/levels")
     @ResponseBody
     fun list(@PathVariable uid: String,

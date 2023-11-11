@@ -24,7 +24,7 @@ class UserController {
     @GetMapping()
     fun getUsers(@RequestParam search: String?) : ResultEntity {
         try {
-            val result = repository.serachUser(search)
+            val result = repository.search(search)
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
@@ -39,7 +39,7 @@ class UserController {
     @GetMapping("/{userid}")
     fun get(@PathVariable userid: String) : ResultEntity {
         try {
-            val result = repository.serachUser(userid)
+            val result = repository.search(userid)
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository
 class UserRepository {
     @Autowired
     lateinit var env: Environment
-    fun serachUser(search: String?): List<UserEntity>{
+    fun search(search: String?): List<UserEntity>{
         val response = runBlocking { futureUsers(search) }
         return response.map { e -> UserEntity(
             email = e.email,
