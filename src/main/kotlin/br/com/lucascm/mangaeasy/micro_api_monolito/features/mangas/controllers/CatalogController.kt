@@ -43,4 +43,19 @@ class CatalogController {
            status = StatusResultEnum.SUCCESS,
         )
     }
+    @GetMapping("/over-18")
+    @ResponseBody
+    fun over18(): ResultEntity {
+        val result = catalogService.list(
+                genres = listOf("adult"),
+                isAdult = true,
+                limit = 20000,
+            )
+        return ResultEntity(
+            message = "Sucesso",
+            total = result.content.size,
+            data = result.content.map { it.uniqueid }.toList(),
+            status = StatusResultEnum.SUCCESS,
+        )
+    }
 }

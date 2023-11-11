@@ -22,7 +22,7 @@ class HandlerUserAdmin(@Autowired val repository: PermissionsRepository, val log
     fun handleIsAdmin(userId: String): Unit {
         val result = repository.findByUserid(userId)
         ///significa que é um admin
-        if (result?.value  != 90){
+        if (result?.value != 90){
             throw BusinessException("O usuario não tem permissão")
         }
         return

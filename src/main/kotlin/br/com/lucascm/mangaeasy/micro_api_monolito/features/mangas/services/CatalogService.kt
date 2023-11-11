@@ -18,14 +18,14 @@ class CatalogService {
     @Autowired
     lateinit var catalogRepository: CatalogRepository
      fun list(genres: List<String>,
-              search: String?,
-              author: String?,
-              page: Int?,
-              uniqueid: String?,
-              limit: Int?,
-              yearAt: Int?,
-              yearFrom: Int?,
-              scans: String?,
+              search: String? = null,
+              author: String? = null,
+              page: Int? = null,
+              uniqueid: String? = null,
+              limit: Int? = null,
+              yearAt: Int? = null,
+              yearFrom: Int? = null,
+              scans: String? = null,
               isAdult: Boolean,
      ): Page<CatalogEntity> {
         return catalogRepository.findAll(Specification(fun(

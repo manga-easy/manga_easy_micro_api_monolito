@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "br.com.lucas-cm.manga-easy"
-version = "1.1.0"
+version = "1.3.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
