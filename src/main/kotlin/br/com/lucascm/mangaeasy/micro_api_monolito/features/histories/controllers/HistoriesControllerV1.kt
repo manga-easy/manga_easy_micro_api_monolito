@@ -84,7 +84,8 @@ class HistoriesControllerV1 {
                     currentchapter = body.currentchapter,
                     isdeleted = body.isdeleted,
                     issync = body.issync,
-                    manga = body.manga
+                    manga = body.manga,
+                    uniqueid = body.uniqueid,
                 ))
             }
             return ResultEntity(

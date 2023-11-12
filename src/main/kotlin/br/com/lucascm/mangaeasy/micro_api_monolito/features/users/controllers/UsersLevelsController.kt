@@ -78,11 +78,11 @@ class UsersLevelsController(
             }
             //3 caso existe local mas não exite na nuvem
             if (levelApp != null && levelDataBase.isEmpty()) {
-                throw Exception("Nivel não exite no Banco")
+                return createLevel(seasonCurret.uid, uid)
             }
             //4 caso existe nois então verifica qual é mais e atualiza o maior
             if (levelApp != null && levelDataBase.isNotEmpty()) {
-               var result = saveLevel(levelApp, levelDataBase.first())
+                var result = saveLevel(levelApp, levelDataBase.first())
                 return ResultEntity(
                     StatusResultEnum.SUCCESS,
                     "Nivel sincronizado com sucesso",

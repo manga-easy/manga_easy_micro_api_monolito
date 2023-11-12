@@ -72,11 +72,14 @@ class LibrariesControllerV1  {
                 ))
             } else {
                 val first = result.first()
-                repository.save(first.copy(updatedat = Date().time,
+                repository.save(first.copy(
+                    updatedat = Date().time,
                     status  = body.status,
                     isdeleted = body.isdeleted,
                     issync = body.issync,
-                    manga = body.manga
+                    manga = body.manga,
+                    idhost = body.idhost,
+                    uniqueid = body.uniqueid,
                 ))
             }
             return ResultEntity(

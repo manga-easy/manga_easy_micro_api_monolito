@@ -19,6 +19,6 @@ data class HistoriesEntity(
         val updatedat: Long? = null,
         val createdat: Long? = null,
         val isdeleted: Boolean = false,
-        val chapterlidos: String= "",
+        val chapterlidos: String = "",
         val issync: Boolean = false,
 )
