@@ -8,10 +8,8 @@ data class HistoriesEntity(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "_id")
         private val id: Long? = null,
-
         @Column(name = "_uid")
         val uid: String? = null,
-
         val uniqueid: String = "",
         val manga: String = "",
         val iduser: String= "",

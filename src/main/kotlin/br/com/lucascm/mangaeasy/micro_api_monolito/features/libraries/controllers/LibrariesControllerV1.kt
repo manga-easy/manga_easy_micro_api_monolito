@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/v2/libraries")
+@RequestMapping("/v1/libraries")
 class LibrariesControllerV1  {
     @Autowired lateinit var repository: LibrariesRepository
     @Autowired lateinit var handleExceptions: HandleExceptions
@@ -22,19 +22,22 @@ class LibrariesControllerV1  {
     @GetMapping
     @ResponseBody
     fun list(
-        @RequestParam idUser: String,
+        @RequestParam idUser: String?,
         @RequestParam uniqueId: String?,
         @RequestParam limit: Int?,
         @RequestParam offset: Int?,
         authentication: Authentication
     ): ResultEntity {
         try {
-            verifyUserIdPermissionService.get(authentication, idUser)
+            if (idUser != null) verifyUserIdPermissionService.get(authentication, idUser)
             val result = if (uniqueId != null) {
-                repository.findByIduserAndUniqueid(iduser = idUser, uniqueid = uniqueId)
+                repository.findByIduserAndUniqueid(
+                    iduser = idUser ?: authentication.principal.toString(),
+                    uniqueid = uniqueId
+                )
             } else {
                 repository.findByIduser(
-                    iduser = idUser,
+                    iduser = idUser ?: authentication.principal.toString(),
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
             }

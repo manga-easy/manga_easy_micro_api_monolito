@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/v2/histories")
+@RequestMapping("/v1/histories")
 class HistoriesControllerV1 {
     @Autowired lateinit var repository: HistoriesRepository
     @Autowired lateinit var handleExceptions: HandleExceptions
@@ -27,19 +27,22 @@ class HistoriesControllerV1 {
     @GetMapping
     @ResponseBody
     fun list(
-        @RequestParam idUser: String,
+        @RequestParam idUser: String?,
         @RequestParam uniqueId: String?,
         @RequestParam limit: Int?,
         @RequestParam offset: Int?,
         authentication: Authentication
          ): ResultEntity {
         try {
-            verifyUserIdPermissionService.get(authentication, idUser)
+            if (idUser != null) verifyUserIdPermissionService.get(authentication, idUser)
             val result = if (uniqueId != null) {
-                repository.findByIduserAndUniqueid(iduser = idUser, uniqueid = uniqueId)
+                repository.findByIduserAndUniqueid(
+                    iduser = idUser ?: authentication.principal.toString(),
+                    uniqueid = uniqueId
+                )
             } else {
                 repository.findByIduser(
-                    iduser = idUser,
+                    iduser = idUser ?: authentication.principal.toString(),
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
             }
@@ -74,7 +77,8 @@ class HistoriesControllerV1 {
                 ))
             } else {
                 val first = result.first()
-                repository.save(first.copy(updatedat = Date().time,
+                repository.save(first.copy(
+                    updatedat = Date().time,
                     capatual = body.capatual,
                     chapterlidos = body.chapterlidos,
                     currentchapter = body.currentchapter,
