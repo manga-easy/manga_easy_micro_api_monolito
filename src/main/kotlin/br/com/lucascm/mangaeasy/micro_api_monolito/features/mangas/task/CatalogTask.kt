@@ -4,6 +4,8 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ContentChapterRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LatestMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,14 +23,21 @@ class CatalogTask{
     @Autowired
     lateinit var mangaDetailsRepository: MangaDetailsRepository
     @Autowired
+    lateinit var contentChapterRepository: ContentChapterRepository
+    @Autowired
+    lateinit var latestMangaRepository: LatestMangaRepository
+    @Autowired
     lateinit var catalogRepository: CatalogRepository
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
-    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 3)
+    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 3, initialDelay = 3)
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
         val result = mangaDetailsRepository.findByOrderByCreatAtDesc()
-        result.forEach{ it -> updateCatalog(it) }
+        result.forEach{ updateCatalog(it) }
+        mangaDetailsRepository.deleteAll()
+        contentChapterRepository.deleteAll()
+        latestMangaRepository.deleteAll()
         log.info("------------------ Finish CatalogTask --------------")
     }
 
