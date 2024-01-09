@@ -83,7 +83,6 @@ class HistoriesControllerV1 {
                     chapterlidos = body.chapterlidos,
                     currentchapter = body.currentchapter,
                     isdeleted = body.isdeleted,
-                    issync = body.issync,
                     manga = body.manga,
                     uniqueid = body.uniqueid,
                 ))
