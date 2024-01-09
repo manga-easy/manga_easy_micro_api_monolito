@@ -9,15 +9,15 @@ data class HistoriesEntity(
         @Column(name = "_id")
         private val id: Long? = null,
         @Column(name = "_uid")
-        val uid: String?,
-        val uniqueid: String,
-        val manga: String,
-        val iduser: String,
+        val uid: String? = null,
+        val uniqueid: String = "",
+        val manga: String = "",
+        val iduser: String = "",
         @Deprecated(message = "User currentChapter 0.13.0 -> 0.15.0")
-        val capatual: String?,
-        var currentchapter: String?,
-        val updatedat: Long?,
-        val createdat: Long?,
-        val isdeleted: Boolean,
-        val chapterlidos: String?
+        val capatual: String? = null,
+        var currentchapter: String? = null,
+        val updatedat: Long? = null,
+        val createdat: Long? = null,
+        val isdeleted: Boolean = false,
+        val chapterlidos: String? = null
 )

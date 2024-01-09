@@ -76,7 +76,6 @@ class LibrariesControllerV1  {
                     updatedat = Date().time,
                     status  = body.status,
                     isdeleted = body.isdeleted,
-                    issync = body.issync,
                     manga = body.manga,
                     idhost = body.idhost,
                     uniqueid = body.uniqueid,

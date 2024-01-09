@@ -10,14 +10,14 @@ data class LibrariesEntity (
         @Column(name = "_id")
         private val id: Long? = null,
         @Column(name = "_uid")
-        val uid: String?,
-        val idhost: Long?,
-        val idmanga: String?,
-        val iduser: String,
-        val uniqueid: String,
-        val manga: String?,
-        val status: String?,
-        val updatedat: Long?,
-        val createdat: Long?,
-        val isdeleted: Boolean
+        val uid: String? = null,
+        val idhost: Long? = null,
+        val idmanga: String? = null,
+        val iduser: String = "",
+        val uniqueid: String = "",
+        val manga: String? = null,
+        val status: String? = null,
+        val updatedat: Long? = null,
+        val createdat: Long? = null,
+        val isdeleted: Boolean = false
 )
