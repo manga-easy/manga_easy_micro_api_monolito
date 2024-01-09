@@ -31,7 +31,7 @@ class HostQueryController {
     fun getManga(@RequestParam idHost: Int, @RequestParam versionApp: String?)
     : ResultEntity{
         try {
-            val result = repository.findByIdhostAndVersionApp(idHost, versionApp)
+            val result = repository.findByIdhostAndVersionApp(idHost, versionApp ?: "0.14.0")
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -66,11 +66,15 @@ class HostQueryController {
             if (body.data.isEmpty()){
                 throw BusinessException("Data não pode ser vazio")
             }
-            val resultFind = repository.findByIdhostAndVersionApp(body.idhost, body.versionApp)
-            val result = if (resultFind == null){
-                repository.save(body.copy(creatAt = Date()))
+            val resultFind = repository.findByIdhostAndVersionApp(body.idhost, body.versionApp ?: "0.14.0")
+            val result = if (resultFind == null){   
+                repository.save(body.copy(creatAt = Date(), versionApp = body.versionApp ?: "0.14.0"))
             }else{
-                repository.save(resultFind.copy(creatAt = Date(), data = body.data))
+                repository.save(resultFind.copy(
+                    creatAt = Date(),
+                    data = body.data,
+                    versionApp = body.versionApp ?: "0.14.0")
+                )
             }
             return ResultEntity(
                 message = "Sucesso",
@@ -90,7 +94,11 @@ class HostQueryController {
                         @RequestParam versionApp: String?)
             : ResultEntity{
         try {
-            val result = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(idHost, uniqueid, versionApp)
+            val result = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(
+                idHost,
+                uniqueid,
+                versionApp ?: "0.14.0"
+            )
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
             }
@@ -125,11 +133,19 @@ class HostQueryController {
             if (body.data.capa.isEmpty()){
                 throw BusinessException("Capa do mangá não pode ser vazio")
             }
-            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(body.idhost, body.uniqueid, body.versionApp)
+            val resultFind = mangaDetailsRepository.findByIdhostAndUniqueidAndVersionApp(
+                body.idhost,
+                body.uniqueid,
+                body.versionApp ?: "0.14.0"
+            )
             val result = if (resultFind == null){
-                mangaDetailsRepository.save(body.copy(creatAt = Date()))
+                mangaDetailsRepository.save(body.copy(creatAt = Date(), versionApp = body.versionApp ?: "0.14.0"))
             }else{
-                mangaDetailsRepository.save(resultFind.copy(creatAt = Date(), data = body.data))
+                mangaDetailsRepository.save(resultFind.copy(
+                    creatAt = Date(),
+                    data = body.data,
+                    versionApp = body.versionApp ?: "0.14.0")
+                )
             }
             ResultEntity(
                 message = "Sucesso",
@@ -154,7 +170,7 @@ class HostQueryController {
                 idHost,
                 uniqueid,
                 chapter,
-                versionApp
+                versionApp ?: "0.14.0"
             )
             if (result == null ){
                 throw BusinessException("Cache não encontrado")
@@ -187,11 +203,20 @@ class HostQueryController {
             if (body.chapter.isEmpty()){
                 throw BusinessException("chapter não pode ser vazio")
             }
-            val resultFind = contentChapterRepository.findByIdhostAndUniqueidAndChapterAndVersionApp(body.idhost, body.uniqueid, body.chapter, body.versionApp)
+            val resultFind = contentChapterRepository.findByIdhostAndUniqueidAndChapterAndVersionApp(
+                body.idhost,
+                body.uniqueid,
+                body.chapter,
+                body.versionApp ?: "0.14.0"
+            )
             val result = if (resultFind == null){
-                contentChapterRepository.save(body.copy(creatAt = Date()))
+                contentChapterRepository.save(body.copy(creatAt = Date(), versionApp = body.versionApp ?: "0.14.0"))
             }else{
-                contentChapterRepository.save(resultFind.copy(creatAt = Date(), data = body.data))
+                contentChapterRepository.save(resultFind.copy(
+                    creatAt = Date(),
+                    data = body.data,
+                    versionApp = body.versionApp ?: "0.14.0")
+                )
             }
             ResultEntity(
                 message = "Sucesso",

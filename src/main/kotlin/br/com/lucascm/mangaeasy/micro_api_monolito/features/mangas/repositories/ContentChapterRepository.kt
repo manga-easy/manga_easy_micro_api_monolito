@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ContentChapterRepository : MongoRepository<ContentChapterEntity, Long> {
-    fun findByIdhostAndUniqueidAndChapterAndVersionApp(idhost: Int, uniqueid: String, chapter: String, versionApp: String?): ContentChapterEntity?
+    fun findByIdhostAndUniqueidAndChapterAndVersionApp(idhost: Int, uniqueid: String, chapter: String, versionApp: String): ContentChapterEntity?
 }
