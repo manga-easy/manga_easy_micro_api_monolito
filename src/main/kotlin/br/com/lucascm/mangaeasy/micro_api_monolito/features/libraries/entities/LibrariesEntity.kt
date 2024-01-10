@@ -12,7 +12,6 @@ data class LibrariesEntity (
         @Column(name = "_uid")
         val uid: String? = null,
         val idhost: Long? = null,
-        val idmanga: String? = null,
         val iduser: String = "",
         val uniqueid: String = "",
         val manga: String? = null,
