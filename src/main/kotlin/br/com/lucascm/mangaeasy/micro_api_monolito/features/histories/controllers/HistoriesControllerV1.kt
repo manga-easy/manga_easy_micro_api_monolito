@@ -78,7 +78,7 @@ class HistoriesControllerV1 {
             } else {
                 val first = result.first()
                 repository.save(first.copy(
-                    updatedat = Date().time,
+                    updatedat = body.updatedat,
                     capatual = body.capatual,
                     chapterlidos = body.chapterlidos,
                     currentchapter = body.currentchapter,

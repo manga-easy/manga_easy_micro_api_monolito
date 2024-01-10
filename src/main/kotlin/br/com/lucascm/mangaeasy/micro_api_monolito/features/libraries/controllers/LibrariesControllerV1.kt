@@ -73,7 +73,7 @@ class LibrariesControllerV1  {
             } else {
                 val first = result.first()
                 repository.save(first.copy(
-                    updatedat = Date().time,
+                    updatedat = body.updatedat,
                     status  = body.status,
                     isdeleted = body.isdeleted,
                     manga = body.manga,
