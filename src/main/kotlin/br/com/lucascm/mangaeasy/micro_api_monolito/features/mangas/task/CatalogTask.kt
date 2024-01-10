@@ -2,6 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ContentChapterRepository
@@ -53,7 +54,7 @@ class CatalogTask{
                     createdAt = Date().time,
                     author = manga.data.autor,
                     synopsis = manga.data.sinopse,
-                    genres = manga.data.generos.joinToString(separator = "<>", transform =  {t -> t.title}),
+                    genres = convertGenders(manga.data.generos),
                     lastChapter = manga.data.capitulos.last().title,
                     ratio = 0.0,
                     scans = manga.data.scans,
@@ -73,5 +74,8 @@ class CatalogTask{
         }catch (e: Exception){
             log.error(e.message, e)
         }
+    }
+    fun convertGenders(genders: List<GenderEntity>): String {
+        return genders.joinToString(separator = "<>", transform =  {t -> t.title.replace(" ", "-")})
     }
 }
