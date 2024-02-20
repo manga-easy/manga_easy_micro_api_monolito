@@ -4,7 +4,5 @@ data class ImageChapterEntity(
     val id: String?,
     val src: String,
     val path: String?,
-    val tipo: TypeFontEnum,
-    @Deprecated("Não será mais usado")
-    val state: Int
+    val tipo: TypeFontEnum
 )
