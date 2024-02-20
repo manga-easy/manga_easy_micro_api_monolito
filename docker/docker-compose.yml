@@ -1,0 +1,74 @@
+x-logging:
+  &x-logging
+  logging:
+    driver: 'json-file'
+    options:
+      max-file: '1'
+      max-size: '10m'
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb:10.7 # fix issues when upgrading using: mysql_upgrade -u root -p
+    container_name: appwrite-mariadb
+    <<: *x-logging
+    restart: unless-stopped
+    networks:
+      - appwrite
+    volumes:
+      - appwrite-mariadb:/var/lib/mysql:rw
+    environment:
+      - MYSQL_ROOT_PASSWORD=${_API_DB_ROOT_PASS}
+      - MYSQL_DATABASE=${_API_DB_SCHEMA}
+      - MYSQL_USER=${_API_DB_USER}
+      - MYSQL_PASSWORD=${_API_DB_PASS}
+    command: 'mysqld --innodb-flush-method=fsync'
+    ports:
+      - 3306:3306
+  api:
+    restart: always
+    build: api
+    <<: *x-logging
+    environment:
+      DB_DATABASE: ${_API_DB_SCHEMA}
+      DB_USER: ${_API_DB_USER}
+      DB_PASSWORD: ${_API_DB_PASS}
+      DB_PORT: ${_API_DB_PORT}
+      JWT_key: ${_API_JWT}
+      DB_HOST: ${_API_DB_HOST}
+      auth_key: ${_auth_key}
+      auth_endpoint: ${_auth_endpoint}
+      auth_idproject: ${_auth_idproject}
+      GOOGLE_APPLICATION_CREDENTIALS: ${_GOOGLE_APPLICATION_CREDENTIALS}
+      MONGODB_URL: ${_MONGODB_URL}
+    networks:
+      - appwrite
+    ports:
+      - 8080:8080
+  nginx:
+    restart: always
+    build: nginx
+    <<: *x-logging
+    ports:
+      - "443:443"
+    networks:
+      - appwrite
+  mongo:
+    image: mongo:7.0.0
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
+    networks:
+      - appwrite
+    ports:
+      - "27017:27017"
+networks:
+  appwrite:
+
+
+volumes:
+  appwrite-mariadb:
+
+    # compose up -d --no-build --remove-orphans
+    # .\gradlew build -x test
