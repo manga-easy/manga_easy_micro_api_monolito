@@ -28,4 +28,5 @@ data class ProfileEntity(
     var currentLevel: String? = null,
     @Column(name = "total_achievements")
     var totalAchievements: Long? = null,
+    var picture: String?
 )

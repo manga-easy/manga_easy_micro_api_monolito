@@ -7,20 +7,19 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.seasons.repositories.SeasonsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersLevelsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersLevelsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
+
+const val LIMIT_FILE_SIZE = 3000000
+val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
 
 @RestController
 @RequestMapping("/v1/profile")
@@ -35,6 +34,7 @@ class ProfileController {
     lateinit var usersLevelsRepository: UsersLevelsRepository
     @Autowired
     lateinit var seasonsRepository: SeasonsRepository
+    lateinit var bucketRepository: BucketRepository
     @GetMapping("/{userID}")
     @ResponseBody
     fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
@@ -53,7 +53,8 @@ class ProfileController {
                     userID = userID,
                     totalMangaRead = 0,
                     totalAchievements = 0,
-                    role = "Aventureiro"
+                    role = "Aventureiro",
+                    picture = null
                 )
                 profileRepository.save(result)
             }
@@ -81,7 +82,7 @@ class ProfileController {
             }
             val result = profileRepository.save(find.copy(
                 biography = body.biography,
-//                currentLevel = getCurrentLevel(userID),
+                //currentLevel = getCurrentLevel(userID),
                 updatedAt = Date().time,
                 mangasHighlight = body.mangasHighlight,
                 achievementsHighlight = body.achievementsHighlight,
@@ -101,5 +102,31 @@ class ProfileController {
         val season = seasonsRepository.findTop1ByOrderByNumberDesc().uid!!
         val result = usersLevelsRepository.findByTemporadaAndUserid(season, userID)
         return result.first()
+    }
+    @PutMapping("/{userID}/image")
+    fun handleFileUpload(
+        @RequestPart file: MultipartFile,
+        @PathVariable userID: String
+    ): ResultEntity {
+        return try {
+//            var find: ProfileEntity = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
+            validateImage(file)
+            bucketRepository.saveImage(userID, file, file.contentType!!)
+            val image = bucketRepository.getLinkImage(userID)
+//            val result = profileRepository.save(find.copy(picture = image))
+            ResultEntity(
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(),
+                total = 1,
+                message = "Sucesso"
+            )
+        } catch (e: Exception){
+            handleExceptions.handleCatch(e)
+        }
+    }
+    private fun validateImage(file: MultipartFile){
+        if (file.size > LIMIT_FILE_SIZE) throw BusinessException("Imagem maior que o permetido: 3mb")
+        val typeImage = file.contentType!!.replace("image/", "").uppercase()
+        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 }
