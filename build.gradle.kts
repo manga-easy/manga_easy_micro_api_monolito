@@ -3,8 +3,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "3.0.5"
 	id("io.spring.dependency-management") version "1.1.0"
+	id("io.sentry.jvm.gradle") version "4.3.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
+}
+
+sentry {
+	// Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+	// This enables source context, allowing you to see your source
+	// code as part of your stack traces in Sentry.
+	includeSourceContext.set(true)
+	org.set("lucas-cm")
+	projectName.set("manga_easy_micro_api_monolito")
+	authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
 }
 
 group = "br.com.lucas-cm.manga-easy"
@@ -18,10 +29,10 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.1")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
-    implementation("io.appwrite:sdk-for-kotlin:1.2.0")
+	implementation("io.appwrite:sdk-for-kotlin:1.2.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -30,6 +41,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
+	implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.3.0")
+	implementation(enforcedPlatform("com.oracle.oci.sdk:oci-java-sdk-bom:3.36.0"))
+	implementation("com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3")
+	implementation("com.oracle.oci.sdk:oci-java-sdk-addons-apache-configurator-jersey3")
+	implementation("com.oracle.oci.sdk:oci-java-sdk-core")
+	implementation("com.oracle.oci.sdk:oci-java-sdk-identity")
+	implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage")
 }
 
 tasks.withType<KotlinCompile> {
