@@ -1,6 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersLevelsEntity
 import jakarta.persistence.*
 
 @Entity
@@ -28,5 +27,6 @@ data class ProfileEntity(
     var currentLevel: String? = null,
     @Column(name = "total_achievements")
     var totalAchievements: Long? = null,
-    var picture: String?
+    var picture: String? = null,
+    var name: String? = null
 )

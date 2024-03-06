@@ -8,7 +8,6 @@ import com.oracle.bmc.objectstorage.requests.PutObjectRequest
 import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
-import java.util.concurrent.TimeUnit
 
 
 const val namespaceName = "axs7rpnviwd0"
@@ -30,7 +29,7 @@ class BucketRepository {
             .build()
         //upload the file
         try {
-            val objects = configuration.putObject(putObjectRequest)
+            configuration.putObject(putObjectRequest)
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
@@ -39,18 +38,28 @@ class BucketRepository {
         }
     }
     fun getLinkImage(userID: String): String{
-       return ""
+        val configuration = getObjectStorage()
+        try {
+           // Construa a URL base do serviço Object Storage
+           val baseUrl = configuration.endpoint
+           // Combinar a URL base e a URL do objeto para obter o link final
+           return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${userID}"
+        } catch (e: Exception) {
+           e.printStackTrace()
+           throw e
+        } finally {
+           configuration.close()
+        }
     }
 
     private fun getObjectStorage(): ObjectStorage {
 
         //load config file
         val configFile: ConfigFileReader.ConfigFile = ConfigFileReader
-            .parse("", "DEFAULT")
+            .parse("src/main/resources/config", "DEFAULT")//OracleIdentityCloudService
         val provider = ConfigFileAuthenticationDetailsProvider(configFile)
 
         //build and return client
-        return ObjectStorageClient.builder()
-            .build(provider)
+        return  ObjectStorageClient.builder().build(provider);
     }
 }
