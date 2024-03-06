@@ -41,6 +41,7 @@ services:
       auth_idproject: ${_auth_idproject}
       GOOGLE_APPLICATION_CREDENTIALS: ${_GOOGLE_APPLICATION_CREDENTIALS}
       MONGODB_URL: ${_MONGODB_URL}
+      SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
     networks:
       - appwrite
     ports:

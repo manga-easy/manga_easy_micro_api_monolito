@@ -42,3 +42,4 @@ gradle/
 adc.json
 create.sql
 src/main/resources/config
+docker/api/config
