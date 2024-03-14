@@ -60,6 +60,8 @@ class BucketRepository {
         val provider = ConfigFileAuthenticationDetailsProvider(configFile)
 
         //build and return client
-        return  ObjectStorageClient.builder().build(provider);
+        return  ObjectStorageClient.builder()
+            .isStreamWarningEnabled(false)
+            .build(provider)
     }
 }
