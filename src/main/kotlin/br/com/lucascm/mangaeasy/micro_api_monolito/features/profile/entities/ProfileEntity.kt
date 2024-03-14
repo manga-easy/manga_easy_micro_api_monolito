@@ -32,5 +32,6 @@ data class ProfileEntity(
     @Column(name = "total_achievements")
     var totalAchievements: Long = 0,
     var picture: String? = null,
-    var name: String? = null
+    var name: String? = null,
+    var visibleStatics: Boolean = true,
 )

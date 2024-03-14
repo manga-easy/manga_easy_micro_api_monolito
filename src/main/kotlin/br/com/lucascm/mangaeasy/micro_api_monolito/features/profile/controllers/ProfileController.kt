@@ -48,7 +48,6 @@ class ProfileController {
     @ResponseBody
     fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
         return try {
-            verifyUserIdPermissionService.get(authentication, userID)
             val user = userRepository.search(userID)
             if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             var result = profileRepository.findByUserID(userID)
@@ -91,14 +90,13 @@ class ProfileController {
             if (find == null){
                throw BusinessException("Perfil não encontrado")
             }
-            val user = userRepository.search(userID)
-            if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             val result = profileRepository.save(find.copy(
                 biography = body.biography,
                 updatedAt = Date().time,
                 mangasHighlight = body.mangasHighlight,
                 achievementsHighlight = body.achievementsHighlight,
-                name = user.first().name,
+                name = body.name,
+                visibleStatics = body.visibleStatics,
             ))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
