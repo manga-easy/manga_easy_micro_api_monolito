@@ -1,32 +1,36 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
-@Table(name = "profile")
+@Document("profile")
 data class ProfileEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var id: Long? = null,
+    private var id: ObjectId? = null,
     var uid: String? = null,
-    var role: String? = null,
+    var role: String = "",
     var biography: String? = null,
     @Column(name = "user_id", unique = true)
     var userID: String = "",
     @Column(name = "mangas_highlight")
-    var mangasHighlight: List<String>? = null,
+    var mangasHighlight: List<Map<String, Any>>? = null,
     @Column(name = "achievements_highlight")
-    var achievementsHighlight: List<String>? = null,
+    var achievementsHighlight: List<Map<String, Any>>? = null,
     @Column(name = "created_at")
     var createdAt: Long? = null,
     @Column(name = "updated_at")
     var updatedAt: Long? = null,
     @Column(name = "total_manga_read")
-    var totalMangaRead: Long? = null,
+    var totalMangaRead: Long = 0,
     @Column(name = "current_level")
-    var currentLevel: String? = null,
+    var totalXp: Long = 0,
     @Column(name = "total_achievements")
-    var totalAchievements: Long? = null,
+    var totalAchievements: Long = 0,
     var picture: String? = null,
     var name: String? = null
 )

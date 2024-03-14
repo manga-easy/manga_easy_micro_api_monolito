@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.time.Instant
 import java.util.*
 
 const val LIMIT_FILE_SIZE_GOLD = 3000000
@@ -48,19 +49,23 @@ class ProfileController {
     fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
         return try {
             verifyUserIdPermissionService.get(authentication, userID)
+            val user = userRepository.search(userID)
+            if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             var result = profileRepository.findByUserID(userID)
             if (result == null){
                 result = ProfileEntity(
                     uid = GetUidByFeature().get("profile"),
                     updatedAt = Date().time,
                     biography = "",
-                    createdAt = Date().time,
+                    createdAt = Date.from(Instant.parse(user.first().registration)).time,
                     achievementsHighlight = listOf(),
                     mangasHighlight = listOf(),
                     userID = userID,
                     totalMangaRead = 0,
                     totalAchievements = 0,
-                    role = "Aventureiro"
+                    role = "Aventureiro",
+                    name = user.first().name,
+                    totalXp = 0,
                 )
                 profileRepository.save(result)
             }
