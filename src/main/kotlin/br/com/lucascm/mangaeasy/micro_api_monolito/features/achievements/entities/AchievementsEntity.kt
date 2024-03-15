@@ -26,4 +26,5 @@ data class AchievementsEntity(
     var createdat: Long? = null,
     @Column(name = "_updatedat")
     var updatedat: Long? = null,
+    var image: String? = null,
 )
