@@ -6,6 +6,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
@@ -44,6 +45,8 @@ class ProfileController {
     lateinit var bucketRepository: BucketRepository
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
+    @Autowired
+    lateinit var librariesRepository: LibrariesRepository
     @GetMapping("/{userID}")
     @ResponseBody
     fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
@@ -52,6 +55,8 @@ class ProfileController {
             if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             var result = profileRepository.findByUserID(userID)
             if (result == null){
+                val totalMangaRead = librariesRepository.countByStatusAndUserId(userID)
+                val totalAchievements = usersAchievementsRepository.countByUserId(userID)
                 result = ProfileEntity(
                     uid = GetUidByFeature().get("profile"),
                     updatedAt = Date().time,
@@ -60,8 +65,8 @@ class ProfileController {
                     achievementsHighlight = listOf(),
                     mangasHighlight = listOf(),
                     userID = userID,
-                    totalMangaRead = 0,
-                    totalAchievements = 0,
+                    totalMangaRead = totalMangaRead,
+                    totalAchievements = totalAchievements,
                     role = "Aventureiro",
                     name = user.first().name,
                     totalXp = 0,
