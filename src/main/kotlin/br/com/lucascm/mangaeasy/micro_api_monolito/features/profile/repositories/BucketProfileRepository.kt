@@ -13,7 +13,7 @@ import java.io.InputStream
 const val namespaceName = "axs7rpnviwd0"
 const val bucketName = "manga-easy-profile"
 @Repository
-class BucketRepository {
+class BucketProfileRepository {
     fun saveImage(userID: String, file: MultipartFile, contentType: String){
         val configuration = getObjectStorage()
         val inputStream: InputStream = file.inputStream
@@ -40,15 +40,15 @@ class BucketRepository {
     fun getLinkImage(userID: String): String{
         val configuration = getObjectStorage()
         try {
-           // Construa a URL base do serviço Object Storage
-           val baseUrl = configuration.endpoint
-           // Combinar a URL base e a URL do objeto para obter o link final
-           return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${userID}"
+            // Construa a URL base do serviço Object Storage
+            val baseUrl = configuration.endpoint
+            // Combinar a URL base e a URL do objeto para obter o link final
+            return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${userID}"
         } catch (e: Exception) {
-           e.printStackTrace()
-           throw e
+            e.printStackTrace()
+            throw e
         } finally {
-           configuration.close()
+            configuration.close()
         }
     }
 

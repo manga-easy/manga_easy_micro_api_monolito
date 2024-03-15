@@ -8,7 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UserRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
@@ -42,7 +42,7 @@ class ProfileController {
     @Autowired
     lateinit var userRepository: UserRepository
     @Autowired
-    lateinit var bucketRepository: BucketRepository
+    lateinit var bucketProfileRepository: BucketProfileRepository
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
     @Autowired
@@ -91,10 +91,7 @@ class ProfileController {
     ): ResultEntity {
         return try {
             verifyUserIdPermissionService.get(authentication, userID)
-            val find = profileRepository.findByUserID(userID)
-            if (find == null){
-               throw BusinessException("Perfil não encontrado")
-            }
+            val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             val result = profileRepository.save(find.copy(
                 biography = body.biography,
                 updatedAt = Date().time,
@@ -125,8 +122,8 @@ class ProfileController {
             val find: ProfileEntity = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             if(file != null){
                 validateImage(file, userID)
-                bucketRepository.saveImage(userID, file, file.contentType!!)
-                image = bucketRepository.getLinkImage(userID)
+                bucketProfileRepository.saveImage(userID, file, file.contentType!!)
+                image = bucketProfileRepository.getLinkImage(userID)
             }
             val result = profileRepository.save(find.copy(picture = image))
             ResultEntity(
