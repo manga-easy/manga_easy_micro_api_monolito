@@ -7,6 +7,9 @@ plugins {
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 }
+group = "br.com.lucas-cm.manga-easy"
+version = "1.4.0+1"
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 sentry {
 	// Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
@@ -17,10 +20,6 @@ sentry {
 	projectName.set("manga_easy_micro_api_monolito")
 	authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
 }
-
-group = "br.com.lucas-cm.manga-easy"
-version = "1.3.2"
-java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
