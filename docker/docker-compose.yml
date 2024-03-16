@@ -18,10 +18,10 @@ services:
     volumes:
       - appwrite-mariadb:/var/lib/mysql:rw
     environment:
-      - MYSQL_ROOT_PASSWORD=${_API_DB_ROOT_PASS}
-      - MYSQL_DATABASE=${_API_DB_SCHEMA}
-      - MYSQL_USER=${_API_DB_USER}
-      - MYSQL_PASSWORD=${_API_DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     command: 'mysqld --innodb-flush-method=fsync'
     ports:
       - 3306:3306
@@ -30,18 +30,19 @@ services:
     build: api
     <<: *x-logging
     environment:
-      DB_DATABASE: ${_API_DB_SCHEMA}
-      DB_USER: ${_API_DB_USER}
-      DB_PASSWORD: ${_API_DB_PASS}
-      DB_PORT: ${_API_DB_PORT}
-      JWT_key: ${_API_JWT}
-      DB_HOST: ${_API_DB_HOST}
-      auth_key: ${_auth_key}
-      auth_endpoint: ${_auth_endpoint}
-      auth_idproject: ${_auth_idproject}
-      GOOGLE_APPLICATION_CREDENTIALS: ${_GOOGLE_APPLICATION_CREDENTIALS}
-      MONGODB_URL: ${_MONGODB_URL}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      JWT_KEY: ${JWT_KEY}
+      DB_HOST: ${DB_HOST}
+      APPWRITE_KEY: ${APPWRITE_KEY}
+      APPWRITE_ENDPOINT: ${APPWRITE_ENDPOINT}
+      APPWRITE_IDPROJECT: ${APPWRITE_IDPROJECT}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      MONGODB_URL: ${MONGODB_URL}
       SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
+      ENVIRONMENT: ${ENVIRONMENT}
     networks:
       - appwrite
     ports:
