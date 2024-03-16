@@ -137,7 +137,7 @@ class AchievementsControllers {
                 bucketAchievementsRepository.saveImage(uid, file, file.contentType!!)
                 imageResult = bucketAchievementsRepository.getLinkImage(uid)
             }
-            val result = achievementsRepository.save(find.copy(image = imageResult))
+            val result = achievementsRepository.save(find.copy(url = imageResult!!))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS, data = listOf(result), total = 1, message = "Sucesso"
             )
