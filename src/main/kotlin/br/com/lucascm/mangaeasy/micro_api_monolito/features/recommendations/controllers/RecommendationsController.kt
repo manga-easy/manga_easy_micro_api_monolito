@@ -188,7 +188,7 @@ class RecommendationsController {
 
     private fun validateImage(file: MultipartFile) {
         val limit = LIMIT_FILE_SIZE_RECOMMENDATION
-        if (file.size > limit) throw BusinessException("Imagem maior que o permetido: ${limit.toString()[0]}mb")
+        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
         val typeImage = file.contentType!!.replace("image/", "").uppercase()
         if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }

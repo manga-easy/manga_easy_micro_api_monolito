@@ -68,7 +68,7 @@ class AchievementsControllers {
     @ResponseBody
     fun create(@RequestBody body: AchievementsEntity, authentication: Authentication): ResultEntity {
         return try {
-//            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             handlerValidateEntity(body)
             val result = achievementsRepository.save(
                 body.copy(
@@ -172,7 +172,7 @@ class AchievementsControllers {
 
     private fun validateImage(file: MultipartFile) {
         val limit = LIMIT_FILE_SIZE_ACHIEVEMENT
-        if (file.size > limit) throw BusinessException("Imagem maior que o permetido: ${limit.toString()[0]}mb")
+        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
         val typeImage = file.contentType!!.replace("image/", "").uppercase()
         if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
