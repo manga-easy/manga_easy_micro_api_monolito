@@ -156,7 +156,10 @@ class RecommendationsController {
                 bucketRecommendationsRepository.saveImage(uniqueid, file, file.contentType!!)
                 imageResult = bucketRecommendationsRepository.getLinkImage(uniqueid)
             }
-            val result = recommendationsRepository.save(find.copy(image = imageResult))
+            val result = recommendationsRepository.save(find.copy(
+                link = imageResult!!,
+                updatedat = Date().time
+            ))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),

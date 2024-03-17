@@ -20,6 +20,5 @@ data class RecommendationsEntity(
     @Column(name = "_createdat")
     var createdat: Long? = null,
     @Column(name = "_updatedat")
-    var updatedat: Long? = null,
-    var image: String? = null,
+    var updatedat: Long? = null
 )
