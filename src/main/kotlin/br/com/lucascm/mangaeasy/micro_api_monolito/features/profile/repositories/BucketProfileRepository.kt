@@ -34,6 +34,7 @@ class BucketProfileRepository {
             e.printStackTrace()
             throw e
         } finally {
+            file.inputStream.close()
             configuration.close()
         }
     }
