@@ -129,7 +129,7 @@ class AchievementsControllers {
     ): ResultEntity {
         return try {
             var imageResult: String? = null
-//            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             val find: AchievementsEntity =
                 achievementsRepository.findByUid(uid) ?: throw BusinessException("Emblema não encontrado")
             if (file != null) {

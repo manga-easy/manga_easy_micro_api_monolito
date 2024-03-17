@@ -4,6 +4,7 @@ import com.oracle.bmc.ConfigFileReader
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider
 import com.oracle.bmc.objectstorage.ObjectStorage
 import com.oracle.bmc.objectstorage.ObjectStorageClient
+import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest
 import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
@@ -63,5 +64,24 @@ class BucketRecommendationsRepository {
         return ObjectStorageClient.builder()
             .isStreamWarningEnabled(false)
             .build(provider)
+    }
+
+    fun deleteImage(uniqueId: String) {
+        val configuration = getObjectStorage()
+        //build upload request
+        val putObjectRequest: DeleteObjectRequest = DeleteObjectRequest.builder()
+            .namespaceName(namespaceName)
+            .bucketName(bucketName)
+            .objectName(uniqueId)
+            .build()
+        //upload the file
+        try {
+            configuration.deleteObject(putObjectRequest)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
+        } finally {
+            configuration.close()
+        }
     }
 }

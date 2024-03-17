@@ -67,6 +67,7 @@ class RecommendationsController {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
             val result =
                 recommendationsRepository.findByUid(uid) ?: throw BusinessException("Recomendação não encontrado")
+            bucketRecommendationsRepository.deleteImage(result.uniqueid)
             recommendationsRepository.delete(result)
             ResultEntity(
                 total = 0,
