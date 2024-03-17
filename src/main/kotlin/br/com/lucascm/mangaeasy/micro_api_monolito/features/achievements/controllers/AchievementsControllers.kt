@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-const val LIMIT_FILE_SIZE_ACHIEVEMENT = 1000000
+const val LIMIT_FILE_SIZE_ACHIEVEMENT = 500000
 
 @RestController
 @RequestMapping("/v1/achievements")

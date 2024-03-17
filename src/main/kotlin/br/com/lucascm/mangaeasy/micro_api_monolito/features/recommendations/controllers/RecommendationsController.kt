@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-const val LIMIT_FILE_SIZE_RECOMMENDATION = 3000000
+const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
 
 @RestController
 @RequestMapping("/v1/recommendations")
@@ -177,9 +177,6 @@ class RecommendationsController {
         }
         if (body.title.isEmpty()) {
             throw BusinessException("Campo title não pode ser vazio")
-        }
-        if (body.link.isEmpty()) {
-            throw BusinessException("Campo link não pode ser vazio")
         }
         if ((body.artistid ?: "").isEmpty()) {
             throw BusinessException("Campo artistid não pode ser vazio")

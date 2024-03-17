@@ -35,6 +35,7 @@ class BucketAchievementsRepository {
             e.printStackTrace()
             throw e
         } finally {
+            file.inputStream.close()
             configuration.close()
         }
     }

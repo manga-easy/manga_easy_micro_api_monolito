@@ -18,7 +18,6 @@ class BucketRecommendationsRepository {
     fun saveImage(uniqueId: String, file: MultipartFile, contentType: String) {
         val configuration = getObjectStorage()
         val inputStream: InputStream = file.inputStream
-
         //build upload request
         val putObjectRequest: PutObjectRequest = PutObjectRequest.builder()
             .namespaceName(namespaceName)
@@ -35,6 +34,7 @@ class BucketRecommendationsRepository {
             e.printStackTrace()
             throw e
         } finally {
+            file.inputStream.close()
             configuration.close()
         }
     }
