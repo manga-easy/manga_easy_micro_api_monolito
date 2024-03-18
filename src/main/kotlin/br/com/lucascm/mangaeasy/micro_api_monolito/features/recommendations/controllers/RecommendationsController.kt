@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.controllers
 
+import MediaRecommendation
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
@@ -177,7 +178,7 @@ class RecommendationsController {
     }
 
     @GetMapping("/{title}/anilist")
-    fun getAnilistRecommendation(@PathVariable title: String): List<RecommendationsEntity>{
+    fun getAnilistRecommendation(@PathVariable title: String): List<MediaRecommendation>{
         return recommendationAnilistRepository.getRecommendationByTitle(title)
     }
 
