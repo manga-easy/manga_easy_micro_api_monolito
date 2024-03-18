@@ -9,6 +9,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
@@ -26,6 +27,9 @@ class RecommendationsController {
 
     @Autowired
     lateinit var handlerUserAdmin: HandlerUserAdmin
+
+    @Autowired
+    lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
@@ -170,6 +174,11 @@ class RecommendationsController {
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
+    }
+
+    @GetMapping("/{title}/anilist")
+    fun getAnilistRecommendation(@PathVariable title: String): List<RecommendationsEntity>{
+        return recommendationAnilistRepository.getRecommendationByTitle(title)
     }
 
     fun handleValidatorWrite(authentication: Authentication, body: RecommendationsEntity) {
