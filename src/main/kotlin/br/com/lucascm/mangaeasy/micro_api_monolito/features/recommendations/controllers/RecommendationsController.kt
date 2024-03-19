@@ -1,6 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.controllers
 
-import MediaRecommendation
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
@@ -162,10 +161,12 @@ class RecommendationsController {
                 bucketRecommendationsRepository.saveImage(uniqueid, file, file.contentType!!)
                 imageResult = bucketRecommendationsRepository.getLinkImage(uniqueid)
             }
-            val result = recommendationsRepository.save(find.copy(
-                link = imageResult!!,
-                updatedat = Date().time
-            ))
+            val result = recommendationsRepository.save(
+                find.copy(
+                    link = imageResult!!,
+                    updatedat = Date().time
+                )
+            )
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
@@ -178,8 +179,27 @@ class RecommendationsController {
     }
 
     @GetMapping("/{title}/anilist")
-    fun getAnilistRecommendation(@PathVariable title: String): List<MediaRecommendation>{
-        return recommendationAnilistRepository.getRecommendationByTitle(title)
+    fun getAnilistRecommendation(
+        @PathVariable title: String,
+        authentication: Authentication
+    ): ResultEntity {
+        return try {
+            val banners = recommendationsRepository.findAllByOrderByUpdatedatDesc()
+            val anilistRecommendations = recommendationAnilistRepository.getRecommendationByTitle(title)
+                .map { it.title.english?.lowercase() ?: it.title.romaji?.lowercase() ?: "" }
+            val recommendation = banners.firstOrNull { banner ->
+                anilistRecommendations.contains(banner.title.lowercase())
+            }
+            val filteredData = recommendation?.let { listOf(it) } ?: emptyList()
+            ResultEntity(
+                status = StatusResultEnum.SUCCESS,
+                data = filteredData,
+                total = recommendation?.let { 1 } ?: 0,
+                message = "Sucesso"
+            )
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
+        }
     }
 
     fun handleValidatorWrite(authentication: Authentication, body: RecommendationsEntity) {

@@ -19,6 +19,6 @@ data class MediaRecommendation(
     @JsonProperty("title") val title: Title
 )
 data class Title(
-    @JsonProperty("english") val english: String,
-    @JsonProperty("romaji") val romaji: String
+    @JsonProperty("english") val english: String?,
+    @JsonProperty("romaji") val romaji: String?
 )

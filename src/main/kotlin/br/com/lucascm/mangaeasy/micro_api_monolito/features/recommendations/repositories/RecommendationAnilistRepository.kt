@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository
 import org.springframework.web.client.RestTemplate
 
 @Repository
-class RecommendationAnilistRepository{
+class RecommendationAnilistRepository {
     val client = RestTemplate()
 
-    val query ="""
+    val query = """
         query{
             Media(search: ":title"){
             recommendations{
@@ -27,7 +27,8 @@ class RecommendationAnilistRepository{
         """
     val urlAnilist = "https://graphql.anilist.co"
     fun getRecommendationByTitle(title: String): List<MediaRecommendation> {
-       var result = client.postForEntity(urlAnilist, mapOf("query" to query.replace(":title", title)), MediaEntity::class.java)
+        val result =
+            client.postForEntity(urlAnilist, mapOf("query" to query.replace(":title", title)), MediaEntity::class.java)
         return result.body?.data?.media?.recommendations?.nodes?.map { it.mediaRecommendation } ?: listOf()
     }
 }
