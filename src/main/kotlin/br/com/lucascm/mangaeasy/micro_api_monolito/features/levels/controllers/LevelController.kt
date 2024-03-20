@@ -6,13 +6,16 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import kotlin.random.Random
+
 
 @RestController
 @RequestMapping("/v1/level")
@@ -23,18 +26,20 @@ class LevelController {
     lateinit var xpRepository: XpRepository
     @Autowired
     lateinit var catalogRepository: CatalogRepository
+    @Autowired
+    lateinit var rankingCache: RankingCache
     @GetMapping("/{userID}")
     @ResponseBody
     fun getXp(authentication: Authentication, @PathVariable userID: String): ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, userID)
-            val result = xpRepository.countXpTotal(userID)
+            val result = xpRepository.countXpTotalByUserId(userID)
             return ResultEntity(listOf(result ?: 0))
         }catch (e: Exception){
             return HandleExceptions().handleCatch(e)
         }
     }
-    @PutMapping("/{userID}")
+    @PutMapping("/{userID}/earn-xp")
     @ResponseBody
     fun earnXp(authentication: Authentication,
                @PathVariable userID: String,
@@ -69,6 +74,17 @@ class LevelController {
                 )
             )
             return ResultEntity(listOf(false))
+        }catch (e: Exception){
+            return HandleExceptions().handleCatch(e)
+        }
+    }
+
+    @GetMapping("/ranking")
+    @ResponseBody
+    fun getRanking(): ResultEntity {
+        try {
+            val result = rankingCache.findAll(PageRequest.of(0, 100))
+            return ResultEntity(result.toList())
         }catch (e: Exception){
             return HandleExceptions().handleCatch(e)
         }

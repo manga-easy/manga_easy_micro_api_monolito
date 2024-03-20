@@ -25,8 +25,17 @@ interface XpRepository : JpaRepository<XpEntity, Long> {
         FROM XpEntity
         WHERE userID = :userID
     """)
-    fun countXpTotal(@Param("userID") userID: String
+    fun countXpTotalByUserId(@Param("userID") userID: String
     ): Long?
 
     fun findByUserIDAndUniqueIDAndChapterNumber(userID: String, uniqueID: String, chapterNumber: String): XpEntity?
+
+    @Query("""
+        SELECT sum(quantity) as Total, userID as userId
+        FROM XpEntity
+        group by userID
+        ORDER by Total desc
+        LIMIT 100
+    """)
+    fun countXpRanking(): List<Map<String, Any>>
 }
