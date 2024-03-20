@@ -47,6 +47,7 @@ dependencies {
 	implementation("com.oracle.oci.sdk:oci-java-sdk-core")
 	implementation("com.oracle.oci.sdk:oci-java-sdk-identity")
 	implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }
 
 tasks.withType<KotlinCompile> {
