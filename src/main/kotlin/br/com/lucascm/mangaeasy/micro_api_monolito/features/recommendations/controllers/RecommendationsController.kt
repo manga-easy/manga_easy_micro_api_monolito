@@ -9,8 +9,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistCache
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
@@ -34,12 +32,6 @@ class RecommendationsController {
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
-
-    @Autowired
-    lateinit var recommendationAnilistCache: RecommendationAnilistCache
-
-    @Autowired
-    lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
     @GetMapping("/list")
     @ResponseBody
@@ -165,48 +157,14 @@ class RecommendationsController {
                 bucketRecommendationsRepository.saveImage(uniqueid, file, file.contentType!!)
                 imageResult = bucketRecommendationsRepository.getLinkImage(uniqueid)
             }
-            val result = recommendationsRepository.save(
-                find.copy(
-                    link = imageResult!!,
-                    updatedat = Date().time
-                )
-            )
+            val result = recommendationsRepository.save(find.copy(
+                link = imageResult!!,
+                updatedat = Date().time
+            ))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
                 total = 1,
-                message = "Sucesso"
-            )
-        } catch (e: Exception) {
-            handleExceptions.handleCatch(e)
-        }
-    }
-
-    @GetMapping("/{title}/anilist")
-    fun getAnilistRecommendation(
-        @PathVariable title: String,
-        authentication: Authentication
-    ): ResultEntity {
-        return try {
-            val banners = recommendationsRepository.findAllByOrderByUpdatedatDesc()
-            var recommendationCache = recommendationAnilistCache.findAll().toList()
-
-            if (recommendationCache.isEmpty()) {
-                recommendationCache = recommendationAnilistRepository.getRecommendationByTitle(title)
-                recommendationCache.forEach { recommendationAnilistCache.save(it) }
-            }
-
-            if (recommendationCache.isEmpty()) throw BusinessException("Recomendação não encontrada")
-
-            val toFilter =
-                recommendationCache.map { it.title.english?.lowercase() ?: it.title.romaji?.lowercase() ?: "" }
-            val recommendation = banners.firstOrNull { banner -> toFilter.contains(banner.title.lowercase()) }
-            val filteredData = recommendation?.let { listOf(it) } ?: emptyList()
-
-            ResultEntity(
-                status = StatusResultEnum.SUCCESS,
-                data = filteredData,
-                total = recommendation?.let { 1 } ?: 0,
                 message = "Sucesso"
             )
         } catch (e: Exception) {
