@@ -9,6 +9,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistCache
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,13 +30,16 @@ class RecommendationsController {
     lateinit var handlerUserAdmin: HandlerUserAdmin
 
     @Autowired
-    lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
-
-    @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
+
+    @Autowired
+    lateinit var recommendationAnilistCache: RecommendationAnilistCache
+
+    @Autowired
+    lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
     @GetMapping("/list")
     @ResponseBody
@@ -185,12 +189,20 @@ class RecommendationsController {
     ): ResultEntity {
         return try {
             val banners = recommendationsRepository.findAllByOrderByUpdatedatDesc()
-            val anilistRecommendations = recommendationAnilistRepository.getRecommendationByTitle(title)
-                .map { it.title.english?.lowercase() ?: it.title.romaji?.lowercase() ?: "" }
-            val recommendation = banners.firstOrNull { banner ->
-                anilistRecommendations.contains(banner.title.lowercase())
+            var recommendationCache = recommendationAnilistCache.findAll().toList()
+
+            if (recommendationCache.isEmpty()) {
+                recommendationCache = recommendationAnilistRepository.getRecommendationByTitle(title)
+                recommendationCache.forEach { recommendationAnilistCache.save(it) }
             }
+
+            if (recommendationCache.isEmpty()) throw BusinessException("Recomendação não encontrada")
+
+            val toFilter =
+                recommendationCache.map { it.title.english?.lowercase() ?: it.title.romaji?.lowercase() ?: "" }
+            val recommendation = banners.firstOrNull { banner -> toFilter.contains(banner.title.lowercase()) }
             val filteredData = recommendation?.let { listOf(it) } ?: emptyList()
+
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = filteredData,

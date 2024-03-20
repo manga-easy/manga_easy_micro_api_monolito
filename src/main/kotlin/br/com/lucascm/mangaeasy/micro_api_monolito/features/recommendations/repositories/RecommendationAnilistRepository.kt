@@ -8,24 +8,25 @@ import org.springframework.web.client.RestTemplate
 @Repository
 class RecommendationAnilistRepository {
     val client = RestTemplate()
-
+    val urlAnilist = "https://graphql.anilist.co"
     val query = """
-        query{
-            Media(search: ":title"){
-            recommendations{
-                nodes{
-                    mediaRecommendation{
-                        title{
-                            english
-                            romaji
-                        }
-                    }
+        {
+          Media(search: ":title") {
+            recommendations {
+              nodes {
+                mediaRecommendation {
+                  title {
+                    english
+                    romaji
+                  }
+                  bannerImage
                 }
+              }
             }
-        }
+          }
         }
         """
-    val urlAnilist = "https://graphql.anilist.co"
+
     fun getRecommendationByTitle(title: String): List<MediaRecommendation> {
         val result =
             client.postForEntity(urlAnilist, mapOf("query" to query.replace(":title", title)), MediaEntity::class.java)
