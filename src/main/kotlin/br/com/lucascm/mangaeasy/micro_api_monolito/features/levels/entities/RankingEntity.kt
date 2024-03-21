@@ -8,12 +8,11 @@ import java.util.concurrent.TimeUnit
 @RedisHash("ranking")
 class RankingEntity (
     @Id
-    var id: String? = null,
-    var userId: String,
-    var totalXp: Long,
-    var place: Long,
-    var picture: String?,
-    var name: String?,
+    var id: String? = null,//É o userId
+    var totalXp: Long = 0,
+    var place: Long = 0,
+    var picture: String? = null,
+    var name: String? = null,
     @TimeToLive(unit = TimeUnit.DAYS)
     var time: Long = 3
 )

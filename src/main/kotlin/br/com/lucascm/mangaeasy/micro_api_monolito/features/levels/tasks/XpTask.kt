@@ -22,22 +22,25 @@ class XpTask {
     @Scheduled(timeUnit = TimeUnit.MINUTES, fixedRate = 10, initialDelay = 1)
     fun updateRanking(){
         log.info("------------------ inicia task --------------")
-        val xp = xpRepository.countXpRanking()
         var place: Long = 0
-        log.info("------ ${xp.size}")
         rankingCache.deleteAll()
-        for (i in xp) {
-            val profile = profileRepository.findByUserID(i["userId"].toString())
-            if (profile == null) continue
-            rankingCache.save(
-                RankingEntity(
-                    userId = profile.userID,
-                    totalXp = i["Total"] as Long,
-                    name = profile.name,
-                    picture = profile.picture,
-                    place = ++place
+        while (true){
+            val xp = xpRepository.countXpRanking(place * 100)
+            if (xp.isEmpty()) break
+            log.info("------ ${xp.size}")
+            for (i in xp) {
+                val profile = profileRepository.findByUserID(i["userId"].toString())
+                if (profile == null) continue
+                rankingCache.save(
+                    RankingEntity(
+                        id = profile.userID,
+                        totalXp = i["Total"] as Long,
+                        name = profile.name,
+                        picture = profile.picture,
+                        place = ++place
+                    )
                 )
-            )
+            }
         }
         log.info("------------------ finaliza task --------------")
     }

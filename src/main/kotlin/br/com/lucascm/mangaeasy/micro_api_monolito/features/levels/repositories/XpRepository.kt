@@ -36,6 +36,7 @@ interface XpRepository : JpaRepository<XpEntity, Long> {
         group by userID
         ORDER by Total desc
         LIMIT 100
+        OFFSET :offset
     """)
-    fun countXpRanking(): List<Map<String, Any>>
+    fun countXpRanking(offset: Long): List<Map<String, Any>>
 }

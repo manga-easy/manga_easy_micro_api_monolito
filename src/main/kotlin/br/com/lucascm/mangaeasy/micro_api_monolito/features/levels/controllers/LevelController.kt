@@ -11,6 +11,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -81,10 +82,25 @@ class LevelController {
 
     @GetMapping("/ranking")
     @ResponseBody
-    fun getRanking(): ResultEntity {
+    fun getRanking(@RequestParam page: Int?): ResultEntity {
         try {
-            val result = rankingCache.findAll(PageRequest.of(0, 100))
+            val result = rankingCache.findAll(
+                PageRequest.of(page ?: 0, 25)
+                    .withSort(Sort.by("place"))
+            )
             return ResultEntity(result.toList())
+        }catch (e: Exception){
+            return HandleExceptions().handleCatch(e)
+        }
+    }
+
+    @GetMapping("/ranking/{userId}")
+    @ResponseBody
+    fun getRankingByUser(@PathVariable userId: String): ResultEntity {
+        try {
+            val result = rankingCache.findById(userId)
+            if (!result.isPresent) throw BusinessException("Ranking não encontrado ou em processamento")
+            return ResultEntity(listOf(result))
         }catch (e: Exception){
             return HandleExceptions().handleCatch(e)
         }
