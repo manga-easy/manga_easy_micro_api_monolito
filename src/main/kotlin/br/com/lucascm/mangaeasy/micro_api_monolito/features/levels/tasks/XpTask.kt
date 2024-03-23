@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.concurrent.TimeUnit
 
 @Component
 class XpTask {
@@ -19,7 +18,7 @@ class XpTask {
     @Autowired
     lateinit var profileRepository: ProfileRepository
     val log = LoggerFactory.getLogger(XpTask::class.java)
-    @Scheduled(timeUnit = TimeUnit.MINUTES, fixedRate = 10, initialDelay = 1)
+    @Scheduled(cron = "0 4 * * * *")
     fun updateRanking(){
         log.info("------------------ inicia task --------------")
         var place: Long = 0
