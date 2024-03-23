@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.TimeToLive
 import java.util.concurrent.TimeUnit
 
 @RedisHash("ranking")
-class RankingEntity (
+data class RankingEntity (
     @Id
     var id: String? = null,//É o userId
     var totalXp: Long = 0,
