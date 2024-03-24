@@ -6,11 +6,13 @@ import com.google.firebase.FirebaseOptions
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
 import javax.annotation.PostConstruct
 
 @SpringBootApplication
 @EnableScheduling
+@EnableRedisRepositories("br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories")
 class MicroApiMonolitoApplication {
 	@PostConstruct
 	fun init() {
