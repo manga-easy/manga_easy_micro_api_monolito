@@ -1,6 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.controllers
 
-import AnilistRecommendationEntity
 import CacheAnilistEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
@@ -165,43 +164,38 @@ class RecommendationsController {
         @PathVariable title: String, authentication: Authentication
     ): ResultEntity {
         return try {
-
-            var result = recommendationAnilistCache.findByTitle(title) ?: CacheAnilistEntity("", "", emptyList())
-
-
-            if (result.recommendation.isEmpty()) {
-                val recommendationAnilist = recommendationAnilistRepository.getRecommendationByTitle(title)
-                result = recommendationAnilistCache.save(
-                    result.copy(id = GetUidByFeature().get("recommendations-anilist"),
-                        title = title,
-                        recommendation = recommendationAnilist.map {
-                            AnilistRecommendationEntity(
-                                bannerImage = it.bannerImage,
-                                english = it.title.english,
-                                romanji = it.title.romaji,
-                                coverImage = it.coverImage.extraLarge
-                            )
-                        })
-                )
+            val cacheResult = recommendationAnilistCache.findById(convertUniqueid(title))
+            if (cacheResult.isPresent) {
+                return ResultEntity(cacheResult.get().recommendation)
             }
-
-            ResultEntity(
-                result.recommendation
+            val recommendationAnilist = recommendationAnilistRepository.getRecommendationByTitle(title)
+            val recommendations = mutableListOf<RecommendationsEntity>()
+            for (e in recommendationAnilist) {
+                if (e.title.romaji != null) {
+                    val recommendation = recommendationsRepository.findByTitle(e.title.romaji)
+                    if (recommendation != null) {
+                        recommendations.add(recommendation)
+                        continue
+                    }
+                }
+                if (e.bannerImage != null) {
+                    recommendations.add(
+                        RecommendationsEntity(
+                            title = e.title.romaji ?: "",
+                            link = e.bannerImage,
+                            uniqueid = convertUniqueid(e.title.romaji ?: "")
+                        )
+                    )
+                }
+            }
+            recommendationAnilistCache.save(
+                CacheAnilistEntity(
+                    id = convertUniqueid(title),
+                    title = title,
+                    recommendation = recommendations,
+                )
             )
-        } catch (e: Exception) {
-            handleExceptions.handleCatch(e)
-        }
-    }
-
-    @GetMapping("/anilist")
-    fun listAnilistRecommendation(
-        authentication: Authentication
-    ): ResultEntity {
-        return try {
-            val resultList = recommendationAnilistCache.findAll().toList()
-            ResultEntity(
-                status = StatusResultEnum.SUCCESS, data = resultList, total = resultList.size, message = "Sucesso"
-            )
+            ResultEntity(recommendations)
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
@@ -228,4 +222,25 @@ class RecommendationsController {
         val typeImage = file.contentType!!.replace("image/", "").uppercase()
         if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
+
+    private fun convertUniqueid(titleManga: String): String {
+        // Lista de termos a serem removidos do título do manga
+        val termos = listOf(
+            "(br)",
+            "(color)",
+            "pt-br"
+        )
+
+        // Converter o título do manga para letras minúsculas
+        var titleMangaLower = titleManga.toLowerCase()
+
+        // Remover termos específicos do título do manga
+        for (termo in termos) {
+            titleMangaLower = titleMangaLower.replace(termo, "")
+        }
+
+        // Remover caracteres especiais do título do manga
+        return titleMangaLower.replace(Regex("[^A-Za-z0-9]"), "")
+    }
+
 }

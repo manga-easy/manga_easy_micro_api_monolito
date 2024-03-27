@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface RecommendationAnilistCache : CrudRepository<CacheAnilistEntity, Long> {
+interface RecommendationAnilistCache : CrudRepository<CacheAnilistEntity, String> {
     fun findByTitle(title: String): CacheAnilistEntity?
 }

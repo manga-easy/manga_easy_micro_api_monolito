@@ -1,7 +1,5 @@
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.TimeToLive
@@ -52,9 +50,9 @@ data class AnilistRecommendationEntity(
 @RedisHash("anilist-recommendation")
 data class CacheAnilistEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: String? = null,
     var title: String = "",
     var recommendation: List<RecommendationsEntity>,
-    @TimeToLive(unit = TimeUnit.DAYS) var time: Long = 6
+    @TimeToLive(unit = TimeUnit.DAYS)
+    var time: Long = 30
 )
