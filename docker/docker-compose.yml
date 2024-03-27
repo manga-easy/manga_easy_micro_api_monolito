@@ -43,6 +43,7 @@ services:
       MONGODB_URL: ${MONGODB_URL}
       SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
       ENVIRONMENT: ${ENVIRONMENT}
+      CACHE_DB: ${CACHE_DB}
     networks:
       - appwrite
     ports:

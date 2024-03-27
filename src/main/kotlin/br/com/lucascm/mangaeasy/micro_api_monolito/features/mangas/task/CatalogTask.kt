@@ -10,7 +10,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
@@ -31,7 +30,7 @@ class CatalogTask{
     lateinit var catalogRepository: CatalogRepository
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
-    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 3, initialDelay = 3)
+    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 3, initialDelay = 1)
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
         val result = mangaDetailsRepository.findByOrderByCreatAtDesc()
@@ -78,4 +77,11 @@ class CatalogTask{
     fun convertGenders(genders: List<GenderEntity>): String {
         return genders.joinToString(separator = "<>", transform =  {t -> t.title.replace(" ", "-")})
     }
+    @Scheduled(cron = "0 4 1 * * *")
+    fun deleteMangaInative(){
+        log.info("------------------ Initial deleteMangaInative --------------")
+        catalogRepository.deleteMangaInactive()
+        log.info("------------------ Finish deleteMangaInative --------------")
+    }
+
 }
