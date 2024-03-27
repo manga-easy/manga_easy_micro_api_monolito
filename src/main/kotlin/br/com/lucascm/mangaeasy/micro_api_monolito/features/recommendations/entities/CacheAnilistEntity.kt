@@ -27,7 +27,6 @@ data class Node(
 
 data class MediaRecommendation(
     @JsonProperty("title") val title: Title,
-    @JsonProperty("coverImage") val coverImage: CoverImage,
     @JsonProperty("bannerImage") val bannerImage: String?
 )
 
@@ -36,15 +35,10 @@ data class Title(
     @JsonProperty("romaji") val romaji: String?
 )
 
-data class CoverImage(
-    @JsonProperty("extraLarge") val extraLarge: String?,
-)
-
 data class AnilistRecommendationEntity(
     var english: String?,
     var romanji: String?,
     var bannerImage: String?,
-    var coverImage: String?,
 )
 
 @RedisHash("anilist-recommendation")
