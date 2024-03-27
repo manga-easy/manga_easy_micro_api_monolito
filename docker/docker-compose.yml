@@ -65,12 +65,25 @@ services:
       - appwrite
     ports:
       - "27017:27017"
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    networks:
+      - appwrite
+    volumes:
+      - cache:/data
+
 networks:
   appwrite:
 
 
 volumes:
   appwrite-mariadb:
+  cache:
+    driver: local
 
     # compose up -d --no-build --remove-orphans
     # .\gradlew build -x test

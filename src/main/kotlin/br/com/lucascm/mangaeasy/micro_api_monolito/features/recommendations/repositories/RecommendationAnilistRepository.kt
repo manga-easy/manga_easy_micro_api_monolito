@@ -20,6 +20,11 @@ class RecommendationAnilistRepository {
                     romaji
                   }
                   bannerImage
+                  coverImage {
+                    extraLarge
+                    large
+                    medium
+                  }                
                 }
               }
             }

@@ -1,5 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.controllers
 
+import AnilistRecommendationEntity
+import CacheAnilistEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
@@ -44,9 +46,7 @@ class RecommendationsController {
     @GetMapping("/list")
     @ResponseBody
     fun list(
-        @RequestParam status: String?,
-        @RequestParam idhost: Int?,
-        @RequestParam isAll: Boolean?
+        @RequestParam status: String?, @RequestParam idhost: Int?, @RequestParam isAll: Boolean?
     ): ResultEntity {
         return try {
             val result: List<RecommendationsEntity> = if (isAll != false) {
@@ -55,10 +55,7 @@ class RecommendationsController {
                 recommendationsRepository.findTop5ByOrderByUpdatedatDesc()
             }
             ResultEntity(
-                total = result.size,
-                status = StatusResultEnum.SUCCESS,
-                data = result,
-                message = "Listado com sucesso"
+                total = result.size, status = StatusResultEnum.SUCCESS, data = result, message = "Listado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -68,8 +65,7 @@ class RecommendationsController {
     @DeleteMapping("/{uid}")
     @ResponseBody
     fun delete(
-        authentication: Authentication,
-        @PathVariable uid: String
+        authentication: Authentication, @PathVariable uid: String
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -78,10 +74,7 @@ class RecommendationsController {
             bucketRecommendationsRepository.deleteImage(result.uniqueid)
             recommendationsRepository.delete(result)
             ResultEntity(
-                total = 0,
-                status = StatusResultEnum.SUCCESS,
-                data = emptyList(),
-                message = "Deletado com sucesso"
+                total = 0, status = StatusResultEnum.SUCCESS, data = emptyList(), message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -91,8 +84,7 @@ class RecommendationsController {
     @PostMapping
     @ResponseBody
     fun create(
-        authentication: Authentication,
-        @RequestBody body: RecommendationsEntity
+        authentication: Authentication, @RequestBody body: RecommendationsEntity
     ): ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -108,10 +100,7 @@ class RecommendationsController {
                 uid = GetUidByFeature().get("recommendations")
             })
             return ResultEntity(
-                total = 1,
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
-                message = "Criado com sucesso"
+                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Criado com sucesso"
             )
         } catch (e: Exception) {
             return handleExceptions.handleCatch(e)
@@ -121,9 +110,7 @@ class RecommendationsController {
     @PutMapping("/{uid}")
     @ResponseBody
     fun update(
-        authentication: Authentication,
-        @RequestBody body: RecommendationsEntity,
-        @PathVariable uid: String
+        authentication: Authentication, @RequestBody body: RecommendationsEntity, @PathVariable uid: String
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -139,10 +126,7 @@ class RecommendationsController {
             }
             recommendationsRepository.save(resultUpdate)
             ResultEntity(
-                total = 1,
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
-                message = "Alterado com sucesso"
+                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Alterado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -151,9 +135,7 @@ class RecommendationsController {
 
     @PutMapping("/{uniqueid}/image")
     fun uploadImage(
-        @RequestPart file: MultipartFile?,
-        @PathVariable uniqueid: String,
-        authentication: Authentication
+        @RequestPart file: MultipartFile?, @PathVariable uniqueid: String, authentication: Authentication
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -167,15 +149,11 @@ class RecommendationsController {
             }
             val result = recommendationsRepository.save(
                 find.copy(
-                    link = imageResult!!,
-                    updatedat = Date().time
+                    link = imageResult!!, updatedat = Date().time
                 )
             )
             ResultEntity(
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
-                total = 1,
-                message = "Sucesso"
+                status = StatusResultEnum.SUCCESS, data = listOf(result), total = 1, message = "Sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -184,30 +162,45 @@ class RecommendationsController {
 
     @GetMapping("/{title}/anilist")
     fun getAnilistRecommendation(
-        @PathVariable title: String,
+        @PathVariable title: String, authentication: Authentication
+    ): ResultEntity {
+        return try {
+
+            var result = recommendationAnilistCache.findByTitle(title) ?: CacheAnilistEntity("", "", emptyList())
+
+
+            if (result.recommendation.isEmpty()) {
+                val recommendationAnilist = recommendationAnilistRepository.getRecommendationByTitle(title)
+                result = recommendationAnilistCache.save(
+                    result.copy(id = GetUidByFeature().get("recommendations-anilist"),
+                        title = title,
+                        recommendation = recommendationAnilist.map {
+                            AnilistRecommendationEntity(
+                                bannerImage = it.bannerImage,
+                                english = it.title.english,
+                                romanji = it.title.romaji,
+                                coverImage = it.coverImage.extraLarge
+                            )
+                        })
+                )
+            }
+
+            ResultEntity(
+                result.recommendation
+            )
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
+        }
+    }
+
+    @GetMapping("/anilist")
+    fun listAnilistRecommendation(
         authentication: Authentication
     ): ResultEntity {
         return try {
-            val banners = recommendationsRepository.findAllByOrderByUpdatedatDesc()
-            var recommendationCache = recommendationAnilistCache.findAll().toList()
-
-            if (recommendationCache.isEmpty()) {
-                recommendationCache = recommendationAnilistRepository.getRecommendationByTitle(title)
-                recommendationCache.forEach { recommendationAnilistCache.save(it) }
-            }
-
-            if (recommendationCache.isEmpty()) throw BusinessException("Recomendação não encontrada")
-
-            val toFilter =
-                recommendationCache.map { it.title.english?.lowercase() ?: it.title.romaji?.lowercase() ?: "" }
-            val recommendation = banners.firstOrNull { banner -> toFilter.contains(banner.title.lowercase()) }
-            val filteredData = recommendation?.let { listOf(it) } ?: emptyList()
-
+            val resultList = recommendationAnilistCache.findAll().toList()
             ResultEntity(
-                status = StatusResultEnum.SUCCESS,
-                data = filteredData,
-                total = recommendation?.let { 1 } ?: 0,
-                message = "Sucesso"
+                status = StatusResultEnum.SUCCESS, data = resultList, total = resultList.size, message = "Sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
