@@ -25,7 +25,6 @@ class SecurityConfig (
         // Define public and private routes
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.GET, "/v1/recommendations/list").permitAll()
-            .requestMatchers(HttpMethod.GET, "/v1/recommendations/{title}/anilist").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/banners/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/hosts/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v2/banners/list").permitAll()
