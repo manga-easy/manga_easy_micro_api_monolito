@@ -12,15 +12,14 @@ data class ProfileEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: ObjectId? = null,
-    var uid: String? = null,
     var role: String = "",
     var biography: String? = null,
     @Column(name = "user_id", unique = true)
     var userID: String = "",
     @Column(name = "mangas_highlight")
-    var mangasHighlight: List<Map<String, Any>>? = null,
+    var mangasHighlight: List<FavoriteManga> = listOf(),
     @Column(name = "achievements_highlight")
-    var achievementsHighlight: List<Map<String, Any>>? = null,
+    var achievementsHighlight: List<FavoriteAchievement> = listOf(),
     @Column(name = "created_at")
     var createdAt: Long? = null,
     @Column(name = "updated_at")
@@ -34,4 +33,6 @@ data class ProfileEntity(
     var picture: String? = null,
     var name: String? = null,
     var visibleStatics: Boolean = true,
+    var visibleAchievements: Boolean = true,
+    var visibleMangas: Boolean = true,
 )
