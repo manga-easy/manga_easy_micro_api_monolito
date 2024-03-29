@@ -1,5 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.controllers.LIMIT_FILE_SIZE_ACHIEVEMENT
 import com.oracle.bmc.ConfigFileReader
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider
 import com.oracle.bmc.objectstorage.ObjectStorage
@@ -12,10 +14,12 @@ import java.io.InputStream
 
 const val namespaceName = "axs7rpnviwd0"
 const val bucketName = "manga-easy-emblemas"
+val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
 
 @Repository
 class BucketAchievementsRepository {
     fun saveImage(uid: String, file: MultipartFile, contentType: String) {
+        validateImage(file)
         val configuration = getObjectStorage()
         val inputStream: InputStream = file.inputStream
 
@@ -62,5 +66,12 @@ class BucketAchievementsRepository {
         val provider = ConfigFileAuthenticationDetailsProvider(configFile)
         //build and return client
         return ObjectStorageClient.builder().isStreamWarningEnabled(false).build(provider)
+    }
+
+    private fun validateImage(file: MultipartFile) {
+        val limit = LIMIT_FILE_SIZE_ACHIEVEMENT
+        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
+        val typeImage = file.contentType!!.replace("image/", "").uppercase()
+        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 }

@@ -6,7 +6,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
 
 @RestController
 @RequestMapping("/v1/recommendations")
@@ -153,14 +151,15 @@ class RecommendationsController {
             val find: RecommendationsEntity = recommendationsRepository.findByUniqueid(uniqueid)
                 ?: throw BusinessException("Recomendação não encontrada")
             if (file != null) {
-                validateImage(file)
                 bucketRecommendationsRepository.saveImage(uniqueid, file, file.contentType!!)
                 imageResult = bucketRecommendationsRepository.getLinkImage(uniqueid)
             }
-            val result = recommendationsRepository.save(find.copy(
-                link = imageResult!!,
-                updatedat = Date().time
-            ))
+            val result = recommendationsRepository.save(
+                find.copy(
+                    link = imageResult!!,
+                    updatedat = Date().time
+                )
+            )
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
@@ -185,12 +184,5 @@ class RecommendationsController {
         if ((body.artistname ?: "").isEmpty()) {
             throw BusinessException("Campo artistname não pode ser vazio")
         }
-    }
-
-    private fun validateImage(file: MultipartFile) {
-        val limit = LIMIT_FILE_SIZE_RECOMMENDATION
-        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
-        val typeImage = file.contentType!!.replace("image/", "").uppercase()
-        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 }
