@@ -2,6 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.rep
 
 import MediaEntity
 import MediaRecommendation
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Repository
 import org.springframework.web.client.RestTemplate
 
@@ -28,8 +29,16 @@ class RecommendationAnilistRepository {
         """
 
     fun getRecommendationByTitle(title: String): List<MediaRecommendation> {
-        val result =
-            client.postForEntity(urlAnilist, mapOf("query" to query.replace(":title", title)), MediaEntity::class.java)
-        return result.body?.data?.media?.recommendations?.nodes?.map { it.mediaRecommendation } ?: listOf()
+        try {
+            val result =
+                client.postForEntity(
+                    urlAnilist,
+                    mapOf("query" to query.replace(":title", title)),
+                    MediaEntity::class.java
+                )
+            return result.body?.data?.media?.recommendations?.nodes?.map { it.mediaRecommendation } ?: listOf()
+        } catch (e: Exception) {
+          return listOf()
+        }
     }
 }
