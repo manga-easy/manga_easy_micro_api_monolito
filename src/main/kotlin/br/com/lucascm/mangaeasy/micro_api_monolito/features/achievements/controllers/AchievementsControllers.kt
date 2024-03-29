@@ -51,6 +51,17 @@ class AchievementsControllers {
         }
     }
 
+    @GetMapping("/user/{userId}")
+    @ResponseBody
+    fun listByUser(@PathVariable userId: String): ResultEntity {
+        return try {
+            val result = achievementsRepository.findByUser(userId)
+            ResultEntity(result)
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
+        }
+    }
+
     @GetMapping("/{id}")
     @ResponseBody
     fun getOne(@PathVariable id: String): ResultEntity {
