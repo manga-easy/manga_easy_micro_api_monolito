@@ -26,19 +26,14 @@ const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
 class RecommendationsController {
     @Autowired
     lateinit var recommendationsRepository: RecommendationsRepository
-
     @Autowired
     lateinit var handlerUserAdmin: HandlerUserAdmin
-
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
-
     @Autowired
     lateinit var handleExceptions: HandleExceptions
-
     @Autowired
     lateinit var recommendationAnilistCache: RecommendationAnilistCache
-
     @Autowired
     lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
@@ -54,7 +49,10 @@ class RecommendationsController {
                 recommendationsRepository.findTop5ByOrderByUpdatedatDesc()
             }
             ResultEntity(
-                total = result.size, status = StatusResultEnum.SUCCESS, data = result, message = "Listado com sucesso"
+                total = result.size,
+                status = StatusResultEnum.SUCCESS,
+                data = result,
+                message = "Listado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -73,7 +71,10 @@ class RecommendationsController {
             bucketRecommendationsRepository.deleteImage(result.uniqueid)
             recommendationsRepository.delete(result)
             ResultEntity(
-                total = 0, status = StatusResultEnum.SUCCESS, data = emptyList(), message = "Deletado com sucesso"
+                total = 0,
+                status = StatusResultEnum.SUCCESS,
+                data = emptyList(),
+                message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -99,7 +100,9 @@ class RecommendationsController {
                 uid = GetUidByFeature().get("recommendations")
             })
             return ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Criado com sucesso"
+                total = 1, status = StatusResultEnum.SUCCESS,
+                data = listOf(result),
+                message = "Criado com sucesso"
             )
         } catch (e: Exception) {
             return handleExceptions.handleCatch(e)
@@ -125,7 +128,9 @@ class RecommendationsController {
             }
             recommendationsRepository.save(resultUpdate)
             ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Alterado com sucesso"
+                total = 1, status = StatusResultEnum.SUCCESS,
+                data = listOf(result),
+                message = "Alterado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -152,7 +157,10 @@ class RecommendationsController {
                 )
             )
             ResultEntity(
-                status = StatusResultEnum.SUCCESS, data = listOf(result), total = 1, message = "Sucesso"
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(result),
+                total = 1,
+                message = "Sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -230,7 +238,6 @@ class RecommendationsController {
             "(color)",
             "pt-br"
         )
-
         // Converter o título do manga para letras minúsculas
         var titleMangaLower = titleManga.toLowerCase()
 
