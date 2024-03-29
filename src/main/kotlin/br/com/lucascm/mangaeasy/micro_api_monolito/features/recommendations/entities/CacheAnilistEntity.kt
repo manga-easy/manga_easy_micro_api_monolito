@@ -46,7 +46,7 @@ data class CacheAnilistEntity(
     @Id
     var id: String? = null,
     var title: String = "",
-    var recommendation: List<RecommendationsEntity>,
+    var recommendation: List<RecommendationsEntity> = listOf(),
     @TimeToLive(unit = TimeUnit.DAYS)
     var time: Long = 30
 )
