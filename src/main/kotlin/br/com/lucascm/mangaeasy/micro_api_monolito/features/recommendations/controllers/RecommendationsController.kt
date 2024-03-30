@@ -24,14 +24,19 @@ import java.util.*
 class RecommendationsController {
     @Autowired
     lateinit var recommendationsRepository: RecommendationsRepository
+
     @Autowired
     lateinit var handlerUserAdmin: HandlerUserAdmin
+
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
+
     @Autowired
     lateinit var handleExceptions: HandleExceptions
+
     @Autowired
     lateinit var recommendationAnilistCache: RecommendationAnilistCache
+
     @Autowired
     lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
@@ -230,13 +235,6 @@ class RecommendationsController {
         if ((body.artistname ?: "").isEmpty()) {
             throw BusinessException("Campo artistname não pode ser vazio")
         }
-    }
-
-    private fun validateImage(file: MultipartFile) {
-        val limit = LIMIT_FILE_SIZE_RECOMMENDATION
-        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
-        val typeImage = file.contentType!!.replace("image/", "").uppercase()
-        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 
     private fun convertUniqueid(titleManga: String): String {
