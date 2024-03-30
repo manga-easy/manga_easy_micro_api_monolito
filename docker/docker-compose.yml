@@ -87,4 +87,4 @@ volumes:
     driver: local
 
     # compose up -d --no-build --remove-orphans
-    # .\gradlew build -x test
+    # .\gradlew clean build -x test

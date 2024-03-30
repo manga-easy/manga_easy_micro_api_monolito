@@ -4,5 +4,5 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entitie
 
 data class FavoriteAchievement(
     val order: Int = 0,
-    val achievement: AchievementsEntity,
+    val achievement: AchievementsEntity? = null,
 )

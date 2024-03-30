@@ -151,7 +151,9 @@ class ProfileController {
             val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             val mangas = find.mangasHighlight.toMutableList()
             mangas.removeIf { it.order == body.order }
-            mangas.add(body)
+            if (body.manga != null) {
+                mangas.add(body)
+            }
             val result = profileRepository.save(
                 find.copy(
                     updatedAt = Date().time,
@@ -176,7 +178,9 @@ class ProfileController {
             val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             val achievements = find.achievementsHighlight.toMutableList()
             achievements.removeIf { it.order == body.order }
-            achievements.add(body)
+            if (body.achievement != null) {
+                achievements.add(body)
+            }
             val result = profileRepository.save(
                 find.copy(
                     updatedAt = Date().time,
