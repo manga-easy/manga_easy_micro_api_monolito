@@ -13,17 +13,20 @@ import org.springframework.stereotype.Component
 class XpTask {
     @Autowired
     lateinit var xpRepository: XpRepository
+
     @Autowired
     lateinit var rankingCache: RankingCache
+
     @Autowired
     lateinit var profileRepository: ProfileRepository
     val log = LoggerFactory.getLogger(XpTask::class.java)
+
     @Scheduled(cron = "0 4 * * * *")
-    fun updateRanking(){
+    fun updateRanking() {
         log.info("------------------ inicia task --------------")
         var place: Long = 0
         rankingCache.deleteAll()
-        while (true){
+        while (true) {
             val xp = xpRepository.countXpRanking(place * 100)
             if (xp.isEmpty()) break
             log.info("------ ${xp.size}")

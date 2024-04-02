@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.configs.RedisRepository
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -12,21 +13,22 @@ import javax.annotation.PostConstruct
 
 @SpringBootApplication
 @EnableScheduling
-@EnableRedisRepositories("br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories")
+@EnableRedisRepositories(repositoryFactoryBeanClass = RedisRepository::class)
 class MicroApiMonolitoApplication {
-	@PostConstruct
-	fun init() {
-		try {
-			// Inicialização do FirebaseApp
-			val options = FirebaseOptions.builder()
-				.setCredentials(GoogleCredentials.getApplicationDefault())
-				.build()
-			FirebaseApp.initializeApp(options)
-		} catch(e: Exception){
-			KotlinLogging.logger("MicroApiMonolitoApplication").catching(e)
-		}
-	}
+    @PostConstruct
+    fun init() {
+        try {
+            // Inicialização do FirebaseApp
+            val options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.getApplicationDefault())
+                .build()
+            FirebaseApp.initializeApp(options)
+        } catch (e: Exception) {
+            KotlinLogging.logger("MicroApiMonolitoApplication").catching(e)
+        }
+    }
 }
+
 fun main(args: Array<String>) {
-	runApplication<MicroApiMonolitoApplication>(*args)
+    runApplication<MicroApiMonolitoApplication>(*args)
 }
