@@ -20,6 +20,7 @@ data class AchievementsEntity(
     var benefits: String = "",
     var disponivel: Boolean = false,
     var categoria: String = "",
+    @Deprecated("Será removido: 0.17")
     var type: String = "",
     var time_cria: Long = 0,
     @Column(name = "_createdat")

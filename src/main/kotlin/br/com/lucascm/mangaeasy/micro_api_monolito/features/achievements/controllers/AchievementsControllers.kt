@@ -9,7 +9,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.Authentication
@@ -46,6 +45,17 @@ class AchievementsControllers {
             ResultEntity(
                 total = result.size, status = StatusResultEnum.SUCCESS, data = result, message = "Listado com sucesso"
             )
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    @ResponseBody
+    fun listByUser(@PathVariable userId: String): ResultEntity {
+        return try {
+            val result = achievementsRepository.findByUser(userId)
+            ResultEntity(result)
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
@@ -133,7 +143,6 @@ class AchievementsControllers {
             val find: AchievementsEntity =
                 achievementsRepository.findByUid(uid) ?: throw BusinessException("Emblema não encontrado")
             if (file != null) {
-                validateImage(file)
                 bucketAchievementsRepository.saveImage(uid, file, file.contentType!!)
                 imageResult = bucketAchievementsRepository.getLinkImage(uid)
             }
@@ -168,12 +177,5 @@ class AchievementsControllers {
         if (campo.isEmpty()) {
             throw BusinessException(String.format("O campo %s não pode ser vazio", nomeCampo))
         }
-    }
-
-    private fun validateImage(file: MultipartFile) {
-        val limit = LIMIT_FILE_SIZE_ACHIEVEMENT
-        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
-        val typeImage = file.contentType!!.replace("image/", "").uppercase()
-        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 }

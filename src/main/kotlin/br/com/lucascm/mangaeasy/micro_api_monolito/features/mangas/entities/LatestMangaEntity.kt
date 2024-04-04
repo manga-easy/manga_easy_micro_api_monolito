@@ -1,18 +1,23 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
 
-import jakarta.persistence.*
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.mapping.Document
+import jakarta.persistence.Id
+import org.springframework.data.redis.core.RedisHash
+import org.springframework.data.redis.core.TimeToLive
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-@Document(collection = "latest-manga")
+@RedisHash("latest-manga")
 data class LatestMangaEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: ObjectId?,
+    val id: String? = null,
     val idhost: Int,
+    val versionApp: String,
     val data: List<MangaEntity>,
     val creatAt: Date?,
-    @Column(name = "version_app")
-    val versionApp: String?,
-)
+    @TimeToLive(unit = TimeUnit.HOURS)
+    var time: Long = 12
+) {
+    fun getCustom(): String {
+        return "$idhost<>$versionApp"
+    }
+}

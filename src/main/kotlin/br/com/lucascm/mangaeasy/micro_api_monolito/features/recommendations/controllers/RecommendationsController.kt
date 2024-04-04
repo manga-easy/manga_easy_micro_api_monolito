@@ -7,7 +7,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers.TYPE_CONTENT_IMAGE
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistCache
@@ -19,28 +18,34 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
-const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
 
 @RestController
 @RequestMapping("/v1/recommendations")
 class RecommendationsController {
     @Autowired
     lateinit var recommendationsRepository: RecommendationsRepository
+
     @Autowired
     lateinit var handlerUserAdmin: HandlerUserAdmin
+
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
+
     @Autowired
     lateinit var handleExceptions: HandleExceptions
+
     @Autowired
     lateinit var recommendationAnilistCache: RecommendationAnilistCache
+
     @Autowired
     lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
     @GetMapping("/list")
     @ResponseBody
     fun list(
-        @RequestParam status: String?, @RequestParam idhost: Int?, @RequestParam isAll: Boolean?
+        @RequestParam status: String?,
+        @RequestParam idhost: Int?,
+        @RequestParam isAll: Boolean?
     ): ResultEntity {
         return try {
             val result: List<RecommendationsEntity> = if (isAll != false) {
@@ -62,7 +67,8 @@ class RecommendationsController {
     @DeleteMapping("/{uid}")
     @ResponseBody
     fun delete(
-        authentication: Authentication, @PathVariable uid: String
+        authentication: Authentication,
+        @PathVariable uid: String
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -84,7 +90,8 @@ class RecommendationsController {
     @PostMapping
     @ResponseBody
     fun create(
-        authentication: Authentication, @RequestBody body: RecommendationsEntity
+        authentication: Authentication,
+        @RequestBody body: RecommendationsEntity
     ): ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -100,7 +107,8 @@ class RecommendationsController {
                 uid = GetUidByFeature().get("recommendations")
             })
             return ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS,
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
                 message = "Criado com sucesso"
             )
@@ -112,7 +120,9 @@ class RecommendationsController {
     @PutMapping("/{uid}")
     @ResponseBody
     fun update(
-        authentication: Authentication, @RequestBody body: RecommendationsEntity, @PathVariable uid: String
+        authentication: Authentication,
+        @RequestBody body: RecommendationsEntity,
+        @PathVariable uid: String
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -128,7 +138,8 @@ class RecommendationsController {
             }
             recommendationsRepository.save(resultUpdate)
             ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS,
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
                 message = "Alterado com sucesso"
             )
@@ -139,7 +150,9 @@ class RecommendationsController {
 
     @PutMapping("/{uniqueid}/image")
     fun uploadImage(
-        @RequestPart file: MultipartFile?, @PathVariable uniqueid: String, authentication: Authentication
+        @RequestPart file: MultipartFile?,
+        @PathVariable uniqueid: String,
+        authentication: Authentication
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -147,13 +160,13 @@ class RecommendationsController {
             val find: RecommendationsEntity = recommendationsRepository.findByUniqueid(uniqueid)
                 ?: throw BusinessException("Recomendação não encontrada")
             if (file != null) {
-                validateImage(file)
                 bucketRecommendationsRepository.saveImage(uniqueid, file, file.contentType!!)
                 imageResult = bucketRecommendationsRepository.getLinkImage(uniqueid)
             }
             val result = recommendationsRepository.save(
                 find.copy(
-                    link = imageResult!!, updatedat = Date().time
+                    link = imageResult!!,
+                    updatedat = Date().time
                 )
             )
             ResultEntity(
@@ -222,13 +235,6 @@ class RecommendationsController {
         if ((body.artistname ?: "").isEmpty()) {
             throw BusinessException("Campo artistname não pode ser vazio")
         }
-    }
-
-    private fun validateImage(file: MultipartFile) {
-        val limit = LIMIT_FILE_SIZE_RECOMMENDATION
-        if (file.size > limit) throw BusinessException("Imagem maior que o permitido: ${limit.toString()[0]}mb")
-        val typeImage = file.contentType!!.replace("image/", "").uppercase()
-        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
     }
 
     private fun convertUniqueid(titleManga: String): String {

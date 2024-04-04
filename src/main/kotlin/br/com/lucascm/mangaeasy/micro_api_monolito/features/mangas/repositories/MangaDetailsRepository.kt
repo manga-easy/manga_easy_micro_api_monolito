@@ -1,13 +1,10 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.LatestMangaEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.configs.RedisRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
-import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface MangaDetailsRepository : MongoRepository<MandaDetailsEntity, Long> {
-    fun findByIdhostAndUniqueid(idhost: Int, uniqueid: String): MandaDetailsEntity?
+interface MangaDetailsRepository : RedisRepository<MandaDetailsEntity, String> {
     fun findByOrderByCreatAtDesc(): List<MandaDetailsEntity>
-    fun findByIdhostAndUniqueidAndVersionApp(idhost: Int, uniqueid: String, versionApp: String): MandaDetailsEntity?
 }

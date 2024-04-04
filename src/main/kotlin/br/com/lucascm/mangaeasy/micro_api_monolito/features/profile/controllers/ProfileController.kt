@@ -3,10 +3,11 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteAchievement
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteManga
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
@@ -19,34 +20,31 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.Instant
 import java.util.*
 
-const val LIMIT_FILE_SIZE_GOLD = 3000000
-const val LIMIT_FILE_SIZE_IRON = 2000000
-const val LIMIT_FILE_SIZE_COPPER = 1000000
-const val Membro_Cobre = "61b12f7a0ff25"
-const val Membro_Prata = "61b12fddd7201"
-const val Membro_Ouro = "61b1302ef0d76"
-const val Membro_Platina = "61b130768bd07"
-const val Membro_Ferro = "627daca5e13281a2e330"
-
-val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
 
 @RestController
 @RequestMapping("/v1/profile")
 class ProfileController {
     @Autowired
     lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
+
     @Autowired
     lateinit var profileRepository: ProfileRepository
+
     @Autowired
     lateinit var handleExceptions: HandleExceptions
+
     @Autowired
     lateinit var userRepository: UserRepository
+
     @Autowired
     lateinit var bucketProfileRepository: BucketProfileRepository
+
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
+
     @Autowired
     lateinit var librariesRepository: LibrariesRepository
+
     @GetMapping("/{userID}")
     @ResponseBody
     fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
@@ -54,11 +52,10 @@ class ProfileController {
             val user = userRepository.search(userID)
             if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             var result = profileRepository.findByUserID(userID)
-            if (result == null){
+            if (result == null) {
                 val totalMangaRead = librariesRepository.countByStatusAndUserId(userID)
                 val totalAchievements = usersAchievementsRepository.countByUserId(userID)
                 result = ProfileEntity(
-                    uid = GetUidByFeature().get("profile"),
                     updatedAt = Date().time,
                     biography = "",
                     createdAt = Date.from(Instant.parse(user.first().registration)).time,
@@ -79,37 +76,42 @@ class ProfileController {
                 total = 1,
                 message = "Sucesso"
             )
-        }catch (e: Exception){
+        } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
     }
+
     @PutMapping("/{userID}")
     @ResponseBody
-    fun updateProfile(authentication: Authentication,
-                      @RequestBody body: ProfileEntity,
-                      @PathVariable userID: String
+    fun updateProfile(
+        authentication: Authentication,
+        @RequestBody body: ProfileEntity,
+        @PathVariable userID: String
     ): ResultEntity {
         return try {
             verifyUserIdPermissionService.get(authentication, userID)
             val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
-            val result = profileRepository.save(find.copy(
-                biography = body.biography,
-                updatedAt = Date().time,
-                mangasHighlight = body.mangasHighlight,
-                achievementsHighlight = body.achievementsHighlight,
-                name = body.name,
-                visibleStatics = body.visibleStatics,
-            ))
+            val result = profileRepository.save(
+                find.copy(
+                    biography = body.biography,
+                    updatedAt = Date().time,
+                    name = body.name,
+                    visibleStatics = body.visibleStatics,
+                    visibleAchievements = body.visibleAchievements,
+                    visibleMangas = body.visibleMangas,
+                )
+            )
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(result),
                 total = 1,
                 message = "Sucesso"
             )
-        }catch (e: Exception){
+        } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
     }
+
     @PutMapping("/{userID}/image")
     fun handleFileUpload(
         @RequestPart file: MultipartFile?,
@@ -119,9 +121,9 @@ class ProfileController {
         return try {
             var image: String? = null
             verifyUserIdPermissionService.get(authentication, userID)
-            val find: ProfileEntity = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
-            if(file != null){
-                validateImage(file, userID)
+            val find: ProfileEntity =
+                profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
+            if (file != null) {
                 bucketProfileRepository.saveImage(userID, file, file.contentType!!)
                 image = bucketProfileRepository.getLinkImage(userID)
             }
@@ -132,41 +134,64 @@ class ProfileController {
                 total = 1,
                 message = "Sucesso"
             )
-        } catch (e: Exception){
+        } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
     }
-    private fun validateImage(file: MultipartFile, userID: String){
-        val limit = getLimitFileByDontion(userID)
-        if (file.size > limit) throw BusinessException("Imagem maior que o permetido: ${limit.toString()[0]}mb")
-        val typeImage = file.contentType!!.replace("image/", "").uppercase()
-        if (!TYPE_CONTENT_IMAGE.contains(typeImage)) throw BusinessException("Tipo de arquivo não permitido.")
-        if (typeImage == "GIF" && LIMIT_FILE_SIZE_GOLD != limit) {
-            throw BusinessException("Tipo de arquivo permitido apenas para doadores gold e platina.")
+
+    @PutMapping("/{userID}/manga")
+    @ResponseBody
+    fun updateFavorteManga(
+        authentication: Authentication,
+        @RequestBody body: FavoriteManga,
+        @PathVariable userID: String
+    ): ResultEntity {
+        return try {
+            verifyUserIdPermissionService.get(authentication, userID)
+            val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
+            val mangas = find.mangasHighlight.toMutableList()
+            mangas.removeIf { it.order == body.order }
+            if (body.manga != null) {
+                mangas.add(body)
+            }
+            val result = profileRepository.save(
+                find.copy(
+                    updatedAt = Date().time,
+                    mangasHighlight = mangas,
+                )
+            )
+            ResultEntity(listOf(result))
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
         }
     }
-    private fun getLimitFileByDontion(userID: String): Int{
-        val achievements = usersAchievementsRepository.findAllByUserid(userID)
-        var limit = 0
-        for (achievement in achievements) {
-            if (achievement.idemblema == Membro_Ouro || achievement.idemblema == Membro_Platina) {
-                limit = LIMIT_FILE_SIZE_GOLD
-                break
+
+    @PutMapping("/{userID}/achievement")
+    @ResponseBody
+    fun updateFavorteAchievement(
+        authentication: Authentication,
+        @RequestBody body: FavoriteAchievement,
+        @PathVariable userID: String
+    ): ResultEntity {
+        return try {
+            verifyUserIdPermissionService.get(authentication, userID)
+            val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
+            val achievements = find.achievementsHighlight.toMutableList()
+            achievements.removeIf { it.order == body.order }
+            if (body.achievement != null) {
+                achievements.add(body)
             }
-            if (achievement.idemblema == Membro_Ferro || achievement.idemblema == Membro_Prata) {
-                if (limit < LIMIT_FILE_SIZE_IRON){
-                    limit = LIMIT_FILE_SIZE_IRON
-                }
-            }
-            if (achievement.idemblema == Membro_Cobre) {
-                if (limit < LIMIT_FILE_SIZE_COPPER){
-                    limit = LIMIT_FILE_SIZE_COPPER
-                }
-            }
+            val result = profileRepository.save(
+                find.copy(
+                    updatedAt = Date().time,
+                    achievementsHighlight = achievements,
+                )
+            )
+            ResultEntity(listOf(result))
+        } catch (e: Exception) {
+            handleExceptions.handleCatch(e)
         }
-        if (limit == 0) {
-            throw BusinessException("Para ter Imagem precisa ser pelo menos Doador Bronze")
-        }
-        return limit
     }
+
+
 }
