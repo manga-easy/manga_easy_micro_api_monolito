@@ -21,7 +21,7 @@ class XpTask {
     lateinit var profileRepository: ProfileRepository
     val log = LoggerFactory.getLogger(XpTask::class.java)
 
-    @Scheduled(cron = "0 4 * * * *")
+    @Scheduled(cron = "0 0 */2 * * *")
     fun updateRanking() {
         log.info("------------------ inicia task --------------")
         var place: Long = 0

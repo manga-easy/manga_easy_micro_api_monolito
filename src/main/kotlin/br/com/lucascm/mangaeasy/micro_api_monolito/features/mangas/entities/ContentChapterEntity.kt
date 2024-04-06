@@ -13,7 +13,7 @@ data class ContentChapterEntity(
     val idhost: Int,
     val uniqueid: String,
     val chapter: String,
-    val versionApp: String,
+    val versionApp: String = "0.14.0",
     val data: List<ImageChapterEntity>,
     val creatAt: Date?,
     @TimeToLive(unit = TimeUnit.DAYS)

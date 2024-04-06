@@ -12,7 +12,7 @@ data class MandaDetailsEntity(
     val id: String?,
     val idhost: Int,
     val uniqueid: String,
-    val versionApp: String,
+    val versionApp: String = "0.14.0",
     val data: DetailsEntity,
     val creatAt: Date?,
     @TimeToLive(unit = TimeUnit.DAYS)

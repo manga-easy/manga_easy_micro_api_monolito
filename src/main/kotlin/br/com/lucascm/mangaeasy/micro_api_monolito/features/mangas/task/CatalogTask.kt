@@ -33,7 +33,7 @@ class CatalogTask {
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
 
-    @Scheduled(cron = "0 4 * * * *")
+    @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
         val result = mangaDetailsRepository.findByOrderByCreatAtDesc()
@@ -83,10 +83,11 @@ class CatalogTask {
         return genders.joinToString(separator = "<>", transform = { t -> t.title.replace(" ", "-") })
     }
 
-    @Scheduled(cron = "0 4 * * * *")
+    @Scheduled(cron = "0 0 4 * * *")
     fun deleteMangaInative() {
         log.info("------------------ Initial deleteMangaInative --------------")
-        catalogRepository.deleteMangaInactive()
+        val result = catalogRepository.deleteMangaInactive()
+        log.info("------- {}", result)
         log.info("------------------ Finish deleteMangaInative --------------")
     }
 

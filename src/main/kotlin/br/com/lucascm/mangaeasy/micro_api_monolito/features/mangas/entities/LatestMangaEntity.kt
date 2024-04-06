@@ -11,7 +11,7 @@ data class LatestMangaEntity(
     @Id
     val id: String? = null,
     val idhost: Int,
-    val versionApp: String,
+    val versionApp: String = "0.14.0",
     val data: List<MangaEntity>,
     val creatAt: Date?,
     @TimeToLive(unit = TimeUnit.HOURS)
