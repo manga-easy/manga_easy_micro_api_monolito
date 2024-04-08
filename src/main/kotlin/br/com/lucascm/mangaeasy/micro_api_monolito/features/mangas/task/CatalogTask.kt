@@ -7,14 +7,13 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.Cata
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LatestMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Component
 class CatalogTask {
@@ -27,32 +26,35 @@ class CatalogTask {
     lateinit var toggleService: ToggleService
 
     @Autowired
-    lateinit var latestMangaRepository: LatestMangaRepository
-
-    @Autowired
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
 
-    @Scheduled(fixedRate = 2, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
         val toggle = toggleService.getToggle<String>(ToggleEnum.currentVersionApp)
         log.info("------------------ Initial CatalogTask --------------")
-        val result = mangaDetailsRepository.findVersionAppByOrderByCreatAtDesc(toggle)
-        log.info("------------------ toggle $toggle")
-        for (item in result) {
-            if (item != null) {
-                updateCatalog(item)
-            }
-        }
+        log.info("------------------ toggle: $toggle")
+        chainDetailsCache(toggle, 0)
         log.info("------------------ Finish CatalogTask --------------")
+    }
+
+    private fun chainDetailsCache(toggle: String, page: Int) {
+        val result = mangaDetailsRepository.findAll(PageRequest.of(page, 100))
+        log.info("------------------Page: $page, quantity: ${result.content.size}")
+        for (item in result.content) {
+            if (item == null) continue
+            if (item.versionApp != toggle) continue
+            updateCatalog(manga = item)
+        }
+        if (!result.isLast) chainDetailsCache(toggle, 1 + page)
     }
 
     fun updateCatalog(manga: MandaDetailsEntity) {
         try {
             log.info("Update manga: {}", manga.data.title)
-            var catalog = catalogRepository.findByUniqueid(manga.uniqueid)
+            val catalog = catalogRepository.findByUniqueid(manga.uniqueid)
             if (catalog == null) {
                 catalogRepository.save(
                     CatalogEntity(
@@ -79,6 +81,10 @@ class CatalogTask {
                         thumb = manga.data.capa,
                         lastChapter = manga.data.capitulos.last().title,
                         genres = manga.data.generos.joinToString(separator = "<>", transform = { t -> t.title }),
+                        scans = manga.data.scans,
+                        synopsis = manga.data.sinopse,
+                        year = manga.data.ano.toLongOrNull(),
+                        author = manga.data.autor,
                     )
                 )
             }

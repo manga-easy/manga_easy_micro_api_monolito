@@ -24,13 +24,13 @@ class XpTask {
 
     @Scheduled(fixedRate = 2, timeUnit = TimeUnit.HOURS)
     fun updateRanking() {
-        log.info("------------------ inicia task --------------")
+        log.info("------------------ inicia updateRanking --------------")
         var place: Long = 0
         rankingCache.deleteAll()
         while (true) {
             val xp = xpRepository.countXpRanking(place * 100)
             if (xp.isEmpty()) break
-            log.info("------ ${xp.size}")
+            log.info("---------- ${xp.size}")
             for (i in xp) {
                 val profile = profileRepository.findByUserID(i["userId"].toString())
                 if (profile == null) continue
@@ -45,6 +45,6 @@ class XpTask {
                 )
             }
         }
-        log.info("------------------ finaliza task --------------")
+        log.info("------------------ finaliza updateRanking --------------")
     }
 }

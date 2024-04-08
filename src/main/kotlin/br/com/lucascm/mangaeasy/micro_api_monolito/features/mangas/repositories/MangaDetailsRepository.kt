@@ -5,6 +5,4 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.Mand
 import org.springframework.stereotype.Repository
 
 @Repository
-interface MangaDetailsRepository : RedisRepository<MandaDetailsEntity, String> {
-    fun findVersionAppByOrderByCreatAtDesc(versionApp: String): List<MandaDetailsEntity?>
-}
+interface MangaDetailsRepository : RedisRepository<MandaDetailsEntity, String> {}
