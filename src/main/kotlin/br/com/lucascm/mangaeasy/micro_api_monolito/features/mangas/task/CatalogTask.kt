@@ -1,11 +1,12 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ContentChapterRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LatestMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Component
 class CatalogTask {
@@ -22,7 +24,7 @@ class CatalogTask {
     lateinit var mangaDetailsRepository: MangaDetailsRepository
 
     @Autowired
-    lateinit var contentChapterRepository: ContentChapterRepository
+    lateinit var toggleService: ToggleService
 
     @Autowired
     lateinit var latestMangaRepository: LatestMangaRepository
@@ -33,11 +35,17 @@ class CatalogTask {
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
 
-    @Scheduled(cron = "0 0 4 * * *")
+    @Scheduled(fixedRate = 2, timeUnit = TimeUnit.MINUTES)
     fun reportCurrentTime() {
+        val toggle = toggleService.getToggle<String>(ToggleEnum.currentVersionApp)
         log.info("------------------ Initial CatalogTask --------------")
-        val result = mangaDetailsRepository.findByOrderByCreatAtDesc()
-        result.forEach { updateCatalog(it) }
+        val result = mangaDetailsRepository.findVersionAppByOrderByCreatAtDesc(toggle)
+        log.info("------------------ toggle $toggle")
+        for (item in result) {
+            if (item != null) {
+                updateCatalog(item)
+            }
+        }
         log.info("------------------ Finish CatalogTask --------------")
     }
 

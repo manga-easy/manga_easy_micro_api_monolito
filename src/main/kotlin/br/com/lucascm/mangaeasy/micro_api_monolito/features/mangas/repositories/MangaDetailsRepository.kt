@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MangaDetailsRepository : RedisRepository<MandaDetailsEntity, String> {
-    fun findByOrderByCreatAtDesc(): List<MandaDetailsEntity>
+    fun findVersionAppByOrderByCreatAtDesc(versionApp: String): List<MandaDetailsEntity?>
 }
