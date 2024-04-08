@@ -44,6 +44,7 @@ services:
       SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
       ENVIRONMENT: ${ENVIRONMENT}
       CACHE_DB: ${CACHE_DB}
+      TOGGLE_URL: ${TOGGLE_URL}
     networks:
       - appwrite
     ports:
