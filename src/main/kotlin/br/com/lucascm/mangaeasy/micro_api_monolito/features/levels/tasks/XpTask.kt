@@ -25,9 +25,10 @@ class XpTask {
     fun updateRanking() {
         log.info("------------------ inicia task --------------")
         var place: Long = 0
+        var offset: Long = 0
         rankingCache.deleteAll()
         while (true) {
-            val xp = xpRepository.countXpRanking(place * 100)
+            val xp = xpRepository.countXpRanking(offset * 100)
             if (xp.isEmpty()) break
             log.info("------ ${xp.size}")
             for (i in xp) {
@@ -43,6 +44,7 @@ class XpTask {
                     )
                 )
             }
+            ++offset
         }
         log.info("------------------ finaliza task --------------")
     }
