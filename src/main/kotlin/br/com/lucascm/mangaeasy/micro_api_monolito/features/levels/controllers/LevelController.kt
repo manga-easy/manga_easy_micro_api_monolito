@@ -4,6 +4,8 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
@@ -37,6 +39,9 @@ class LevelController {
     @Autowired
     lateinit var profileRepository: ProfileRepository
 
+    @Autowired
+    lateinit var toggleService: ToggleService
+
     @GetMapping("/{userID}")
     @ResponseBody
     fun getXp(authentication: Authentication, @PathVariable userID: String): ResultEntity {
@@ -58,6 +63,10 @@ class LevelController {
     ): ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, userID)
+            val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
+            if (!toggle) {
+                throw BusinessException("Nivel está desativado")
+            }
             val manga = catalogRepository.findByUniqueid(body.uniqueID)
             if (manga == null) {
                 throw BusinessException("Manga não catalogado")
