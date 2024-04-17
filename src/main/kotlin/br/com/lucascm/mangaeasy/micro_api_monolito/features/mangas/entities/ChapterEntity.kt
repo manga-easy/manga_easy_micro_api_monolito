@@ -6,5 +6,7 @@ data class ChapterEntity(
     val number: Double?,
     val href: String?,
     val date: String?,
-    val imagens: List<ImageChapterEntity> = listOf()
+    val imagens: List<ImageChapterEntity> = listOf(),
+    val description: String?,
+    val scan: String?
 )
