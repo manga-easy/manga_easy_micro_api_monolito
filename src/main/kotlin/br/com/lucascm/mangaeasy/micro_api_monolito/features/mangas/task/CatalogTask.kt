@@ -5,7 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
@@ -51,7 +51,7 @@ class CatalogTask {
         if (!result.isLast) chainDetailsCache(toggle, 1 + page)
     }
 
-    fun updateCatalog(manga: MandaDetailsEntity) {
+    fun updateCatalog(manga: MangaDetailsEntity) {
         try {
             log.info("Update manga: {}", manga.data.title)
             val catalog = catalogRepository.findByUniqueid(manga.uniqueid)
