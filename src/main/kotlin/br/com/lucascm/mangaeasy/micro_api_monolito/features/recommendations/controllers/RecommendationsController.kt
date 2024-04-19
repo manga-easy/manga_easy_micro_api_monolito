@@ -7,6 +7,8 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistCache
@@ -40,12 +42,15 @@ class RecommendationsController {
     @Autowired
     lateinit var recommendationAnilistRepository: RecommendationAnilistRepository
 
+    @Autowired
+    lateinit var catalogRepository: CatalogRepository
+
     @GetMapping("/list")
     @ResponseBody
     fun list(
         @RequestParam status: String?,
         @RequestParam idhost: Int?,
-        @RequestParam isAll: Boolean?
+        @RequestParam isAll: Boolean?,
     ): ResultEntity {
         return try {
             val result: List<RecommendationsEntity> = if (isAll != false) {
@@ -68,7 +73,7 @@ class RecommendationsController {
     @ResponseBody
     fun delete(
         authentication: Authentication,
-        @PathVariable uid: String
+        @PathVariable uid: String,
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -91,7 +96,7 @@ class RecommendationsController {
     @ResponseBody
     fun create(
         authentication: Authentication,
-        @RequestBody body: RecommendationsEntity
+        @RequestBody body: RecommendationsEntity,
     ): ResultEntity {
         try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -122,7 +127,7 @@ class RecommendationsController {
     fun update(
         authentication: Authentication,
         @RequestBody body: RecommendationsEntity,
-        @PathVariable uid: String
+        @PathVariable uid: String,
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -152,7 +157,7 @@ class RecommendationsController {
     fun uploadImage(
         @RequestPart file: MultipartFile?,
         @PathVariable uniqueid: String,
-        authentication: Authentication
+        authentication: Authentication,
     ): ResultEntity {
         return try {
             handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
@@ -182,7 +187,7 @@ class RecommendationsController {
 
     @GetMapping("/{title}/anilist")
     fun getAnilistRecommendation(
-        @PathVariable title: String, authentication: Authentication
+        @PathVariable title: String, authentication: Authentication,
     ): ResultEntity {
         return try {
             val cacheResult = recommendationAnilistCache.findById(convertUniqueid(title))
@@ -192,19 +197,21 @@ class RecommendationsController {
             val recommendationAnilist = recommendationAnilistRepository.getRecommendationByTitle(title)
             val recommendations = mutableListOf<RecommendationsEntity>()
             for (e in recommendationAnilist) {
-                if (e.title.romaji != null) {
-                    val recommendation = recommendationsRepository.findByTitle(e.title.romaji)
-                    if (recommendation != null) {
-                        recommendations.add(recommendation)
-                        continue
-                    }
+                val catalog = findCatalog(e.title.romaji ?: "", e.title.english ?: "")
+                if (catalog == null) continue
+
+                val recommendation = recommendationsRepository.findByTitle(catalog.name)
+                if (recommendation != null) {
+                    recommendations.add(recommendation)
+                    continue
                 }
+
                 if (e.bannerImage != null) {
                     recommendations.add(
                         RecommendationsEntity(
-                            title = e.title.romaji ?: "",
+                            title = catalog.name,
                             link = e.bannerImage,
-                            uniqueid = convertUniqueid(e.title.romaji ?: "")
+                            uniqueid = catalog.uniqueid
                         )
                     )
                 }
@@ -254,6 +261,13 @@ class RecommendationsController {
 
         // Remover caracteres especiais do título do manga
         return titleMangaLower.replace(Regex("[^A-Za-z0-9]"), "")
+    }
+
+    private fun findCatalog(romanji: String, english: String): CatalogEntity? {
+        if (romanji.isEmpty() && english.isEmpty()) return null
+        val catalog = catalogRepository.findByUniqueid(convertUniqueid(romanji))
+        if (catalog != null) return catalog
+        return catalogRepository.findByUniqueid(convertUniqueid(english))
     }
 
 }
