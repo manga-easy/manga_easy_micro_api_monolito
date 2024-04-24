@@ -2,17 +2,17 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.ContentChapterEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.LatestMangaEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.ContentChapterDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.LatestMangaDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.MangaDetailsDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ContentChapterRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LatestMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/v1/host-query")
@@ -29,47 +29,36 @@ class HostQueryController {
     @Autowired
     lateinit var handleExceptions: HandleExceptions
 
+    @Autowired
+    lateinit var toggleService: ToggleService
+
     @GetMapping("/latest-manga")
     @ResponseBody
-    fun getManga(@RequestParam idHost: Int, @RequestParam versionApp: String?)
+    fun getManga(@RequestParam idHost: Int)
             : ResultEntity {
-        try {
-            val result = repository.findById("$idHost<>${versionApp ?: "0.14.0"}")
+        return try {
+            val result = repository.findById("$idHost")
             if (!result.isPresent) {
                 throw BusinessException("Cache não encontrado")
             }
-            return ResultEntity(
-                message = "Sucesso",
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result.get()),
-                total = 1
-            )
+            ResultEntity(data = listOf(result.get()))
         } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
+            handleExceptions.handleCatch(e)
         }
     }
 
     @PutMapping("/latest-manga")
     @ResponseBody
-    fun putManga(@RequestBody body: LatestMangaEntity): ResultEntity {
-        try {
+    fun putManga(@RequestBody body: LatestMangaDto): ResultEntity {
+        return try {
             if (body.data.isEmpty()) {
                 throw BusinessException("Data não pode ser vazio")
             }
-            val result = repository.findById(body.getCustom())
-            if (!result.isPresent) {
-                val resultSave = repository.save(
-                    body.copy(
-                        id = body.getCustom(),
-                        creatAt = Date(),
-                        time = 12,
-                    )
-                )
-                return ResultEntity(listOf(resultSave))
-            }
-            return ResultEntity(listOf(result))
+            handleVersionApp(body.versionApp)
+            val resultSave = repository.save(body.toEntity())
+            ResultEntity(listOf(resultSave))
         } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
+            handleExceptions.handleCatch(e)
         }
     }
 
@@ -78,28 +67,22 @@ class HostQueryController {
     fun getMangaDetails(
         @RequestParam idHost: Int,
         @RequestParam uniqueid: String,
-        @RequestParam versionApp: String?
     )
             : ResultEntity {
-        try {
-            val result = mangaDetailsRepository.findById("$idHost<>$uniqueid<>${versionApp ?: "0.14.0"}")
+        return try {
+            val result = mangaDetailsRepository.findById("$idHost<>$uniqueid")
             if (!result.isPresent) {
                 throw BusinessException("Cache não encontrado")
             }
-            return ResultEntity(
-                message = "Sucesso",
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result.get()),
-                total = 1
-            )
+            ResultEntity(data = listOf(result.get()))
         } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
+            handleExceptions.handleCatch(e)
         }
     }
 
     @PutMapping("/manga-details")
     @ResponseBody
-    fun updateMangaDetails(@RequestBody body: MandaDetailsEntity)
+    fun updateMangaDetails(@RequestBody body: MangaDetailsDto)
             : ResultEntity {
         return try {
             if (body.uniqueid.isEmpty()) {
@@ -114,18 +97,13 @@ class HostQueryController {
             if (body.data.capa.isEmpty()) {
                 throw BusinessException("Capa do mangá não pode ser vazio")
             }
-            val result = mangaDetailsRepository.findById(body.getCustom())
-            if (!result.isPresent) {
-                val resultSave = mangaDetailsRepository.save(
-                    body.copy(
-                        id = body.getCustom(),
-                        creatAt = Date(),
-                        time = 1
-                    )
-                )
-                return ResultEntity(listOf(resultSave))
-            }
-            ResultEntity(listOf(result))
+            handleVersionApp(body.versionApp)
+
+            val resultSave = mangaDetailsRepository.save(
+                body.toEntity()
+            )
+            return ResultEntity(listOf(resultSave))
+
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
@@ -137,28 +115,24 @@ class HostQueryController {
         @RequestParam idHost: Int,
         @RequestParam uniqueid: String,
         @RequestParam chapter: String,
-        @RequestParam versionApp: String?
     )
             : ResultEntity {
-        try {
-            val result = contentChapterRepository.findById("$idHost<>$uniqueid<>$chapter<>${versionApp ?: "0.14.0"}")
+        return try {
+            val result = contentChapterRepository.findById("$idHost<>$uniqueid<>$chapter")
             if (!result.isPresent) {
                 throw BusinessException("Cache não encontrado")
             }
-            return ResultEntity(
-                message = "Sucesso",
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result.get()),
-                total = 1
+            ResultEntity(
+                data = listOf(result.get())
             )
         } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
+            handleExceptions.handleCatch(e)
         }
     }
 
     @PutMapping("/content-chapter")
     @ResponseBody
-    fun updateContentChapter(@RequestBody body: ContentChapterEntity)
+    fun updateContentChapter(@RequestBody body: ContentChapterDto)
             : ResultEntity {
         return try {
             if (body.uniqueid.isEmpty()) {
@@ -170,21 +144,21 @@ class HostQueryController {
             if (body.chapter.isEmpty()) {
                 throw BusinessException("chapter não pode ser vazio")
             }
-            val result = contentChapterRepository.findById(body.getCustom())
-            if (!result.isPresent) {
-                val resultSave = contentChapterRepository.save(
-                    body.copy(
-                        id = body.getCustom(),
-                        creatAt = Date(),
-                        versionApp = body.versionApp,
-                        time = 30,
-                    )
-                )
-                ResultEntity(listOf(resultSave))
-            }
-            ResultEntity(listOf(result))
+            handleVersionApp(body.versionApp)
+
+            val resultSave = contentChapterRepository.save(
+                body.toEntity()
+            )
+            ResultEntity(listOf(resultSave))
+
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
+    }
+
+    private fun handleVersionApp(versionApp: String) {
+        val toggle = toggleService.getToggle<String>(ToggleEnum.currentVersionApp)
+        //Não deixar atualizar o cache versões desatualizadas ou beta
+        if (toggle != versionApp) throw BusinessException("Somente a versão atual pode atualizar o cache")
     }
 }

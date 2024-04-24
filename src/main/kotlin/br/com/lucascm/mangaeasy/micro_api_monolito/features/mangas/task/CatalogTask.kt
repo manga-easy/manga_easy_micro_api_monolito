@@ -1,11 +1,9 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MandaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
 import org.slf4j.LoggerFactory
@@ -23,9 +21,6 @@ class CatalogTask {
     lateinit var mangaDetailsRepository: MangaDetailsRepository
 
     @Autowired
-    lateinit var toggleService: ToggleService
-
-    @Autowired
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
@@ -33,34 +28,31 @@ class CatalogTask {
 
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
-        val toggle = toggleService.getToggle<String>(ToggleEnum.currentVersionApp)
         log.info("------------------ Initial CatalogTask --------------")
-        log.info("------------------ toggle: $toggle")
-        chainDetailsCache(toggle, 0)
+        chainDetailsCache(0)
         log.info("------------------ Finish CatalogTask --------------")
     }
 
-    private fun chainDetailsCache(toggle: String, page: Int) {
+    private fun chainDetailsCache(page: Int) {
         val result = mangaDetailsRepository.findAll(PageRequest.of(page, 100))
         log.info("------------------Page: $page, quantity: ${result.content.size}")
         for (item in result.content) {
             if (item == null) continue
-            if (item.versionApp != toggle) continue
             updateCatalog(manga = item)
         }
-        if (!result.isLast) chainDetailsCache(toggle, 1 + page)
+        if (!result.isLast) chainDetailsCache(1 + page)
     }
 
-    fun updateCatalog(manga: MandaDetailsEntity) {
+    fun updateCatalog(manga: MangaDetailsEntity) {
         try {
             log.info("Update manga: {}", manga.data.title)
-            val catalog = catalogRepository.findByUniqueid(manga.uniqueid)
+            val catalog = catalogRepository.findByUniqueid(manga.data.uniqueid)
             if (catalog == null) {
                 catalogRepository.save(
                     CatalogEntity(
                         name = manga.data.title,
                         updatedAt = Date().time,
-                        uniqueid = manga.uniqueid,
+                        uniqueid = manga.data.uniqueid,
                         createdAt = Date().time,
                         author = manga.data.autor,
                         synopsis = manga.data.sinopse,
