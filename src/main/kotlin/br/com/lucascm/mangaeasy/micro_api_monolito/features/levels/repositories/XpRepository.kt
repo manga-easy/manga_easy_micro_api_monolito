@@ -8,35 +8,43 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface XpRepository : JpaRepository<XpEntity, Long> {
-    @Query("""
+    @Query(
+        """
         SELECT sum(quantity)
         FROM XpEntity
         WHERE uniqueID = :uniqueID
             AND userID = :userID
             AND chapterNumber = :chapterNumber
-    """)
-    fun countXpByUniqueidAndChapterNumber(@Param("userID") userID: String,
-                @Param("uniqueID") uniqueID: String,
-                @Param("chapterNumber") chapterNumber: String
+        """
+    )
+    fun countXpByUniqueidAndChapterNumber(
+        @Param("userID") userID: String,
+        @Param("uniqueID") uniqueID: String,
+        @Param("chapterNumber") chapterNumber: String,
     ): Long?
 
-    @Query("""
+    @Query(
+        """
         SELECT sum(quantity)
         FROM XpEntity
         WHERE userID = :userID
-    """)
-    fun countXpTotalByUserId(@Param("userID") userID: String
+        """
+    )
+    fun countXpTotalByUserId(
+        @Param("userID") userID: String,
     ): Long?
 
-    fun findByUserIDAndUniqueIDAndChapterNumber(userID: String, uniqueID: String, chapterNumber: String): XpEntity?
+    fun findByUserIDAndUniqueIDAndChapterNumber(userID: String, uniqueID: String, chapterNumber: String): List<XpEntity>
 
-    @Query("""
+    @Query(
+        """
         SELECT sum(quantity) as Total, userID as userId
         FROM XpEntity
         group by userID
         ORDER by Total desc
         LIMIT 100
         OFFSET :offset
-    """)
+        """
+    )
     fun countXpRanking(offset: Long): List<Map<String, Any>>
 }

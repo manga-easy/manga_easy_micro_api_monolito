@@ -59,7 +59,7 @@ class LevelController {
     fun earnXp(
         authentication: Authentication,
         @PathVariable userID: String,
-        @RequestBody body: earnXpDto
+        @RequestBody body: earnXpDto,
     ): ResultEntity {
         try {
             verifyUserIdPermissionService.get(authentication, userID)
@@ -76,7 +76,7 @@ class LevelController {
                 body.uniqueID,
                 body.chapterNumber
             )
-            if (result == null) {
+            if (result.isEmpty()) {
                 xpRepository.save(
                     XpEntity(
                         uniqueID = body.uniqueID,
@@ -95,12 +95,13 @@ class LevelController {
                 }
                 return ResultEntity(listOf(true))
             }
-            if (result.quantity > 50) throw BusinessException("Voçê ja atingiu o maximo de xp para esse capitulo do manga")
+            val xp = result.first()
+            if (xp.quantity > 50) throw BusinessException("Voçê ja atingiu o maximo de xp para esse capitulo do manga")
             xpRepository.save(
-                result.copy(
+                xp.copy(
                     updatedAt = Date().time,
-                    totalMinutes = ++result.totalMinutes,
-                    quantity = result.quantity + Random.nextInt(1, 6).toLong()
+                    totalMinutes = ++xp.totalMinutes,
+                    quantity = xp.quantity + Random.nextInt(1, 6).toLong()
                 )
             )
             return ResultEntity(listOf(false))
