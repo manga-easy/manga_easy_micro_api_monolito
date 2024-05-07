@@ -2,6 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,9 @@ class CatalogController {
 
     @Autowired
     lateinit var catalogRepository: CatalogRepository
+
+    @Autowired
+    lateinit var xpRepository: XpRepository
 
     @GetMapping
     @ResponseBody
@@ -70,6 +74,17 @@ class CatalogController {
     @ResponseBody
     fun random(@RequestParam isAdult: Boolean?): ResultEntity {
         val result = catalogRepository.findMangaRandom(isAdult ?: false)
+        return ResultEntity(listOf(result))
+    }
+
+    @GetMapping("/most-manga-weekly")
+    @ResponseBody
+    fun mostMangaWeekly(): ResultEntity {
+        val uniqueid = xpRepository.mostMangaReadWeekly()
+        var result = catalogRepository.findByUniqueid(uniqueid)
+        if (result == null) {
+            result = catalogRepository.findMangaRandom(false)
+        }
         return ResultEntity(listOf(result))
     }
 }
