@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "catalog")
-data class CatalogEntity (
+data class CatalogEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long? = null,
@@ -15,6 +15,8 @@ data class CatalogEntity (
     val lastChapter: String = "",
     @Column(name = "total_views")
     val totalViews: Long = 0,
+    @Column(name = "total_likes")
+    val totalLikes: Long = 0,
     val author: String = "",
     val thumb: String = "",
     val synopsis: String = "",
@@ -25,5 +27,5 @@ data class CatalogEntity (
     @Column(name = "created_at")
     val createdAt: Long? = 0,
     val genres: String = "",
-    val year: Long? = null
+    val year: Long? = null,
 )

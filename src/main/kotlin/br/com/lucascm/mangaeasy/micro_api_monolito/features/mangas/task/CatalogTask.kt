@@ -5,7 +5,9 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.Cata
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LikeMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -25,6 +27,12 @@ class CatalogTask {
 
     @Autowired
     lateinit var getUidByFeature: GetUidByFeature
+
+    @Autowired
+    lateinit var viewMangaRepository: ViewMangaRepository
+
+    @Autowired
+    lateinit var likeMangaRepository: LikeMangaRepository
 
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
@@ -47,6 +55,8 @@ class CatalogTask {
         try {
             log.info("Update manga: {}", manga.data.title)
             val catalog = catalogRepository.findByUniqueid(manga.data.uniqueid)
+            val totalLikes = likeMangaRepository.countByUniqueid(manga.data.uniqueid)
+            val totalViews = viewMangaRepository.countByUniqueid(manga.data.uniqueid)
             if (catalog == null) {
                 catalogRepository.save(
                     CatalogEntity(
@@ -61,9 +71,10 @@ class CatalogTask {
                         ratio = 0.0,
                         scans = manga.data.scans,
                         thumb = manga.data.capa,
-                        totalViews = 0,
+                        totalViews = totalViews,
                         year = manga.data.ano.toLongOrNull(),
-                        uid = getUidByFeature.get("catalog")
+                        uid = getUidByFeature.get("catalog"),
+                        totalLikes = totalLikes,
                     )
                 )
             } else {
@@ -77,6 +88,8 @@ class CatalogTask {
                         synopsis = manga.data.sinopse,
                         year = manga.data.ano.toLongOrNull(),
                         author = manga.data.autor,
+                        totalLikes = totalLikes,
+                        totalViews = totalViews,
                     )
                 )
             }

@@ -15,9 +15,10 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
 @Configuration
 @EnableWebSecurity
-class SecurityConfig (
+class SecurityConfig(
     private val tokenService: TokenService,
 ) {
     @Bean
@@ -32,8 +33,7 @@ class SecurityConfig (
             .requestMatchers(HttpMethod.GET, "/v1/seasons/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/notifications/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/over-18").permitAll()
-            .requestMatchers("/v2/**").authenticated()
-            .requestMatchers("/v1/**").authenticated()
+            .requestMatchers("**").authenticated()
 
         // Configure JWT
         http.oauth2ResourceServer().jwt()
