@@ -14,7 +14,7 @@ interface CatalogRepository : JpaSpecificationExecutor<CatalogEntity>, JpaReposi
 
     @Query(
         """
-            DELETE FROM `catalog` WHERE created_at = updated_at and created_at > UNIX_TIMESTAMP(NOW() - INTERVAL 60 DAY)
+            DELETE FROM `catalog` WHERE updated_at < (UNIX_TIMESTAMP(NOW() - INTERVAL 120 DAY) * 1000)
         """,
         nativeQuery = true
     )
