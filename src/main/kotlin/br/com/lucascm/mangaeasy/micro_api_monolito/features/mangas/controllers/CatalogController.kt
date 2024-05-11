@@ -50,8 +50,8 @@ class CatalogController {
             )
             return ResultEntity(
                 message = "Sucesso",
-                total = result.content.size,
-                data = result.content,
+                total = result.size,
+                data = result,
                 status = StatusResultEnum.SUCCESS,
             )
         } catch (e: Exception) {
@@ -70,8 +70,8 @@ class CatalogController {
             )
             return ResultEntity(
                 message = "Sucesso",
-                total = result.content.size,
-                data = result.content.map { it.uniqueid }.toList(),
+                total = result.size,
+                data = result.map { it.uniqueid }.toList(),
                 status = StatusResultEnum.SUCCESS,
             )
         } catch (e: Exception) {
