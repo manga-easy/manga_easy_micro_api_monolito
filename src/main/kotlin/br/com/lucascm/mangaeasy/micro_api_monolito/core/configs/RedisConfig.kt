@@ -19,7 +19,9 @@ class RedisConfig {
             RedisCacheName.LIST_CATALOG
                     to config(Duration.ofHours(12)),
             RedisCacheName.LIST_REVIEW
-                    to config(Duration.ofHours(2))
+                    to config(Duration.ofHours(2)),
+            RedisCacheName.GET_MANGA_WEEKLY
+                    to config(Duration.ofDays(1))
         )
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(config(Duration.ofHours(2)))

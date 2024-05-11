@@ -4,6 +4,7 @@ class RedisCacheName {
     companion object {
         const val LIST_CATALOG = "list-catalog"
         const val LIST_REVIEW = "list-review"
+        const val GET_MANGA_WEEKLY = "most-manga-weekly"
     }
 
 }

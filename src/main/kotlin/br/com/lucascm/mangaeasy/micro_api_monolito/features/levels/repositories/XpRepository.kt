@@ -47,16 +47,4 @@ interface XpRepository : JpaRepository<XpEntity, Long> {
         """
     )
     fun countXpRanking(offset: Long): List<Map<String, Any>>
-
-    @Query(
-        """
-        SELECT uniqueID
-            FROM XpEntity
-            WHERE YEARWEEK(FROM_UNIXTIME(updatedAt / 1000), 1) = YEARWEEK(CURDATE(), 1)
-            GROUP BY uniqueID
-            ORDER BY sum(quantity) DESC
-        LIMIT 1
-        """
-    )
-    fun mostMangaReadWeekly(): String
 }

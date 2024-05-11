@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
@@ -18,6 +19,9 @@ import org.springframework.stereotype.Service
 class CatalogService {
     @Autowired
     lateinit var catalogRepository: CatalogRepository
+
+    @Autowired
+    lateinit var viewMangaRepository: ViewMangaRepository
 
     @Cacheable(RedisCacheName.LIST_CATALOG)
     fun list(
@@ -97,5 +101,15 @@ class CatalogService {
             PageRequest.of(page ?: 0, limit ?: 25)
         )
         return result.content
+    }
+
+    @Cacheable(RedisCacheName.GET_MANGA_WEEKLY)
+    fun mostMangaWeekly(): CatalogEntity {
+        val uniqueid = viewMangaRepository.mostMangaReadWeekly()
+        var result = catalogRepository.findByUniqueid(uniqueid)
+        if (result == null) {
+            result = catalogRepository.findMangaRandom(false)
+        }
+        return result
     }
 }
