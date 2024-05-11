@@ -33,7 +33,7 @@ class ReviewController {
     @GetMapping("/v1/{uniqueid}")
     fun list(@PathVariable uniqueid: String, @RequestParam page: Int?): ResponseEntity<Any> {
         return try {
-            return HandleResponseApi().ok(reviewService.list(uniqueid, page))
+            return HandleResponseApi().ok(reviewService.list(uniqueid, page ?: 0))
         } catch (e: Exception) {
             HandleResponseApi().error(e)
         }
