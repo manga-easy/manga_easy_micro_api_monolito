@@ -1,6 +1,8 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.core.configs
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.TokenService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
@@ -85,12 +87,13 @@ class SecurityConfig(
 
 @Component
 class AppVersionFilter : Filter {
-    val minimumVersionApp = SemVer(0, 15, 0)
+    val toggleService: ToggleService = ToggleService()
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
         val headerVersion = httpRequest.getHeader("me-app-version")
-        val versionApp = SemVer.parse(headerVersion ?: "0.15.0")
+        val versionApp = SemVer.parse(headerVersion ?: "0.15.4")
+        val minimumVersionApp = SemVer.parse(toggleService.getToggle(ToggleEnum.minimalVersionApp))
 
         // Verificar se a versão do aplicativo é muito antiga
         if (versionApp < minimumVersionApp) {
