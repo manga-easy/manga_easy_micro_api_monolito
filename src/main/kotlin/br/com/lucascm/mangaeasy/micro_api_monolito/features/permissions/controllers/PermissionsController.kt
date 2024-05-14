@@ -3,9 +3,9 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.control
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.entities.PermissionsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.repositories.PermissionsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,47 +15,44 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/permissions")
-class PermissionsController(@Autowired val repository: PermissionsRepository,
-                            @Autowired val getIsUserAdmin: HandlerUserAdmin) {
+class PermissionsController(
+    @Autowired val repository: PermissionsRepository,
+    @Autowired val getIsUserAdmin: HandlerUserAdmin
+) {
     @GetMapping("/list")
-    @ResponseBody
-    fun list(authentication: Authentication) : ResultEntity {
-        try {
-            val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
-            if (!isUserAdmin){
-                throw BusinessException("O usuario não tem permissão")
-            }
+    fun list(authentication: Authentication): ResultEntity {
+        return try {
+            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+
             val result: List<PermissionsEntity> = repository.findAll()
-            return ResultEntity(
+            ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
                 data = result,
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
+
     @PostMapping
-    @ResponseBody
-    fun create(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity {
+    fun create(authentication: Authentication, @RequestBody body: PermissionsEntity): ResultEntity {
         try {
-            val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
-            if (!isUserAdmin){
-                throw BusinessException("O usuario não tem permissão")
-            }
-            if (body.userid == null){
+            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+
+            if (body.userid == null) {
                 throw BusinessException("O userid não pode ser nulo")
             }
 
             val permission = repository.findByUserid(body.userid!!)
-            if (permission != null){
-               throw BusinessException("O usuario ja tem um nivel de permissão")
+            if (permission != null) {
+                throw BusinessException("O usuario ja tem um nivel de permissão")
             }
-            if (body.value == null){
+            if (body.value == null) {
                 throw BusinessException("O value não pode ser nulo")
             }
-            if (body.value!! >= 90){
+            if (body.value!! >= 90) {
                 throw BusinessException("Permissão é maior que o permitido")
             }
 
@@ -75,19 +72,15 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
     }
 
     @PutMapping
-    @ResponseBody
-    fun update(authentication: Authentication, @RequestBody body: PermissionsEntity) : ResultEntity {
+    fun update(authentication: Authentication, @RequestBody body: PermissionsEntity): ResultEntity {
         try {
-            val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
+            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
 
-            if (!isUserAdmin){
-                throw BusinessException("O usuario não tem permissão")
-            }
-
-            if (body.value == null){
+            if (body.value == null) {
                 throw BusinessException("O value não pode ser nulo")
             }
-            val permission = repository.findByUserid(body.userid!!) ?: throw BusinessException("O registro não encontrado")
+            val permission =
+                repository.findByUserid(body.userid!!) ?: throw BusinessException("O registro não encontrado")
 
             val permissionUpdated = permission.apply {
                 updatedat = Date().time
@@ -106,25 +99,21 @@ class PermissionsController(@Autowired val repository: PermissionsRepository,
     }
 
     @DeleteMapping("/{uid}")
-    @ResponseBody
-    fun delete(authentication: Authentication, @PathVariable uid: String) : ResultEntity {
-        try {
-            val isUserAdmin = getIsUserAdmin.get(authentication.principal.toString())
+    fun delete(authentication: Authentication, @PathVariable uid: String): ResultEntity {
+        return try {
+            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
 
-            if (!isUserAdmin){
-                throw BusinessException("O usuario não tem permissão")
-            }
             val permission = repository.findByUid(uid) ?: throw BusinessException("O registro não encontrado")
 
             repository.delete(permission)
-            return ResultEntity(
+            ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(permission),
                 message = "Deletado com sucesso"
             )
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
 
