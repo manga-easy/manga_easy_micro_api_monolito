@@ -14,20 +14,22 @@ import org.springframework.stereotype.Repository
 class UserRepository {
     @Autowired
     lateinit var env: Environment
-    fun search(search: String?): List<UserEntity>{
+    fun search(search: String?): List<UserEntity> {
         val response = runBlocking { futureUsers(search) }
-        return response.map { e -> UserEntity(
-            email = e.email,
-            emailverification = e.emailVerification,
-            registration = e.registration,
-            prefs = e.prefs.toJson(),
-            uid = e.id,
-            name = e.name,
-            status = e.status
-        ) }.toList()
+        return response.map { e ->
+            UserEntity(
+                email = e.email,
+                emailverification = e.emailVerification,
+                registration = e.registration,
+                prefs = e.prefs.toJson(),
+                uid = e.id,
+                name = e.name,
+                status = e.status
+            )
+        }.toList()
     }
 
-    private suspend fun futureUsers(search: String?) : List<User<Any>>{
+    private suspend fun futureUsers(search: String?): List<User<Map<String, Any>>> {
         val client = Client(endPoint = "https://${env.getProperty("auth.endpoint")!!}/v1", selfSigned = true)
             .setProject(env.getProperty("auth.idproject")!!) // Your project ID
             .setKey(env.getProperty("auth.key")!!) // Your secret API key
