@@ -27,5 +27,5 @@ interface ViewMangaRepository : JpaRepository<ViewMangaEntity, Long> {
         LIMIT 1
         """
     )
-    fun mostMangaReadWeekly(): String
+    fun mostMangaReadWeekly(): String?
 }
