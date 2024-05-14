@@ -3,9 +3,12 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleResponseApi
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +19,9 @@ class CatalogController {
 
     @Autowired
     lateinit var catalogRepository: CatalogRepository
+
+    @Autowired
+    lateinit var xpRepository: XpRepository
 
     @GetMapping
     @ResponseBody
@@ -83,6 +89,16 @@ class CatalogController {
             return ResultEntity(listOf(result))
         } catch (e: Exception) {
             HandleExceptions().handleCatch(e)
+        }
+    }
+
+    @GetMapping("/most-manga-weekly")
+    @ResponseBody
+    fun mostMangaWeekly(): ResponseEntity<Any> {
+        return try {
+            return HandleResponseApi().ok(catalogService.mostMangaWeekly())
+        } catch (e: Exception) {
+            HandleResponseApi().error(e)
         }
     }
 }

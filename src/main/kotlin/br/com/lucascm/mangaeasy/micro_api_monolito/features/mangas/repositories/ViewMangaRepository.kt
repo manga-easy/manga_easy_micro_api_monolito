@@ -16,4 +16,16 @@ interface ViewMangaRepository : JpaRepository<ViewMangaEntity, Long> {
         """
     )
     fun countByUniqueid(@Param("uniqueid") uniqueid: String): Long
+
+    @Query(
+        """
+        SELECT uniqueid
+            FROM ViewMangaEntity
+            WHERE YEARWEEK(FROM_UNIXTIME(createdAt / 1000), 1) = YEARWEEK(CURDATE(), 1)
+            GROUP BY uniqueid
+            ORDER BY COUNT(*) DESC
+        LIMIT 1
+        """
+    )
+    fun mostMangaReadWeekly(): String
 }
