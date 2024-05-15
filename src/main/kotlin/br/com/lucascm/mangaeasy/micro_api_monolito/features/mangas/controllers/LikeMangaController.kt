@@ -46,7 +46,6 @@ class LikeMangaController {
 
     @DeleteMapping("/v1/like")
     fun delete(@PathVariable uniqueid: String, authentication: Authentication) {
-        throw Exception("test")
         val userId = authentication.principal.toString()
         val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userId)
             ?: throw BusinessException("Like não encontrado")
