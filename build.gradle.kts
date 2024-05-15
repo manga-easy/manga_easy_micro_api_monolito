@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.0"
 }
 group = "br.com.lucas-cm.manga-easy"
-version = "1.6.0"
+version = "1.7.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 sentry {

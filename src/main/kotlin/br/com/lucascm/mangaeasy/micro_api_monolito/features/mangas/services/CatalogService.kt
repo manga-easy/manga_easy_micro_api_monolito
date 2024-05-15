@@ -106,6 +106,7 @@ class CatalogService {
     @Cacheable(RedisCacheName.GET_MANGA_WEEKLY)
     fun mostMangaWeekly(): CatalogEntity {
         val uniqueid = viewMangaRepository.mostMangaReadWeekly()
+            ?: return catalogRepository.findMangaRandom(false)
         var result = catalogRepository.findByUniqueid(uniqueid)
         if (result == null) {
             result = catalogRepository.findMangaRandom(false)
