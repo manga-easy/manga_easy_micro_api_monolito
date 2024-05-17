@@ -15,8 +15,6 @@ import java.util.*
 @RestController
 @RequestMapping("/review")
 class ReviewController {
-
-
     @Autowired
     lateinit var catalogRepository: CatalogRepository
 
@@ -54,7 +52,7 @@ class ReviewController {
                 userId = userId,
                 updatedAt = Date().time,
                 commentary = body.commentary,
-                value = body.value,
+                rating = body.rating,
                 hasSpoiler = body.hasSpoiler,
                 hasUpdated = false,
             )
@@ -74,7 +72,7 @@ class ReviewController {
         return reviewRepository.save(
             review.copy(
                 commentary = body.commentary,
-                value = body.value,
+                rating = body.rating,
                 updatedAt = Date().time,
                 hasSpoiler = body.hasSpoiler,
                 hasUpdated = true,
