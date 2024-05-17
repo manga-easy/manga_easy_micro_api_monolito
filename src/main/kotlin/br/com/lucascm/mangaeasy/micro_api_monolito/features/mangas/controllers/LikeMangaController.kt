@@ -41,7 +41,7 @@ class LikeMangaController {
         catalogRepository.findByUniqueid(uniqueid)
             ?: throw BusinessException("Manga não encontrado: $uniqueid")
         val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userId)
-        return FoundLikeMangaDto(value = result != null)
+        return FoundLikeMangaDto(liked = result != null)
     }
 
     @DeleteMapping("/v1/like")
