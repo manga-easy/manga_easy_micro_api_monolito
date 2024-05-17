@@ -46,7 +46,7 @@ class LikeReviewController {
             throw BusinessException("Avaliação não encontrado: $id")
         }
         val result = likeReviewRepository.findByIdAndUserId(id, userId)
-        return FoundReviewDto(value = result != null)
+        return FoundReviewDto(liked = result != null)
     }
 
     @DeleteMapping("/v1/like")
