@@ -18,16 +18,16 @@ class RestResponseEntityExceptionHandler
         return ResponseEntity<Any>(
             mapOf("message" to e.message),
             HttpStatus.UNPROCESSABLE_ENTITY
-        );
+        )
     }
 
     @ExceptionHandler(Exception::class)
     fun handleInternalServerError(e: Exception): ResponseEntity<Any> {
-        Sentry.captureException(e);
+        Sentry.captureException(e)
         KotlinLogging.logger("RestResponseEntityExceptionHandler").catching(e)
         return ResponseEntity<Any>(
             mapOf("message" to "Ocorreu um erro no serviço"),
             HttpStatus.INTERNAL_SERVER_ERROR
-        );
+        )
     }
 }

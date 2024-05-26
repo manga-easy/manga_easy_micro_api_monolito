@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
+@Deprecated("Descontinuado")
 class HandleExceptions {
     fun handleCatch(e: Exception): ResultEntity {
         if (e is BusinessException) {
