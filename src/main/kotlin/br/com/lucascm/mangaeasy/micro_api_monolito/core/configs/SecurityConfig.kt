@@ -45,6 +45,7 @@ class SecurityConfig(
             .requestMatchers(HttpMethod.GET, "/v1/notifications/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/over-18").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/most-manga-weekly").permitAll()
+            .requestMatchers(HttpMethod.GET, "/doc/**").permitAll()
             .requestMatchers("**").authenticated()
 
         // Configure JWT

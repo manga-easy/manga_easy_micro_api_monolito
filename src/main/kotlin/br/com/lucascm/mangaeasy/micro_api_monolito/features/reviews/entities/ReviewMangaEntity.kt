@@ -18,7 +18,7 @@ data class ReviewMangaEntity(
     val hasSpoiler: Boolean = false,
     @Column(nullable = false, name = "is_updated")
     val hasUpdated: Boolean = false,
-    val value: Double = 0.0,
+    val rating: Double = 0.0,
     @Column(name = "updated_at")
     val updatedAt: Long? = 0,
     @Column(name = "created_at")

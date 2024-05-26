@@ -48,6 +48,8 @@ dependencies {
     implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("net.swiftzer.semver:semver:2.0.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    implementation("org.springdoc:springdoc-openapi-starter-common:2.5.0")
 }
 
 tasks.withType<KotlinCompile> {
