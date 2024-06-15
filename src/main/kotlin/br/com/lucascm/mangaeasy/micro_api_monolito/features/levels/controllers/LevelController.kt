@@ -3,22 +3,20 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import kotlin.random.Random
 
 
 @RestController
@@ -37,7 +35,7 @@ class LevelController {
     lateinit var rankingCache: RankingCache
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var messageService: MessageService
 
     @Autowired
     lateinit var toggleService: ToggleService
@@ -61,52 +59,24 @@ class LevelController {
         @PathVariable userID: String,
         @RequestBody body: earnXpDto,
     ): ResultEntity {
-        try {
+        return try {
             verifyUserIdPermissionService.get(authentication, userID)
             val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
             if (!toggle) {
                 throw BusinessException("Nivel está desativado")
             }
-            val manga = catalogRepository.findByUniqueid(body.uniqueID)
-            if (manga == null) {
-                throw BusinessException("Manga não catalogado")
-            }
-            val result = xpRepository.findByUserIDAndUniqueIDAndChapterNumber(
-                userID,
-                body.uniqueID,
-                body.chapterNumber
-            )
-            if (result.isEmpty()) {
-                xpRepository.save(
-                    XpEntity(
-                        uniqueID = body.uniqueID,
-                        chapterNumber = body.chapterNumber,
-                        userID = userID,
-                        createdAt = Date().time,
-                        updatedAt = Date().time,
-                        quantity = Random.nextInt(1, 6).toLong(),
-                        totalMinutes = 1
-                    )
-                )
-                val profile = profileRepository.findByUserID(userID)
-                if (profile != null) {
-                    val totalXp = xpRepository.countXpTotalByUserId(userID)
-                    profileRepository.save(profile.copy(totalXp = totalXp!!))
-                }
-                return ResultEntity(listOf(true))
-            }
-            val xp = result.first()
-            if (xp.quantity > 50) throw BusinessException("Voçê ja atingiu o maximo de xp para esse capitulo do manga")
-            xpRepository.save(
-                xp.copy(
-                    updatedAt = Date().time,
-                    totalMinutes = ++xp.totalMinutes,
-                    quantity = xp.quantity + Random.nextInt(1, 6).toLong()
+            catalogRepository.findByUniqueid(body.uniqueID)
+                ?: throw BusinessException("Manga não catalogado")
+            messageService.sendXp(
+                XpConsumerDto(
+                    userID,
+                    body.chapterNumber,
+                    body.uniqueID
                 )
             )
-            return ResultEntity(listOf(false))
+            ResultEntity(listOf(false))
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
 

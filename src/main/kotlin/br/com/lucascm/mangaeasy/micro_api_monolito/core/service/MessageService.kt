@@ -11,8 +11,7 @@ class MessageService {
     @Autowired
     lateinit var rqueueMessageEnqueuer: RqueueMessageEnqueuer
 
-    // send notification in 30 seconds
-    fun sendNotification(xp: XpConsumerDto) {
+    fun sendXp(xp: XpConsumerDto) {
         rqueueMessageEnqueuer.enqueue("xp", xp)
     }
 }

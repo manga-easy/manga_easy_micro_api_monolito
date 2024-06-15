@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.consumers
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import com.github.sonus21.rqueue.annotation.RqueueListener
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,9 +17,14 @@ class XpConsumer {
     @Autowired
     lateinit var xpRepository: XpRepository
 
+    @Autowired
+    lateinit var profileRepository: ProfileRepository
+    val log = KotlinLogging.logger("onMessage")
+
     @RqueueListener("xp", numRetries = "3")
     fun onMessage(xp: XpConsumerDto) {
-        KotlinLogging.logger("onMessage").info("---------- init onMessage ----------------")
+        log.info("---------- onMessage init ----------------")
+        log.info("---------- onMessage xp {} ----------------", xp)
         val result = xpRepository.findByUserIDAndUniqueIDAndChapterNumber(
             xp.useId,
             xp.uniqueID,
@@ -36,24 +42,23 @@ class XpConsumer {
                     totalMinutes = 1
                 )
             )
-//            val profile = profileRepository.findByUserID(userID)
-//            if (profile != null) {
-//                val totalXp = xpRepository.countXpTotalByUserId(userID)
-//                profileRepository.save(profile.copy(totalXp = totalXp!!))
-//            }
-//            return ResultEntity(listOf(true))
+            val profile = profileRepository.findByUserID(xp.useId)
+            if (profile != null) {
+                val totalXp = xpRepository.countXpTotalByUserId(xp.useId)
+                profileRepository.save(profile.copy(totalXp = totalXp!!))
+            }
+            return
         }
-        val xp = result.first()
-        if (xp.quantity < 50) {
+        val resultFirst = result.first()
+        if (resultFirst.quantity < 50) {
             xpRepository.save(
-                xp.copy(
+                resultFirst.copy(
                     updatedAt = Date().time,
-                    totalMinutes = ++xp.totalMinutes,
-                    quantity = xp.quantity + Random.nextInt(1, 6).toLong()
+                    totalMinutes = ++resultFirst.totalMinutes,
+                    quantity = resultFirst.quantity + Random.nextInt(1, 6).toLong()
                 )
             )
-            //throw BusinessException("Voçê ja atingiu o maximo de xp para esse capitulo do manga")
         }
-        KotlinLogging.logger("onMessage").info("---------- finish onMessage ----------------")
+        log.info("---------- onMessage finish ----------------")
     }
 }
