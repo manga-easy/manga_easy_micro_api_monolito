@@ -22,7 +22,7 @@ class XpTask {
     lateinit var profileRepository: ProfileRepository
     val log = LoggerFactory.getLogger(XpTask::class.java)
 
-    @Scheduled(fixedRate = 2, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
     fun updateRanking() {
         log.info("------------------ inicia updateRanking --------------")
         var place: Long = 0
