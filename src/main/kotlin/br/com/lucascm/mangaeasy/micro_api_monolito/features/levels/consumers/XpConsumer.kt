@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.consumers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.QueueName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
@@ -19,9 +20,9 @@ class XpConsumer {
 
     @Autowired
     lateinit var profileRepository: ProfileRepository
-    val log = KotlinLogging.logger("onMessage")
+    val log = KotlinLogging.logger("XpConsumer")
 
-    @RqueueListener("xp", numRetries = "3")
+    @RqueueListener(QueueName.xp, numRetries = "3")
     fun onMessage(xp: XpConsumerDto) {
         log.info("---------- onMessage init ----------------")
         log.info("---------- onMessage xp {} ----------------", xp)
