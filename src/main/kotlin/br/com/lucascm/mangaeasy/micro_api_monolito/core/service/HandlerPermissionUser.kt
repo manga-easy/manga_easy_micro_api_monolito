@@ -10,13 +10,12 @@ import org.springframework.stereotype.Service
 class HandlerPermissionUser {
     @Autowired
     lateinit var repository: PermissionsRepository
-    fun handleIsAdmin(userAuth: UserAuth): Unit {
+    fun handleIsAdmin(userAuth: UserAuth) {
         val result = repository.findByUserid(userAuth.userId)
         ///significa que é um admin
         if (result?.value != 90) {
             throw BusinessException("O usuario não tem permissão")
         }
-        return
     }
 
     //Verificar se o usuario do token é o mesmo da url, caso for admin ele faz oque quiser
