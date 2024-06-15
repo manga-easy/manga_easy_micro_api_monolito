@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.tasks
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
@@ -23,7 +24,29 @@ class XpTask {
 
     @Scheduled(fixedRate = 2, timeUnit = TimeUnit.HOURS)
     fun updateRanking() {
-
+        log.info("------------------ inicia updateRanking --------------")
+        var place: Long = 0
+        var offset: Long = 0
+        rankingCache.deleteAll()
+        while (true) {
+            val xp = xpRepository.countXpRanking(offset * 100)
+            if (xp.isEmpty()) break
+            log.info("---------- ${xp.size}")
+            for (i in xp) {
+                val profile = profileRepository.findByUserID(i["userId"].toString())
+                if (profile == null) continue
+                rankingCache.save(
+                    RankingEntity(
+                        id = profile.userID,
+                        totalXp = i["Total"] as Long,
+                        name = profile.name,
+                        picture = profile.picture,
+                        place = ++place
+                    )
+                )
+            }
+            ++offset
+        }
         log.info("------------------ finaliza updateRanking --------------")
     }
 }
