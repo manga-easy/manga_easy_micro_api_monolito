@@ -1,12 +1,13 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.FoundLikeMangaDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.LikeMangaEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LikeMangaRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -20,14 +21,13 @@ class LikeMangaController {
     lateinit var likeMangaRepository: LikeMangaRepository
 
     @PostMapping("/v1/like")
-    fun create(@PathVariable uniqueid: String, authentication: Authentication): LikeMangaEntity {
-        val userId = authentication.principal.toString()
+    fun create(@PathVariable uniqueid: String, @AuthenticationPrincipal userAuth: UserAuth): LikeMangaEntity {
         catalogRepository.findByUniqueid(uniqueid)
             ?: throw BusinessException("Manga não encontrado: $uniqueid")
-        return likeMangaRepository.findByUniqueidAndUserId(uniqueid, userId)
+        return likeMangaRepository.findByUniqueidAndUserId(uniqueid, userAuth.userId)
             ?: likeMangaRepository.save(
                 LikeMangaEntity(
-                    userId = userId,
+                    userId = userAuth.userId,
                     uniqueid = uniqueid,
                     createdAt = Date().time,
                 )
@@ -36,18 +36,16 @@ class LikeMangaController {
     }
 
     @GetMapping("/v1/like")
-    fun get(@PathVariable uniqueid: String, authentication: Authentication): FoundLikeMangaDto {
-        val userId = authentication.principal.toString()
+    fun get(@PathVariable uniqueid: String, @AuthenticationPrincipal userAuth: UserAuth): FoundLikeMangaDto {
         catalogRepository.findByUniqueid(uniqueid)
             ?: throw BusinessException("Manga não encontrado: $uniqueid")
-        val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userId)
+        val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userAuth.userId)
         return FoundLikeMangaDto(liked = result != null)
     }
 
     @DeleteMapping("/v1/like")
-    fun delete(@PathVariable uniqueid: String, authentication: Authentication) {
-        val userId = authentication.principal.toString()
-        val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userId)
+    fun delete(@PathVariable uniqueid: String, @AuthenticationPrincipal userAuth: UserAuth) {
+        val result = likeMangaRepository.findByUniqueidAndUserId(uniqueid, userAuth.userId)
             ?: throw BusinessException("Like não encontrado")
         likeMangaRepository.deleteById(result.id!!)
     }

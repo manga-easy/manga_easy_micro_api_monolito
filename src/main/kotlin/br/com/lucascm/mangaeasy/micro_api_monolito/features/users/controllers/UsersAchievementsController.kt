@@ -3,15 +3,15 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.users.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersAchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -25,10 +25,7 @@ class UsersAchievementsController {
     lateinit var achievementsRepository: AchievementsRepository
 
     @Autowired
-    lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
-
-    @Autowired
-    lateinit var handlerUserAdmin: HandlerUserAdmin
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
@@ -37,10 +34,10 @@ class UsersAchievementsController {
     fun listAchievements(
         @PathVariable uid: String,
         @RequestParam idEmblema: String?,
-        authentication: Authentication
+        @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            verifyUserIdPermissionService.get(authentication, uid);
+            handlerPermissionUser.handleIsOwnerToken(userAuth, uid);
             val result: List<UsersAchievementsEntity> = if (idEmblema == null) {
                 repository.findAllByUserid(uid)
             } else {
@@ -61,11 +58,11 @@ class UsersAchievementsController {
     fun removeAchievement(
         @PathVariable uid: String,
         @PathVariable idAchieviment: String,
-        authentication: Authentication
+        @AuthenticationPrincipal userAuth: UserAuth
     )
             : ResultEntity {
         try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerPermissionUser.handleIsAdmin(userAuth)
             val resultAchievements = repository.findAllByUseridAndIdemblema(
                 userId = uid,
                 idemblema = idAchieviment,
@@ -92,11 +89,10 @@ class UsersAchievementsController {
     fun addUserAchievement(
         @PathVariable uid: String,
         @RequestBody body: UsersAchievementsEntity,
-        authentication: Authentication
+        @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
-
+            handlerPermissionUser.handleIsAdmin(userAuth)
             val resultAchievements = achievementsRepository.findByUid(body.idemblema)
                 ?: throw BusinessException("Emblema não encontrado")
             val resultUsers = repository.findAllByUseridAndIdemblema(
@@ -131,10 +127,10 @@ class UsersAchievementsController {
     fun acquire(
         @PathVariable uid: String,
         @RequestBody body: UsersAchievementsEntity,
-        authentication: Authentication
+        @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            verifyUserIdPermissionService.get(authentication, uid);
+            handlerPermissionUser.handleIsOwnerToken(userAuth, uid);
             val resultEmblema = achievementsRepository.findByUid(body.idemblema)
                 ?: throw BusinessException("Emblema não encontrado")
             if (resultEmblema.categoria != "evento") {

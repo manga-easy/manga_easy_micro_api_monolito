@@ -4,9 +4,10 @@ import CacheAnilistEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
@@ -15,7 +16,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repo
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
@@ -28,7 +29,7 @@ class RecommendationsController {
     lateinit var recommendationsRepository: RecommendationsRepository
 
     @Autowired
-    lateinit var handlerUserAdmin: HandlerUserAdmin
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
@@ -72,11 +73,11 @@ class RecommendationsController {
     @DeleteMapping("/{uid}")
     @ResponseBody
     fun delete(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable uid: String,
     ): ResultEntity {
         return try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerPermissionUser.handleIsAdmin(userAuth)
             val result =
                 recommendationsRepository.findByUid(uid) ?: throw BusinessException("Recomendação não encontrado")
             bucketRecommendationsRepository.deleteImage(result.uniqueid)
@@ -95,12 +96,12 @@ class RecommendationsController {
     @PostMapping
     @ResponseBody
     fun create(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: RecommendationsEntity,
     ): ResultEntity {
         try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
-            handleValidatorWrite(authentication, body)
+            handlerPermissionUser.handleIsAdmin(userAuth)
+            handleValidatorWrite(body)
             val resultVCheck = recommendationsRepository.findByUniqueid(body.uniqueid)
             if (resultVCheck != null) {
                 throw BusinessException("Esse mangá já tem recomendação")
@@ -125,13 +126,13 @@ class RecommendationsController {
     @PutMapping("/{uid}")
     @ResponseBody
     fun update(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: RecommendationsEntity,
         @PathVariable uid: String,
     ): ResultEntity {
         return try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
-            handleValidatorWrite(authentication, body)
+            handlerPermissionUser.handleIsAdmin(userAuth)
+            handleValidatorWrite(body)
             val result = recommendationsRepository.findByUid(uid) ?: throw BusinessException("Banner não encontrado")
             val resultUpdate = result.apply {
                 updatedat = Date().time
@@ -157,10 +158,10 @@ class RecommendationsController {
     fun uploadImage(
         @RequestPart file: MultipartFile?,
         @PathVariable uniqueid: String,
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
     ): ResultEntity {
         return try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerPermissionUser.handleIsAdmin(userAuth)
             var imageResult: String? = null
             val find: RecommendationsEntity = recommendationsRepository.findByUniqueid(uniqueid)
                 ?: throw BusinessException("Recomendação não encontrada")
@@ -187,7 +188,7 @@ class RecommendationsController {
 
     @GetMapping("/{title}/anilist")
     fun getAnilistRecommendation(
-        @PathVariable title: String, authentication: Authentication,
+        @PathVariable title: String, @AuthenticationPrincipal userAuth: UserAuth,
     ): ResultEntity {
         return try {
             val cacheResult = recommendationAnilistCache.findById(convertUniqueid(title))
@@ -197,8 +198,11 @@ class RecommendationsController {
             val recommendationAnilist = recommendationAnilistRepository.getRecommendationByTitle(title)
             val recommendations = mutableListOf<RecommendationsEntity>()
             for (e in recommendationAnilist) {
-                val catalog = findCatalog(e.title.romaji ?: "", e.title.english ?: "")
-                if (catalog == null) continue
+                val catalog = findCatalog(
+                    e.title.romaji ?: "",
+                    e.title.english ?: ""
+                )
+                    ?: continue
 
                 val recommendation = recommendationsRepository.findByTitle(catalog.name)
                 if (recommendation != null) {
@@ -229,7 +233,7 @@ class RecommendationsController {
         }
     }
 
-    fun handleValidatorWrite(authentication: Authentication, body: RecommendationsEntity) {
+    fun handleValidatorWrite(body: RecommendationsEntity) {
         if (body.uniqueid.isEmpty()) {
             throw BusinessException("Campo uniqueid não pode ser vazio")
         }

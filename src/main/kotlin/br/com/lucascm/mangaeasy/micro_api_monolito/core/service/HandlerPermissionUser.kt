@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service
 class HandlerPermissionUser {
     @Autowired
     lateinit var repository: PermissionsRepository
-    fun handleIsAdmin(userId: String): Unit {
-        val result = repository.findByUserid(userId)
+    fun handleIsAdmin(userAuth: UserAuth): Unit {
+        val result = repository.findByUserid(userAuth.userId)
         ///significa que é um admin
         if (result?.value != 90) {
             throw BusinessException("O usuario não tem permissão")
@@ -25,6 +25,6 @@ class HandlerPermissionUser {
         if (userIdUrl == userAuth.userId) {
             return
         }
-        handleIsAdmin(userAuth.userId)
+        handleIsAdmin(userAuth)
     }
 }
