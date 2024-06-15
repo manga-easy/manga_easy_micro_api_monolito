@@ -3,13 +3,14 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.entities.BannersEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositories.BannersRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -20,7 +21,7 @@ class BannersControllerV2 {
     lateinit var repository: BannersRepository
 
     @Autowired
-    lateinit var getIsUserAdmin: HandlerUserAdmin
+    lateinit var getIsUserAdmin: HandlerPermissionUser
 
     @GetMapping("/list")
     fun list(
@@ -37,11 +38,11 @@ class BannersControllerV2 {
 
     @DeleteMapping("/{uid}")
     fun delete(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable uid: String
     ): ResultEntity {
         try {
-            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+            getIsUserAdmin.handleIsAdmin(userAuth)
 
             val result = repository.findByUid(uid)
                 ?: throw BusinessException("Banner não encontrado")
@@ -61,11 +62,11 @@ class BannersControllerV2 {
 
     @PostMapping
     fun create(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: BannersEntity
     ): ResultEntity {
         try {
-            handleValidatorWrite(authentication, body)
+            handleValidatorWrite(userAuth, body)
             val result = repository.save(body.apply {
                 createdat = Date().time
                 updatedat = Date().time
@@ -84,12 +85,12 @@ class BannersControllerV2 {
 
     @PutMapping("/{uid}")
     fun update(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: BannersEntity,
         @PathVariable uid: String
     ): ResultEntity {
         try {
-            handleValidatorWrite(authentication, body)
+            handleValidatorWrite(userAuth, body)
             val result = repository.findByUid(uid)
                 ?: throw BusinessException("Banner não encontrado")
             val resultUpdate = result.apply {
@@ -109,8 +110,8 @@ class BannersControllerV2 {
         }
     }
 
-    fun handleValidatorWrite(authentication: Authentication, body: BannersEntity) {
-        getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+    fun handleValidatorWrite(@AuthenticationPrincipal userAuth: UserAuth, body: BannersEntity) {
+        getIsUserAdmin.handleIsAdmin(userAuth)
 
         if (body.image.isEmpty()) {
             throw BusinessException("Campo Image não pode ser vazio")

@@ -3,15 +3,16 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.contro
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
@@ -31,7 +32,7 @@ class AchievementsControllers {
     lateinit var handleExceptions: HandleExceptions
 
     @Autowired
-    lateinit var handlerUserAdmin: HandlerUserAdmin
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping("/list")
     @ResponseBody
@@ -76,9 +77,9 @@ class AchievementsControllers {
 
     @PostMapping
     @ResponseBody
-    fun create(@RequestBody body: AchievementsEntity, authentication: Authentication): ResultEntity {
+    fun create(@RequestBody body: AchievementsEntity, @AuthenticationPrincipal userAuth: UserAuth): ResultEntity {
         return try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerPermissionUser.handleIsAdmin(userAuth)
             handlerValidateEntity(body)
             val result = achievementsRepository.save(
                 body.copy(
@@ -100,11 +101,11 @@ class AchievementsControllers {
     @ResponseBody
     fun update(
         @RequestBody body: AchievementsEntity,
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable uid: String,
     ): ResultEntity {
         return try {
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
+            handlerPermissionUser.handleIsAdmin(userAuth)
             handlerValidateEntity(body)
             val resultFind = achievementsRepository.findByUid(uid) ?: throw BusinessException("Emblema não encontrado")
             val result = achievementsRepository.save(
@@ -135,20 +136,23 @@ class AchievementsControllers {
 
     @PutMapping("/{uid}/image")
     fun uploadImage(
-        @RequestPart file: MultipartFile?, @PathVariable uid: String, authentication: Authentication
+        @RequestPart file: MultipartFile?, @PathVariable uid: String, @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         return try {
             var imageResult: String? = null
-            handlerUserAdmin.handleIsAdmin(authentication.principal.toString())
-            val find: AchievementsEntity =
-                achievementsRepository.findByUid(uid) ?: throw BusinessException("Emblema não encontrado")
+            handlerPermissionUser.handleIsAdmin(userAuth)
+            val find: AchievementsEntity = achievementsRepository.findByUid(uid)
+                ?: throw BusinessException("Emblema não encontrado")
             if (file != null) {
                 bucketAchievementsRepository.saveImage(uid, file, file.contentType!!)
                 imageResult = bucketAchievementsRepository.getLinkImage(uid)
             }
             val result = achievementsRepository.save(find.copy(url = imageResult!!))
             ResultEntity(
-                status = StatusResultEnum.SUCCESS, data = listOf(result), total = 1, message = "Sucesso"
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(result),
+                total = 1,
+                message = "Sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)

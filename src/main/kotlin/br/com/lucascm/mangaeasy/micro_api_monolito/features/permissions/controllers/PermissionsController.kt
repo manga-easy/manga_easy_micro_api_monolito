@@ -3,13 +3,14 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.control
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerUserAdmin
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.entities.PermissionsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.repositories.PermissionsRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -17,13 +18,12 @@ import java.util.*
 @RequestMapping("/v1/permissions")
 class PermissionsController(
     @Autowired val repository: PermissionsRepository,
-    @Autowired val getIsUserAdmin: HandlerUserAdmin
+    @Autowired val getIsUserAdmin: HandlerPermissionUser
 ) {
     @GetMapping("/list")
-    fun list(authentication: Authentication): ResultEntity {
+    fun list(@AuthenticationPrincipal userAuth: UserAuth): ResultEntity {
         return try {
-            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
-
+            getIsUserAdmin.handleIsAdmin(userAuth)
             val result: List<PermissionsEntity> = repository.findAll()
             ResultEntity(
                 total = result.size,
@@ -37,9 +37,9 @@ class PermissionsController(
     }
 
     @PostMapping
-    fun create(authentication: Authentication, @RequestBody body: PermissionsEntity): ResultEntity {
+    fun create(@AuthenticationPrincipal userAuth: UserAuth, @RequestBody body: PermissionsEntity): ResultEntity {
         try {
-            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+            getIsUserAdmin.handleIsAdmin(userAuth)
 
             if (body.userid == null) {
                 throw BusinessException("O userid não pode ser nulo")
@@ -72,9 +72,9 @@ class PermissionsController(
     }
 
     @PutMapping
-    fun update(authentication: Authentication, @RequestBody body: PermissionsEntity): ResultEntity {
+    fun update(@AuthenticationPrincipal userAuth: UserAuth, @RequestBody body: PermissionsEntity): ResultEntity {
         try {
-            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+            getIsUserAdmin.handleIsAdmin(userAuth)
 
             if (body.value == null) {
                 throw BusinessException("O value não pode ser nulo")
@@ -99,9 +99,9 @@ class PermissionsController(
     }
 
     @DeleteMapping("/{uid}")
-    fun delete(authentication: Authentication, @PathVariable uid: String): ResultEntity {
+    fun delete(@AuthenticationPrincipal userAuth: UserAuth, @PathVariable uid: String): ResultEntity {
         return try {
-            getIsUserAdmin.handleIsAdmin(authentication.principal.toString())
+            getIsUserAdmin.handleIsAdmin(userAuth)
 
             val permission = repository.findByUid(uid) ?: throw BusinessException("O registro não encontrado")
 

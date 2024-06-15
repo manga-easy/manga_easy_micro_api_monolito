@@ -2,9 +2,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.MessageService
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
@@ -15,7 +16,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/level")
 class LevelController {
     @Autowired
-    lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @Autowired
     lateinit var xpRepository: XpRepository
@@ -42,25 +43,25 @@ class LevelController {
 
     @GetMapping("/{userID}")
     @ResponseBody
-    fun getXp(authentication: Authentication, @PathVariable userID: String): ResultEntity {
-        try {
-            verifyUserIdPermissionService.get(authentication, userID)
+    fun getXp(@AuthenticationPrincipal userAuth: UserAuth, @PathVariable userID: String): ResultEntity {
+        return try {
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val result = xpRepository.countXpTotalByUserId(userID)
-            return ResultEntity(listOf(result ?: 0))
+            ResultEntity(listOf(result ?: 0))
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
 
     @PutMapping("/{userID}/earn-xp")
     @ResponseBody
     fun earnXp(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable userID: String,
         @RequestBody body: earnXpDto,
     ): ResultEntity {
         return try {
-            verifyUserIdPermissionService.get(authentication, userID)
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
             if (!toggle) {
                 throw BusinessException("Nivel está desativado")
@@ -83,26 +84,26 @@ class LevelController {
     @GetMapping("/ranking")
     @ResponseBody
     fun getRanking(@RequestParam page: Int?): ResultEntity {
-        try {
+        return try {
             val result = rankingCache.findAll(
                 PageRequest.of(page ?: 0, 25)
                     .withSort(Sort.by("place"))
             )
-            return ResultEntity(result.toList())
+            ResultEntity(result.toList())
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
 
     @GetMapping("/ranking/{userId}")
     @ResponseBody
     fun getRankingByUser(@PathVariable userId: String): ResultEntity {
-        try {
+        return try {
             val result = rankingCache.findById(userId)
             if (!result.isPresent) throw BusinessException("Ranking não encontrado ou em processamento")
-            return ResultEntity(listOf(result))
+            ResultEntity(listOf(result))
         } catch (e: Exception) {
-            return HandleExceptions().handleCatch(e)
+            HandleExceptions().handleCatch(e)
         }
     }
 }

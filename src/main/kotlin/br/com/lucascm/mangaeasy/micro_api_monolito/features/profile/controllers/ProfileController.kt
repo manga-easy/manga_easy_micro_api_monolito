@@ -3,8 +3,9 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.VerifyUserIdPermissionService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteAchievement
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteManga
@@ -14,7 +15,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UserRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.time.Instant
@@ -25,7 +26,7 @@ import java.util.*
 @RequestMapping("/v1/profile")
 class ProfileController {
     @Autowired
-    lateinit var verifyUserIdPermissionService: VerifyUserIdPermissionService
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @Autowired
     lateinit var profileRepository: ProfileRepository
@@ -47,7 +48,7 @@ class ProfileController {
 
     @GetMapping("/{userID}")
     @ResponseBody
-    fun getProfile(authentication: Authentication, @PathVariable userID: String): ResultEntity {
+    fun getProfile(@PathVariable userID: String): ResultEntity {
         return try {
             val user = userRepository.search(userID)
             if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
@@ -84,13 +85,14 @@ class ProfileController {
     @PutMapping("/{userID}")
     @ResponseBody
     fun updateProfile(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: ProfileEntity,
         @PathVariable userID: String
     ): ResultEntity {
         return try {
-            verifyUserIdPermissionService.get(authentication, userID)
-            val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
+            val find = profileRepository.findByUserID(userID)
+                ?: throw BusinessException("Perfil não encontrado")
             val result = profileRepository.save(
                 find.copy(
                     biography = body.biography,
@@ -116,11 +118,11 @@ class ProfileController {
     fun handleFileUpload(
         @RequestPart file: MultipartFile?,
         @PathVariable userID: String,
-        authentication: Authentication
+        @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         return try {
             var image: String? = null
-            verifyUserIdPermissionService.get(authentication, userID)
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find: ProfileEntity =
                 profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             if (file != null) {
@@ -142,12 +144,12 @@ class ProfileController {
     @PutMapping("/{userID}/manga")
     @ResponseBody
     fun updateFavorteManga(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: FavoriteManga,
         @PathVariable userID: String
     ): ResultEntity {
         return try {
-            verifyUserIdPermissionService.get(authentication, userID)
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             val mangas = find.mangasHighlight.toMutableList()
             mangas.removeIf { it.order == body.order }
@@ -169,12 +171,12 @@ class ProfileController {
     @PutMapping("/{userID}/achievement")
     @ResponseBody
     fun updateFavorteAchievement(
-        authentication: Authentication,
+        @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: FavoriteAchievement,
         @PathVariable userID: String
     ): ResultEntity {
         return try {
-            verifyUserIdPermissionService.get(authentication, userID)
+            handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find = profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             val achievements = find.achievementsHighlight.toMutableList()
             achievements.removeIf { it.order == body.order }
