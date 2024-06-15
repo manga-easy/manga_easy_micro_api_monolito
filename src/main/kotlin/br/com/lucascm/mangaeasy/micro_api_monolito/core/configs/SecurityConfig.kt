@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.config.ResourceHandlerRegistry
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +44,7 @@ class SecurityConfig(
             .requestMatchers(HttpMethod.GET, "/v1/catalog/over-18").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/most-manga-weekly").permitAll()
             .requestMatchers(HttpMethod.GET, "/doc/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/rqueue/**").permitAll()
             .requestMatchers("**").authenticated()
 
         // Configure JWT
@@ -68,6 +70,12 @@ class SecurityConfig(
         val registration = FilterRegistrationBean(AppVersionFilter())
         registration.addUrlPatterns("/*")
         return registration
+    }
+
+    fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+        if (!registry.hasMappingForPattern("/**")) {
+            registry.addResourceHandler("/**").addResourceLocations("classpath:/public/")
+        }
     }
 }
 
