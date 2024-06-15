@@ -1,6 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.configs.RedisRepository
+import com.github.sonus21.rqueue.spring.EnableRqueue
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -12,9 +13,11 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.scheduling.annotation.EnableScheduling
 import javax.annotation.PostConstruct
 
+
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
+@EnableRqueue
 @EnableRedisRepositories(repositoryFactoryBeanClass = RedisRepository::class)
 class MicroApiMonolitoApplication {
     @PostConstruct
