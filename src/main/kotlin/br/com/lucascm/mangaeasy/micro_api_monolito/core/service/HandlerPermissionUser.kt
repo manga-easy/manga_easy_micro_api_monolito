@@ -4,7 +4,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.repositories.PermissionsRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,7 +20,7 @@ class HandlerPermissionUser {
     }
 
     //Verificar se o usuario do token é o mesmo da url, caso for admin ele faz oque quiser
-    fun handleIsOwnerToken(@AuthenticationPrincipal userAuth: UserAuth, userIdUrl: String) {
+    fun handleIsOwnerToken(userAuth: UserAuth, userIdUrl: String) {
         if (userIdUrl == userAuth.userId) {
             return
         }
