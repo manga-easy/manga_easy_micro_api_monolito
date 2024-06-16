@@ -8,9 +8,10 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,7 +34,7 @@ class LevelController {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var rankingCache: RankingCache
+    lateinit var rankingRepository: RankingRepository
 
     @Autowired
     lateinit var messageService: MessageService
@@ -85,7 +86,7 @@ class LevelController {
     @ResponseBody
     fun getRanking(@RequestParam page: Int?): ResultEntity {
         return try {
-            val result = rankingCache.findAll(
+            val result = rankingRepository.findAll(
                 PageRequest.of(page ?: 0, 25)
                     .withSort(Sort.by("place"))
             )
@@ -97,13 +98,8 @@ class LevelController {
 
     @GetMapping("/ranking/{userId}")
     @ResponseBody
-    fun getRankingByUser(@PathVariable userId: String): ResultEntity {
-        return try {
-            val result = rankingCache.findById(userId)
-            if (!result.isPresent) throw BusinessException("Ranking não encontrado ou em processamento")
-            ResultEntity(listOf(result))
-        } catch (e: Exception) {
-            HandleExceptions().handleCatch(e)
-        }
+    fun getRankingByUser(@PathVariable userId: String): RankingEntity {
+        return rankingRepository.findByUserId(userId)
+            ?: throw BusinessException("Ranking não encontrado ou em processamento")
     }
 }

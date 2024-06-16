@@ -1,7 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.tasks
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingCache
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import org.slf4j.LoggerFactory
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
+import kotlin.time.measureTimedValue
 
 @Component
 class XpTask {
@@ -16,7 +17,7 @@ class XpTask {
     lateinit var xpRepository: XpRepository
 
     @Autowired
-    lateinit var rankingCache: RankingCache
+    lateinit var rankingRepository: RankingRepository
 
     @Autowired
     lateinit var profileRepository: ProfileRepository
@@ -27,26 +28,45 @@ class XpTask {
         log.info("------------------ inicia updateRanking --------------")
         var place: Long = 0
         var offset: Long = 0
-        rankingCache.deleteAll()
-        while (true) {
-            val xp = xpRepository.countXpRanking(offset * 100)
-            if (xp.isEmpty()) break
-            log.info("---------- ${xp.size}")
-            for (i in xp) {
-                val profile = profileRepository.findByUserID(i["userId"].toString())
-                if (profile == null) continue
-                rankingCache.save(
-                    RankingEntity(
-                        id = profile.userID,
-                        totalXp = i["Total"] as Long,
-                        name = profile.name,
-                        picture = profile.picture,
-                        place = ++place
+        val time = measureTimedValue {
+            while (true) {
+                val xp = xpRepository.countXpRanking(offset * 100)
+                if (xp.isEmpty()) break
+                log.info("---------- ${xp.size}")
+                for (i in xp) {
+                    val userId = i["userId"].toString()
+                    val profile = profileRepository.findByUserID(userId)
+                        ?: continue
+                    saveRanking(
+                        RankingEntity(
+                            totalXp = i["Total"] as Long,
+                            name = profile.name,
+                            picture = profile.picture,
+                            place = ++place,
+                            userId = userId
+                        )
                     )
-                )
+
+                }
+                ++offset
             }
-            ++offset
         }
-        log.info("------------------ finaliza updateRanking --------------")
+        log.info("------------------ finaliza updateRanking time: {} --------------", time.duration.inWholeMinutes)
+    }
+
+    private fun saveRanking(rankingEntity: RankingEntity) {
+        val find = rankingRepository.findByUserId(rankingEntity.userId)
+        if (find == null) {
+            rankingRepository.save(rankingEntity)
+            return
+        }
+        rankingRepository.save(
+            find.copy(
+                totalXp = rankingEntity.totalXp,
+                name = rankingEntity.name,
+                picture = rankingEntity.picture,
+                place = rankingEntity.place,
+            )
+        )
     }
 }
