@@ -22,7 +22,7 @@ class BannersController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
-    @GetMapping("/v1/")
+    @GetMapping("/v1")
     fun list(
         @RequestParam status: String?,
         @RequestParam idhost: Int?
@@ -43,7 +43,7 @@ class BannersController {
         repository.deleteById(find.get().id!!)
     }
 
-    @PostMapping("/v1/")
+    @PostMapping("/v1")
     fun create(
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: CreateBannerDto
