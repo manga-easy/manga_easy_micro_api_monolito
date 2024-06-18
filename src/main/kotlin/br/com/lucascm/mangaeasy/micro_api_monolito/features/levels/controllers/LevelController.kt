@@ -5,7 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.MessageService
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
