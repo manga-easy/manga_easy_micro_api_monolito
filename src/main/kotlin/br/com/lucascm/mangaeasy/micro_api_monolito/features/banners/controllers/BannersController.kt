@@ -15,7 +15,7 @@ import java.util.*
 @RestController
 @Tag(name = "Banners")
 @RequestMapping("/banners")
-class BannersControllerV2 {
+class BannersController {
     @Autowired
     lateinit var repository: BannersRepository
 
@@ -36,9 +36,11 @@ class BannersControllerV2 {
         @PathVariable uid: String
     ) {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        val result = repository.findByUid(uid)
-            ?: throw BusinessException("Banner não encontrado")
-        repository.delete(result)
+        val find = repository.findById(uid)
+        if (!find.isPresent) {
+            throw BusinessException("Banner não encontrado")
+        }
+        repository.deleteById(find.get().id!!)
     }
 
     @PostMapping("/v1/")
@@ -57,20 +59,22 @@ class BannersControllerV2 {
         )
     }
 
-    @PutMapping("/v1/{uid}")
+    @PutMapping("/v1/{id}")
     fun update(
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: CreateBannerDto,
-        @PathVariable uid: String
+        @PathVariable id: String
     ): BannersEntity {
         handleValidatorWrite(userAuth, body)
-        val find = repository.findByUid(uid)
-            ?: throw BusinessException("Banner não encontrado")
-        val banner = find.apply {
-            updatedat = Date().time
-            link = body.link
-            image = body.image
+        val find = repository.findById(id)
+        if (!find.isPresent) {
+            throw BusinessException("Banner não encontrado")
         }
+        val banner = find.get().copy(
+            updatedat = Date().time,
+            link = body.link,
+            image = body.image
+        )
         return repository.save(banner)
 
     }
