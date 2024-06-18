@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/banners")
+@Deprecated("Remover 0.18 -> 0.20")
 class BannersControllerV1(@Autowired val repository: BannersRepository) {
     @GetMapping("/list")
     @ResponseBody
@@ -27,7 +28,7 @@ class BannersControllerV1(@Autowired val repository: BannersRepository) {
                         type = "",
                         updatedat = e.updatedat,
                         createdat = e.createdat,
-                        uid = e.uid,
+                        uid = e.id,
                         image = e.image,
                         link = e.link,
                     )

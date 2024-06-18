@@ -1,7 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.dtos
 
-import jakarta.persistence.Column
-
+@Deprecated("Remover 0.18 -> 0.20")
 data class BannerDtoV1(
     val uid: String? = null,
     val image: String = "",
