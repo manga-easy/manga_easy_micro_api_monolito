@@ -16,9 +16,9 @@ data class BannersEntity(
     val image: String = "",
     val link: String = "",
 
-    @Column(name = "createdat")
-    val createdat: Long = 0,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
 
-    @Column(name = "updatedat")
-    val updatedat: Long = 0,
+    @Column(name = "updated_at", nullable = false)
+    val updatedAt: Long = 0,
 )

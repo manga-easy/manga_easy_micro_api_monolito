@@ -26,8 +26,8 @@ class BannersControllerV1(@Autowired val repository: BannersRepository) {
                 data = result.map { e ->
                     BannerDtoV1(
                         type = "",
-                        updatedat = e.updatedat,
-                        createdat = e.createdat,
+                        updatedat = e.updatedAt,
+                        createdat = e.createdAt,
                         uid = e.id,
                         image = e.image,
                         link = e.link,

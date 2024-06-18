@@ -51,10 +51,10 @@ class BannersController {
         handleValidatorWrite(userAuth, body)
         return repository.save(
             BannersEntity(
-                updatedat = Date().time,
+                updatedAt = Date().time,
                 link = body.link,
                 image = body.image,
-                createdat = Date().time
+                createdAt = Date().time
             )
         )
     }
@@ -71,7 +71,7 @@ class BannersController {
             throw BusinessException("Banner não encontrado")
         }
         val banner = find.get().copy(
-            updatedat = Date().time,
+            updatedAt = Date().time,
             link = body.link,
             image = body.image
         )
