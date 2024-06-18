@@ -22,7 +22,7 @@ class BannersController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
-    @GetMapping("/v1/list")
+    @GetMapping("/v1/")
     fun list(
         @RequestParam status: String?,
         @RequestParam idhost: Int?
