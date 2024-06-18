@@ -12,7 +12,7 @@ data class RankingEntity(
     @Id
     @UuidGenerator
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private val id: String? = null,
+    val id: String? = null,
     @Column(name = "total_xp", nullable = false)
     var totalXp: Long = 0,
     @Column(name = "user_id", unique = true, nullable = false)
