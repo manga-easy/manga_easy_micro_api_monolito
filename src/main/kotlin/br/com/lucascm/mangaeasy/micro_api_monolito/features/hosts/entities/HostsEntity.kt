@@ -7,7 +7,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "_1_database_1_collection_3")
+@Table(name = "host")
 data class HostsEntity(
     @Id
     @UuidGenerator
@@ -18,7 +18,8 @@ data class HostsEntity(
     @Column(name = "`order`")
     val order: Int = 0,
     val name: String = "",
-    val host: String = "",
+    @Column(name = "url_api", nullable = false)
+    val urlApi: String = "",
     val status: String = "",
     @Column(name = "created_at", nullable = false)
     val createdAt: Long = 0,

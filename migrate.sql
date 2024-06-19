@@ -29,3 +29,4 @@ ALTER TABLE appwrite.host MODIFY COLUMN updated_at bigint(20) NOT NULL;
 ALTER TABLE appwrite.host MODIFY COLUMN status varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE appwrite.host MODIFY COLUMN `order` int(11) NOT NULL;
 ALTER TABLE appwrite.host MODIFY COLUMN name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.host CHANGE host url_api varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
