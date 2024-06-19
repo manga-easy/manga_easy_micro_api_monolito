@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos
 
+@Deprecated("Remover 0.18 -> 0.20")
 data class HostDtoV1(
     val _uid: String? = null,
     val idhost: Int? = null,
