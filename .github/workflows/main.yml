@@ -25,6 +25,9 @@ jobs:
         run: |
           gradle wrapper
           chmod +x ./gradlew
+          
+      - name: Set Sentry Auth Token
+        run: echo "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: ./gradlew clean build -x test
