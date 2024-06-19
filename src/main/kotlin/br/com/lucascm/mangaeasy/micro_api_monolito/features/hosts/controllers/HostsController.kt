@@ -24,7 +24,6 @@ class HostsController {
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping("/v1")
-    @ResponseBody
     fun list(
         @RequestParam status: String?,
         @RequestParam isAll: Boolean = false,
@@ -41,7 +40,6 @@ class HostsController {
 
 
     @PostMapping
-    @ResponseBody
     fun create(
         @RequestBody body: CreateHostDto,
         @AuthenticationPrincipal userAuth: UserAuth
@@ -62,7 +60,6 @@ class HostsController {
     }
 
     @PutMapping("/{id}")
-    @ResponseBody
     fun update(
         @RequestBody body: CreateHostDto,
         @PathVariable id: String,
