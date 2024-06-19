@@ -24,7 +24,7 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
     command: 'mysqld --innodb-flush-method=fsync'
     ports:
-      - 3306:3306
+      - "3306:3306"
   api:
     restart: always
     build: api
@@ -48,7 +48,7 @@ services:
     networks:
       - appwrite
     ports:
-      - 8080:8080
+      - "8080:8080"
   nginx:
     restart: always
     build: nginx
