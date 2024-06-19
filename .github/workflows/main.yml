@@ -22,7 +22,9 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+        run: |
+          chmod +x ./gradlew
+          ./gradlew wrapper
 
       - name: Build with Gradle
         run: ./gradlew build -x test
@@ -41,7 +43,7 @@ jobs:
           echo "${{ secrets.GOOGLE_ADC_FILE }}" > adc.json
           echo "${{ secrets.ORACLE_CONFIG }}" > config
           echo "${{ secrets.ORACLE_PROFILE }}" > profile.pem
-          
+
       - name: Build Docker image
         run: docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/api_monolith:latest --push .
 
