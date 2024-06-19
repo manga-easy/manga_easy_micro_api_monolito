@@ -34,7 +34,7 @@ class HostsControllerV1(@Autowired val repository: HostsRepository) {
                         name = e.name,
                         _uid = e.uid,
                         _createdat = e.createdAt,
-                        host = e.host,
+                        host = e.urlApi,
                         _updatedat = e.updatedAt,
                         order = e.order,
                         interstitialadunitid = "",
