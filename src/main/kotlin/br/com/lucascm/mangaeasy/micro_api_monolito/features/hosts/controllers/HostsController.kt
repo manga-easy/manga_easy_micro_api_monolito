@@ -51,7 +51,7 @@ class HostsController {
                 updatedAt = Date().time,
                 createdAt = Date().time,
                 name = body.name,
-                host = body.host,
+                urlApi = body.urlApi,
                 hostId = body.hostId,
                 status = body.status,
                 order = body.order
@@ -73,7 +73,7 @@ class HostsController {
             find.copy(
                 updatedAt = Date().time,
                 name = body.name,
-                host = body.host,
+                urlApi = body.urlApi,
                 hostId = body.hostId,
                 status = body.status,
                 order = body.order
@@ -82,7 +82,7 @@ class HostsController {
     }
 
     private fun handlerValidation(body: CreateHostDto) {
-        if (body.host.isEmpty()) {
+        if (body.urlApi.isEmpty()) {
             throw BusinessException("O campo host não pode ser vazio")
         }
         if (body.name.isEmpty()) {

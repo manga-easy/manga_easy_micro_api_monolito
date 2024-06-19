@@ -4,6 +4,6 @@ data class CreateHostDto(
     val hostId: Int = 0,
     val order: Int = 0,
     val name: String = "",
-    val host: String = "",
+    val urlApi: String = "",
     val status: String = ""
 )
