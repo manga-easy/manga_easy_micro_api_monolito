@@ -40,7 +40,7 @@ class SecurityConfig(
             .requestMatchers(HttpMethod.GET, "/v1/hosts/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/banners/v1").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/banners/list").permitAll()
-            .requestMatchers(HttpMethod.GET, "/v2/hosts/list").permitAll()
+            .requestMatchers(HttpMethod.GET, "/hosts/v1").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/notifications/list").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/over-18").permitAll()
             .requestMatchers(HttpMethod.GET, "/v1/catalog/most-manga-weekly").permitAll()

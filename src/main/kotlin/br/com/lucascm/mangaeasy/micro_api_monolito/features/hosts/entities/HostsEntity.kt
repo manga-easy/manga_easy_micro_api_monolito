@@ -12,7 +12,7 @@ data class HostsEntity(
     @Id
     @UuidGenerator
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    val uid: String? = null,
+    val id: String? = null,
     @Column(name = "host_id", nullable = false)
     val hostId: Int = 0,
     @Column(name = "`order`")

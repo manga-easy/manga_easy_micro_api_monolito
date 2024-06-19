@@ -27,19 +27,19 @@ class HostsController {
     fun list(
         @RequestParam status: String?,
         @RequestParam isAll: Boolean = false,
-        @RequestParam idhost: Int?
+        @RequestParam hostId: Int?
     ): List<HostsEntity> {
         if (isAll) {
             return repository.findAll()
         }
-        if (idhost != null) {
-            return repository.findByIdhost(idhost)
+        if (hostId != null) {
+            return repository.findByHostId(hostId)
         }
         return repository.findByStatus(status ?: "enable")
     }
 
 
-    @PostMapping
+    @PostMapping("/v1")
     fun create(
         @RequestBody body: CreateHostDto,
         @AuthenticationPrincipal userAuth: UserAuth
@@ -59,18 +59,20 @@ class HostsController {
         )
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/v1/{id}")
     fun update(
         @RequestBody body: CreateHostDto,
         @PathVariable id: String,
         @AuthenticationPrincipal userAuth: UserAuth
     ): HostsEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        val find = repository.findByUid(id)
-            ?: throw BusinessException("Host não encontrado")
+        val find = repository.findById(id)
+        if (!find.isPresent) {
+            throw BusinessException("Host não encontrado")
+        }
         handlerValidation(body)
         return repository.save(
-            find.copy(
+            find.get().copy(
                 updatedAt = Date().time,
                 name = body.name,
                 urlApi = body.urlApi,

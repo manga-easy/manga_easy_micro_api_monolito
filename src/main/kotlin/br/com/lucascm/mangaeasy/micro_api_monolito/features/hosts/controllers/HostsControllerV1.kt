@@ -32,7 +32,7 @@ class HostsControllerV1(@Autowired val repository: HostsRepository) {
                     HostDtoV1(
                         status = e.status,
                         name = e.name,
-                        _uid = e.uid,
+                        _uid = e.id,
                         _createdat = e.createdAt,
                         host = e.urlApi,
                         _updatedat = e.updatedAt,
@@ -57,7 +57,7 @@ class HostsControllerV1(@Autowired val repository: HostsRepository) {
             return repository.findAll()
         }
         if (idhost != null) {
-            return repository.findByIdhost(idhost)
+            return repository.findByHostId(idhost)
         }
         return repository.findByStatus(status ?: "enable")
     }
