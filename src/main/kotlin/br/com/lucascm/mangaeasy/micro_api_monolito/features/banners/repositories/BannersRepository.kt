@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository
 
 
 @Repository
-interface BannersRepository : JpaRepository<BannersEntity, Long> {
-    fun findByUid(uid: String): BannersEntity?
+interface BannersRepository : JpaRepository<BannersEntity, String> {
 }
