@@ -62,4 +62,4 @@ jobs:
 
       - name: Pull new image and restart container
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_TEST }} "cd docker && sudo docker-compose pull && sudo docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_TEST }} "cd docker && sudo docker compose pull && sudo docker compose up -d"
