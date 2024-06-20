@@ -27,7 +27,8 @@ services:
       - "3306:3306"
   api:
     restart: always
-    build: api
+    image: lucascardo12/api_monolith
+    container_name: api
     <<: *x-logging
     environment:
       DB_DATABASE: ${DB_DATABASE}

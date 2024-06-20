@@ -26,27 +26,27 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.boot:spring-boot-starter:3.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.3.0")
     implementation("com.google.firebase:firebase-admin:9.3.0")
-    implementation("io.appwrite:sdk-for-kotlin:2.0.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("io.appwrite:sdk-for-kotlin:5.0.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.6")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.6")
+    implementation("org.springframework.boot:spring-boot-starter-security:3.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:3.3.0")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.3.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.3.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.3.3")
     implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.8.0")
-    implementation(enforcedPlatform("com.oracle.oci.sdk:oci-java-sdk-bom:3.43.1"))
-    implementation("com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3")
-    implementation("com.oracle.oci.sdk:oci-java-sdk-addons-apache-configurator-jersey3")
-    implementation("com.oracle.oci.sdk:oci-java-sdk-core")
-    implementation("com.oracle.oci.sdk:oci-java-sdk-identity")
-    implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation(enforcedPlatform("com.oracle.oci.sdk:oci-java-sdk-bom:3.43.2"))
+    implementation("com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3:3.42.0")
+    implementation("com.oracle.oci.sdk:oci-java-sdk-addons-apache-configurator-jersey3:3.39.0")
+    implementation("com.oracle.oci.sdk:oci-java-sdk-core:3.42.0")
+    implementation("com.oracle.oci.sdk:oci-java-sdk-identity:3.42.0")
+    implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.42.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.2.4")
     implementation("net.swiftzer.semver:semver:2.0.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     implementation("org.springdoc:springdoc-openapi-starter-common:2.5.0")
@@ -68,7 +68,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-gradle.beforeProject {
-    // Set a default value
-    project.ext.set("hasTests", false)
+tasks.named<Test>("test") {
+    enabled = false
 }

@@ -19,7 +19,7 @@ jobs:
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Grant execute permission for gradlew
         run: |
@@ -49,3 +49,16 @@ jobs:
 
       - name: Build Docker image
         run: docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/api_monolith:latest --push .
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TEST }}
+
+      - name: Pull new image and restart container
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_TEST }} "cd docker && sudo docker-compose pull && sudo docker-compose up -d"
