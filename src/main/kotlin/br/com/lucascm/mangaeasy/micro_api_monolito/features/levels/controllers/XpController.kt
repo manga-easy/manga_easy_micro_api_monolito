@@ -50,10 +50,10 @@ class XpController {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
         val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
         if (!toggle) {
-            throw BusinessException("Nivel está desativado")
+            throw BusinessException("Nível está desativado")
         }
         catalogRepository.findByUniqueid(body.uniqueID)
-            ?: throw BusinessException("Manga não catalogado")
+            ?: throw BusinessException("Mangá não catalogado")
         messageService.sendXp(
             XpConsumerDto(
                 userID,
