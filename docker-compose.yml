@@ -10,11 +10,11 @@ version: '3'
 services:
   mariadb:
     image: mariadb:10.7 # fix issues when upgrading using: mysql_upgrade -u root -p
-    container_name: appwrite-mariadb
+    container_name: mariadb
     <<: *x-logging
     restart: unless-stopped
     networks:
-      - appwrite
+      - api_monolith
     volumes:
       - appwrite-mariadb:/var/lib/mysql:rw
     environment:
@@ -47,25 +47,27 @@ services:
       CACHE_DB: ${CACHE_DB}
       TOGGLE_URL: ${TOGGLE_URL}
     networks:
-      - appwrite
+      - api_monolith
     ports:
       - "8080:8080"
   nginx:
     restart: always
+    container_name: gateway
     build: nginx
     <<: *x-logging
     ports:
       - "443:443"
     networks:
-      - appwrite
+      - api_monolith
   mongo:
     image: mongo:7.0.0
+    container_name: mongodb
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
     networks:
-      - appwrite
+      - api_monolith
     ports:
       - "27017:27017"
   cache:
@@ -75,12 +77,12 @@ services:
       - '6379:6379'
     command: redis-server --save 20
     networks:
-      - appwrite
+      - api_monolith
     volumes:
       - cache:/data
 
 networks:
-  appwrite:
+  api_monolith:
 
 
 volumes:
