@@ -22,7 +22,7 @@ class XpConsumer {
     lateinit var profileRepository: ProfileRepository
     val log = KotlinLogging.logger("XpConsumer")
 
-    @RqueueListener(QueueName.xp, numRetries = "3")
+    @RqueueListener(QueueName.XP, numRetries = "3")
     fun onMessage(xp: XpConsumerDto) {
         log.info("---------- onMessage init ----------------")
         log.info("---------- onMessage xp {} ----------------", xp)

@@ -1,21 +1,22 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
+
 @Entity
-@Table(name = "_1_database_1_collection_10")
+@Table(name = "notification")
 data class NotificationsEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var _id: Long? = null,
-    @Column(name = "_uid")
-    var uid: String? = null,
-    var titulo: String = "",
-    var menssege: String? = null,
-    var image: String? = null,
-    var datemade: Long? = null,
-    @Column(name = "_createdat")
-    var createdat: Long? = null,
-
-    @Column(name = "_updatedat")
-    var updatedat: Long? = null,
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+    val title: String = "",
+    val message: String? = null,
+    val image: String? = null,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
+    val status: NotificationStatus = NotificationStatus.SUCCESS,
 )

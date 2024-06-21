@@ -4,8 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entiti
 import org.springframework.data.jpa.repository.JpaRepository
 
 
-
-interface NotificationsRepository : JpaRepository<NotificationsEntity, Long> {
+interface NotificationsRepository : JpaRepository<NotificationsEntity, String> {
     fun findTop25ByOrderByCreatedatDesc(): List<NotificationsEntity>
-    fun findByUid(uid: String): NotificationsEntity?
+   
 }

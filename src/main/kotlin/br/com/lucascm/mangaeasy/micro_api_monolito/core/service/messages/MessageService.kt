@@ -14,10 +14,14 @@ class MessageService {
     lateinit var rqueueMessageEnqueuer: RqueueMessageEnqueuer
 
     fun sendXp(xp: XpConsumerDto) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.xp, xp, Duration.ofSeconds(5))
+        rqueueMessageEnqueuer.enqueueIn(QueueName.XP, xp, Duration.ofSeconds(5))
     }
 
     fun sendViewManga(view: ViewMangaConsumerDto) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.viewManga, view, Duration.ofSeconds(5))
+        rqueueMessageEnqueuer.enqueueIn(QueueName.VIEW_MANGA, view, Duration.ofSeconds(5))
+    }
+
+    fun sendNotification(id: String) {
+        rqueueMessageEnqueuer.enqueueIn(QueueName.NOTIFICATION, id, Duration.ofSeconds(5))
     }
 }
