@@ -72,6 +72,7 @@ services:
       - "27017:27017"
   cache:
     image: redis:6.2-alpine
+    container_name: redisdb
     restart: always
     ports:
       - '6379:6379'
