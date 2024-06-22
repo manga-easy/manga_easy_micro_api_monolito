@@ -1,10 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationStatus
@@ -18,10 +15,11 @@ import java.util.*
 
 
 @RestController
-@RequestMapping("/notifications")
-class NotificationsController(@Autowired val repository: NotificationsRepository) {
+@RequestMapping("/notification")
+
+class NotificationsController {
     @Autowired
-    lateinit var handleExceptions: HandleExceptions
+    lateinit var repository: NotificationsRepository
 
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
@@ -29,86 +27,44 @@ class NotificationsController(@Autowired val repository: NotificationsRepository
     @Autowired
     lateinit var messageService: MessageService
 
-    @GetMapping("/list")
+    @GetMapping("/v1")
     @ResponseBody
     fun list(
         @RequestParam status: String?,
         @RequestParam idhost: Int?
-    ): ResultEntity {
-        return try {
-            val result: List<NotificationsEntity> = repository.findTop25ByOrderByCreatedatDesc()
-            ResultEntity(
-                total = result.size,
-                status = StatusResultEnum.SUCCESS,
-                data = result.map {
-                    NotificationV1Dto(
-                        image = it.image,
-                        createdat = it.createdAt,
-                        datemade = it.createdAt,
-                        menssege = it.message,
-                        titulo = it.title,
-                        uid = it.id,
-                        updatedat = it.createdAt,
-                    )
-                }.toList(),
-                message = "Listado com sucesso"
-            )
-        } catch (e: Exception) {
-            handleExceptions.handleCatch(e)
-        }
+    ): List<NotificationsEntity> {
+        return repository.findTop25ByOrderByCreatedatDesc()
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/v1/{id}")
     @ResponseBody
     fun delete(
         @PathVariable id: String,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): ResultEntity {
-        try {
-            handlerPermissionUser.handleIsAdmin(userAuth)
-            repository.deleteById(id)
-            return ResultEntity(
-                total = 1,
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(),
-                message = "Listado com sucesso"
-            )
-        } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
-        }
+    ) {
+        handlerPermissionUser.handleIsAdmin(userAuth)
+        return repository.deleteById(id)
     }
 
-    @PostMapping
-    @ResponseBody
+    @PostMapping("/v1")
     fun create(
         @RequestBody body: NotificationV1Dto,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): ResultEntity {
-        try {
-            handlerPermissionUser.handleIsAdmin(userAuth)
-            if (body.titulo.isEmpty()) {
-                throw BusinessException("O titulo não pode ser vazio")
-            }
-            val result = repository.save(
-                NotificationsEntity(
-                    createdAt = Date().time,
-                    status = NotificationStatus.PROCESSING,
-                    message = body.menssege,
-                    title = body.titulo,
-                    image = body.image,
-                )
-            )
-            messageService.sendNotification(result.id!!)
-            return ResultEntity(
-                total = 1,
-                status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
-                message = "Enviada com sucesso"
-            )
-        } catch (e: Exception) {
-            return handleExceptions.handleCatch(e)
+    ): NotificationsEntity {
+        handlerPermissionUser.handleIsAdmin(userAuth)
+        if (body.titulo.isEmpty()) {
+            throw BusinessException("O titulo não pode ser vazio")
         }
+        val result = repository.save(
+            NotificationsEntity(
+                createdAt = Date().time,
+                status = NotificationStatus.PROCESSING,
+                message = body.menssege,
+                title = body.titulo,
+                image = body.image,
+            )
+        )
+        messageService.sendNotification(result.id!!)
+        return result
     }
-
-
 }
