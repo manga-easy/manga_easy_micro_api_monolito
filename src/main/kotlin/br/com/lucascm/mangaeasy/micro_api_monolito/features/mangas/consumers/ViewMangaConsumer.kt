@@ -16,7 +16,7 @@ class ViewMangaConsumer {
     lateinit var viewMangaRepository: ViewMangaRepository
     val log = KotlinLogging.logger("ViewMangaConsumer")
 
-    @RqueueListener(QueueName.viewManga, numRetries = "3")
+    @RqueueListener(QueueName.VIEW_MANGA, numRetries = "3")
     fun onMessage(view: ViewMangaConsumerDto) {
         log.info("---------- onMessage init ----------------")
         log.info("---------- onMessage view {} ----------------", view)

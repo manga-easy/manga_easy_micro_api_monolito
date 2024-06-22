@@ -8,7 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
@@ -92,7 +92,7 @@ class LevelController {
                     .withSort(Sort.by("place"))
             )
             val listDto = result.map {
-                RankingDto(
+                RankingV1Dto(
                     name = it.name,
                     id = it.userId,
                     totalXp = it.totalXp,
