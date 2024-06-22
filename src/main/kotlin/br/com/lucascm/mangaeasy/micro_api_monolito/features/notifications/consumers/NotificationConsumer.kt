@@ -10,25 +10,26 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
+@Component
 class NotificationConsumer {
     @Autowired
     lateinit var repository: NotificationsRepository
     private val log = KotlinLogging.logger("NotificationConsumer")
 
     @RqueueListener(QueueName.NOTIFICATION, numRetries = "0")
-    fun onMessage(id: String) {
-        var entity: NotificationsEntity? = null
+    fun onMessage(notification: NotificationsEntity) {
         try {
             // This registration token comes from the client FCM SDKs.
-            entity = repository.findById(id).get()
-            val notification = Notification.builder()
-                .setTitle(entity.title)
-                .setBody(entity.message)
-                .setImage(entity.image)
+            val notificationBuilder = Notification.builder()
+                .setTitle(notification.title)
+                .setBody(notification.message)
+                .setImage(notification.image)
                 .build()
             val message = Message.builder()
-                .setNotification(notification)
+                .setNotification(notificationBuilder)
+                .setTopic("avisos")
                 .build()
             // Send a message to the device corresponding to the provided
             // registration token.
@@ -37,19 +38,19 @@ class NotificationConsumer {
             // Response is a message ID string.
             log.info("Successfully sent message: $response")
             repository.save(
-                entity.copy(
+                notification.copy(
                     status = NotificationStatus.SUCCESS
                 )
             )
         } catch (e: Exception) {
             log.catching(e)
-            if (entity != null) {
-                repository.save(
-                    entity.copy(
-                        status = NotificationStatus.ERROR
-                    )
+
+            repository.save(
+                notification.copy(
+                    status = NotificationStatus.ERROR
                 )
-            }
+            )
+
         }
     }
 }

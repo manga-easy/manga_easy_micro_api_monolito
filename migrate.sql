@@ -43,3 +43,4 @@ ALTER TABLE appwrite.notification MODIFY COLUMN id varchar(255) CHARACTER SET ut
 ALTER TABLE appwrite.notification ADD CONSTRAINT notification_pk PRIMARY KEY (id);
 ALTER TABLE appwrite.notification ADD CONSTRAINT notification_unique UNIQUE KEY (id);
 ALTER TABLE appwrite.notification CHANGE menssege message varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+ALTER TABLE appwrite.notification ADD status smallint NOT NULL;

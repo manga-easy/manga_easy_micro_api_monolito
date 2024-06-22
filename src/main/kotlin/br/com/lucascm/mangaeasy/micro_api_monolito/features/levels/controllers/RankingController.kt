@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/ranking")
+@Tag(name = "Ranking")
 class RankingController {
     @Autowired
     lateinit var rankingRepository: RankingRepository

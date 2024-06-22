@@ -8,6 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entiti
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.repositories.NotificationsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -16,7 +17,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/notification")
-
+@Tag(name = "Notification")
 class NotificationsController {
     @Autowired
     lateinit var repository: NotificationsRepository
@@ -64,7 +65,7 @@ class NotificationsController {
                 image = body.image,
             )
         )
-        messageService.sendNotification(result.id!!)
+        messageService.sendNotification(result)
         return result
     }
 }

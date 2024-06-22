@@ -99,7 +99,7 @@ class NotificationsV1Controller(@Autowired val repository: NotificationsReposito
                     image = body.image,
                 )
             )
-            messageService.sendNotification(result.id!!)
+            messageService.sendNotification(result)
             return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,

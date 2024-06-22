@@ -2,6 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.ViewMangaConsumerDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationsEntity
 import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -21,7 +22,7 @@ class MessageService {
         rqueueMessageEnqueuer.enqueueIn(QueueName.VIEW_MANGA, view, Duration.ofSeconds(5))
     }
 
-    fun sendNotification(id: String) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.NOTIFICATION, id, Duration.ofSeconds(5))
+    fun sendNotification(notification: NotificationsEntity) {
+        rqueueMessageEnqueuer.enqueueIn(QueueName.NOTIFICATION, notification, Duration.ofSeconds(5))
     }
 }
