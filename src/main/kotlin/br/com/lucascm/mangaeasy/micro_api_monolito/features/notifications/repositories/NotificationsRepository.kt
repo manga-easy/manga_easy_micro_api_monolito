@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 
 interface NotificationsRepository : JpaRepository<NotificationsEntity, String> {
-    fun findTop25ByOrderByCreatedatDesc(): List<NotificationsEntity>
-   
+    fun findTop25ByOrderByCreatedAtDesc(): List<NotificationsEntity>
+
 }

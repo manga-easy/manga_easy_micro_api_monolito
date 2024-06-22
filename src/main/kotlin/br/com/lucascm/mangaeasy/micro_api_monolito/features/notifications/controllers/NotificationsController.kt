@@ -33,7 +33,7 @@ class NotificationsController {
         @RequestParam status: String?,
         @RequestParam idhost: Int?
     ): List<NotificationsEntity> {
-        return repository.findTop25ByOrderByCreatedatDesc()
+        return repository.findTop25ByOrderByCreatedAtDesc()
     }
 
     @DeleteMapping("/v1/{id}")
