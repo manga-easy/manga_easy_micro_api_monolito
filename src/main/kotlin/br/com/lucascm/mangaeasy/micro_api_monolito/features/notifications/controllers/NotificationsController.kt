@@ -4,8 +4,8 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.CreateNotificationDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationStatus
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.repositories.NotificationsRepository
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -49,19 +49,19 @@ class NotificationsController {
 
     @PostMapping("/v1")
     fun create(
-        @RequestBody body: NotificationV1Dto,
+        @RequestBody body: CreateNotificationDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): NotificationsEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        if (body.titulo.isEmpty()) {
+        if (body.title.isEmpty()) {
             throw BusinessException("O titulo não pode ser vazio")
         }
         val result = repository.save(
             NotificationsEntity(
                 createdAt = Date().time,
                 status = NotificationStatus.PROCESSING,
-                message = body.menssege,
-                title = body.titulo,
+                message = body.message,
+                title = body.title,
                 image = body.image,
             )
         )

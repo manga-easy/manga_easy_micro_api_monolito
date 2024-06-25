@@ -44,3 +44,30 @@ ALTER TABLE appwrite.notification ADD CONSTRAINT notification_pk PRIMARY KEY (id
 ALTER TABLE appwrite.notification ADD CONSTRAINT notification_unique UNIQUE KEY (id);
 ALTER TABLE appwrite.notification CHANGE menssege message varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
 ALTER TABLE appwrite.notification ADD status smallint NOT NULL;
+
+RENAME TABLE appwrite.`_1_database_1_collection_14` TO appwrite.recommendation;
+
+ALTER TABLE appwrite.recommendation DROP COLUMN `_id`;
+
+UPDATE recommendation
+SET datacria = 0
+where
+	datacria is null
+
+UPDATE recommendation
+SET `_createdat` = datacria
+
+where
+	1=1
+
+ALTER TABLE appwrite.recommendation CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.recommendation MODIFY COLUMN uniqueid varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.recommendation MODIFY COLUMN title varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.recommendation MODIFY COLUMN link varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.recommendation DROP COLUMN dataCria;
+ALTER TABLE appwrite.recommendation CHANGE `_createdAt` created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.recommendation CHANGE `_updatedAt` updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.recommendation CHANGE artistid artist_id varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+ALTER TABLE appwrite.recommendation CHANGE artistname artist_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+ALTER TABLE appwrite.recommendation ADD CONSTRAINT recommendation_pk PRIMARY KEY (id);
+ALTER TABLE appwrite.recommendation ADD CONSTRAINT recommendation_unique UNIQUE KEY (id);

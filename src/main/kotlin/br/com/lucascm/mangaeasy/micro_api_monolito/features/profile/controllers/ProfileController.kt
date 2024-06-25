@@ -66,7 +66,6 @@ class ProfileController {
                     totalMangaRead = totalMangaRead,
                     totalAchievements = totalAchievements,
                     role = "Aventureiro",
-                    name = user.first().name,
                     totalXp = 0,
                 )
                 profileRepository.save(result)
