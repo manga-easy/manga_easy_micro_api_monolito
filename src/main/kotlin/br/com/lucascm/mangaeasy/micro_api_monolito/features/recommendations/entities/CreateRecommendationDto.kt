@@ -6,7 +6,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 data class CreateRecommendationDto(
     val uniqueid: String = "",
     val title: String = "",
-    val artistId: String? = null,
+    val artistId: String,
 
     ) {
     fun validationValues() {
@@ -16,7 +16,7 @@ data class CreateRecommendationDto(
         if (title.isEmpty()) {
             throw BusinessException("Campo title não pode ser vazio")
         }
-        if ((artistId ?: "").isEmpty()) {
+        if (artistId.isEmpty()) {
             throw BusinessException("Campo artistid não pode ser vazio")
         }
     }

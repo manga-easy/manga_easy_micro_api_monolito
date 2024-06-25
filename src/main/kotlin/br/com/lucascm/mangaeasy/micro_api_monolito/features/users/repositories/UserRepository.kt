@@ -33,7 +33,6 @@ class UserRepository(
                 registration = e.registration,
                 prefs = e.prefs.toJson(),
                 uid = e.id,
-                name = e.name,
                 status = e.status
             )
         }.toList()
@@ -47,7 +46,6 @@ class UserRepository(
             registration = e.registration,
             prefs = e.prefs.toJson(),
             uid = e.id,
-            name = e.name,
             status = e.status
         )
     }

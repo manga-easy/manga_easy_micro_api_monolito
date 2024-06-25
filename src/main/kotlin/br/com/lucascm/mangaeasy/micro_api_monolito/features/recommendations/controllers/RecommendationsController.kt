@@ -4,6 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.CreateRecommendationDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
@@ -37,6 +38,9 @@ class RecommendationsController {
     @Autowired
     lateinit var catalogRepository: CatalogRepository
 
+    @Autowired
+    lateinit var profileRepository: ProfileRepository
+
     @GetMapping("/v1")
     fun list(
         @RequestParam page: Int?
@@ -66,13 +70,15 @@ class RecommendationsController {
         if (resultVCheck != null) {
             throw BusinessException("Mangá já tem recomendação")
         }
+        val user = profileRepository.findByUserID(body.artistId)
+            ?: throw BusinessException("Artista não tem perfil")
         return recommendationsRepository.save(
             RecommendationsEntity(
                 createdAt = Date().time,
                 title = body.title,
                 updatedAt = Date().time,
                 uniqueid = body.uniqueid,
-                artistId = body.uniqueid
+                artistId = user.name
             )
         )
     }
@@ -87,13 +93,16 @@ class RecommendationsController {
         handlerPermissionUser.handleIsAdmin(userAuth)
         body.validationValues()
         val result = recommendationsRepository.findById(id)
-        if (!result.isPresent) throw BusinessException("Banner não encontrado")
+        if (!result.isPresent) throw BusinessException("Recomendação não encontrado")
+        val user = profileRepository.findByUserID(body.artistId)
+            ?: throw BusinessException("Artista não tem perfil")
         return recommendationsRepository.save(
             RecommendationsEntity(
                 title = body.title,
                 updatedAt = Date().time,
                 uniqueid = body.uniqueid,
-                artistId = body.uniqueid
+                artistId = body.uniqueid,
+                artistName = user.name,
             )
         )
     }

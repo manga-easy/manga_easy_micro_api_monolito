@@ -3,10 +3,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.ser
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
@@ -25,7 +25,7 @@ class RecommendationsService {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var userRepository: UserRepository
+    lateinit var profileRepository: ProfileRepository
 
     @Cacheable(RedisCacheName.RECOMMENDATIONS)
     fun list(page: Int): List<RecommendationsEntity> {
@@ -33,8 +33,10 @@ class RecommendationsService {
         val result = recommendationsRepository.findAll(pageRequest).content
         for (recommendation in result) {
             if (recommendation.artistId != null) {
-                val user = userRepository.getId(recommendation.artistId)
-                recommendation.artistName = user.name
+                val user = profileRepository.findByUserID(recommendation.artistId)
+                if (user != null) {
+                    recommendation.artistName = user.name
+                }
             }
         }
         return result
