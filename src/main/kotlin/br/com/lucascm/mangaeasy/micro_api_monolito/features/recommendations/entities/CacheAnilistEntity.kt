@@ -1,9 +1,4 @@
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.persistence.Id
-import org.springframework.data.redis.core.RedisHash
-import org.springframework.data.redis.core.TimeToLive
-import java.util.concurrent.TimeUnit
 
 data class MediaEntity(
     @JsonProperty("data") val data: Data
@@ -33,20 +28,4 @@ data class MediaRecommendation(
 data class Title(
     @JsonProperty("english") val english: String?,
     @JsonProperty("romaji") val romaji: String?
-)
-
-data class AnilistRecommendationEntity(
-    var english: String?,
-    var romanji: String?,
-    var bannerImage: String?,
-)
-
-@RedisHash("anilist-recommendation")
-data class CacheAnilistEntity(
-    @Id
-    var id: String? = null,
-    var title: String = "",
-    var recommendation: List<RecommendationsEntity> = listOf(),
-    @TimeToLive(unit = TimeUnit.DAYS)
-    var time: Long = 30
 )

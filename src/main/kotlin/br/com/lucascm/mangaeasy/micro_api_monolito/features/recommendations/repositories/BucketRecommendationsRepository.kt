@@ -12,21 +12,23 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 
 
-const val namespaceName = "axs7rpnviwd0"
-const val bucketName = "manga-easy-banners"
-const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
-val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
-
 @Repository
 class BucketRecommendationsRepository {
+    companion object {
+        val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
+        const val NAME_SPACE = "axs7rpnviwd0"
+        const val BUCKET_NAME = "manga-easy-banners"
+        const val LIMIT_FILE_SIZE_RECOMMENDATION = 2000000
+    }
+
     fun saveImage(uniqueId: String, file: MultipartFile, contentType: String) {
         validateImage(file)
         val configuration = getObjectStorage()
         val inputStream: InputStream = file.inputStream
         //build upload request
         val putObjectRequest: PutObjectRequest = PutObjectRequest.builder()
-            .namespaceName(namespaceName)
-            .bucketName(bucketName)
+            .namespaceName(NAME_SPACE)
+            .bucketName(BUCKET_NAME)
             .objectName(uniqueId)
             .contentLength(file.size)
             .contentType(contentType)
@@ -50,7 +52,7 @@ class BucketRecommendationsRepository {
             // Construa a URL base do serviço Object Storage
             val baseUrl = configuration.endpoint
             // Combinar a URL base e a URL do objeto para obter o link final
-            return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${uniqueId}"
+            return "${baseUrl}/n/${NAME_SPACE}/b/${BUCKET_NAME}/o/${uniqueId}"
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
@@ -74,8 +76,8 @@ class BucketRecommendationsRepository {
         val configuration = getObjectStorage()
         //build upload request
         val putObjectRequest: DeleteObjectRequest = DeleteObjectRequest.builder()
-            .namespaceName(namespaceName)
-            .bucketName(bucketName)
+            .namespaceName(NAME_SPACE)
+            .bucketName(BUCKET_NAME)
             .objectName(uniqueId)
             .build()
         //upload the file

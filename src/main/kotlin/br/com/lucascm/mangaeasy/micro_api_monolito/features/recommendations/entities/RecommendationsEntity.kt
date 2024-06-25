@@ -1,24 +1,26 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "_1_database_1_collection_14")
+@Table(name = "recommendation")
 data class RecommendationsEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "_id")
-    private var id: Long? = null,
-    @Column(name = "_uid")
-    var uid: String? = null,
-    var uniqueid: String = "",
-    var title: String = "",
-    var link: String = "",
-    var artistid: String? = null,
-    var artistname: String? = null,
-    var datacria: Long? = null,
-    @Column(name = "_createdat")
-    var createdat: Long? = null,
-    @Column(name = "_updatedat")
-    var updatedat: Long? = null
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+    val uniqueid: String = "",
+    val title: String = "",
+    val link: String = "",
+    @Column(name = "artist_id")
+    val artistId: String? = null,
+    var artistName: String? = null,
+    @Column(name = "created_at")
+    val createdAt: Long = 0,
+    @Column(name = "updated_at")
+    val updatedAt: Long = 0
 )
