@@ -1,7 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.controllers.LIMIT_FILE_SIZE_ACHIEVEMENT
 import com.oracle.bmc.ConfigFileReader
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider
 import com.oracle.bmc.objectstorage.ObjectStorage
@@ -18,6 +17,10 @@ val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
 
 @Repository
 class BucketAchievementsRepository {
+    companion object {
+        const val LIMIT_FILE_SIZE_ACHIEVEMENT = 500000
+    }
+
     fun saveImage(uid: String, file: MultipartFile, contentType: String) {
         validateImage(file)
         val configuration = getObjectStorage()

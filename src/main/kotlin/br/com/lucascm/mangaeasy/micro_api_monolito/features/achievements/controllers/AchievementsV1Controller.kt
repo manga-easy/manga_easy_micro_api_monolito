@@ -4,10 +4,11 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsV1Dto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.CreateAchievementsDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,12 +17,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
-const val LIMIT_FILE_SIZE_ACHIEVEMENT = 500000
 
 @RestController
 @RequestMapping("/v1/achievements")
-class AchievementsControllers {
+class AchievementsV1Controller {
+
     @Autowired
     lateinit var achievementsRepository: AchievementsRepository
 
@@ -39,12 +41,15 @@ class AchievementsControllers {
     fun list(@RequestParam available: Boolean?): ResultEntity {
         return try {
             val result: List<AchievementsEntity> = if (available == true) {
-                achievementsRepository.findByDisponivelOrderByCreatedatDesc(available)
+                achievementsRepository.findByReclaimOrderByCreatedAtDesc(available)
             } else {
-                achievementsRepository.findAll(Sort.by(Sort.Direction.DESC, "createdat"))
+                achievementsRepository.findAll(Sort.by(Sort.Direction.DESC, AchievementsEntity::updatedAt.name))
             }
             ResultEntity(
-                total = result.size, status = StatusResultEnum.SUCCESS, data = result, message = "Listado com sucesso"
+                total = result.size,
+                status = StatusResultEnum.SUCCESS,
+                data = result.map { AchievementsV1Dto.fromEntity(it) }.toList(),
+                message = "Listado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -56,7 +61,7 @@ class AchievementsControllers {
     fun listByUser(@PathVariable userId: String): ResultEntity {
         return try {
             val result = achievementsRepository.findByUser(userId)
-            ResultEntity(result)
+            ResultEntity(result.map { AchievementsV1Dto.fromEntity(it) }.toList())
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
         }
@@ -66,9 +71,13 @@ class AchievementsControllers {
     @ResponseBody
     fun getOne(@PathVariable id: String): ResultEntity {
         return try {
-            val result = achievementsRepository.findByUid(id) ?: throw BusinessException("Emblema não encontrado")
+            val result = achievementsRepository.findById(id).getOrNull()
+                ?: throw BusinessException("Emblema não encontrado")
             ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Listado com sucesso"
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(AchievementsV1Dto.fromEntity(result)),
+                message = "Listado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -77,20 +86,29 @@ class AchievementsControllers {
 
     @PostMapping
     @ResponseBody
-    fun create(@RequestBody body: AchievementsEntity, @AuthenticationPrincipal userAuth: UserAuth): ResultEntity {
+    fun create(@RequestBody body: CreateAchievementsDto, @AuthenticationPrincipal userAuth: UserAuth): ResultEntity {
         return try {
             handlerPermissionUser.handleIsAdmin(userAuth)
-            handlerValidateEntity(body)
+            body.handlerValidateEntity()
             val result = achievementsRepository.save(
-                body.copy(
-                    uid = GetUidByFeature().get("achievements"),
-                    createdat = Date().time,
-                    time_cria = Date().time,
-                    updatedat = Date().time,
+                AchievementsEntity(
+                    createdAt = Date().time,
+                    updatedAt = Date().time,
+                    name = body.name,
+                    benefits = body.benefits,
+                    category = body.category,
+                    description = body.description,
+                    percentRarity = 0.0,
+                    rarity = body.rarity,
+                    reclaim = body.reclaim,
+                    totalAcquired = 0
                 )
             )
             ResultEntity(
-                total = 1, status = StatusResultEnum.SUCCESS, data = listOf(result), message = "Criado com sucesso"
+                total = 1,
+                status = StatusResultEnum.SUCCESS,
+                data = listOf(AchievementsV1Dto.fromEntity(result)),
+                message = "Criado com sucesso"
             )
         } catch (e: Exception) {
             handleExceptions.handleCatch(e)
@@ -100,33 +118,30 @@ class AchievementsControllers {
     @PutMapping("/{uid}")
     @ResponseBody
     fun update(
-        @RequestBody body: AchievementsEntity,
+        @RequestBody body: CreateAchievementsDto,
         @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable uid: String,
     ): ResultEntity {
         return try {
             handlerPermissionUser.handleIsAdmin(userAuth)
-            handlerValidateEntity(body)
-            val resultFind = achievementsRepository.findByUid(uid) ?: throw BusinessException("Emblema não encontrado")
+            body.handlerValidateEntity()
+            val resultFind = achievementsRepository.findById(uid).getOrNull()
+                ?: throw BusinessException("Emblema não encontrado")
             val result = achievementsRepository.save(
                 resultFind.copy(
-                    updatedat = Date().time,
+                    updatedAt = Date().time,
                     name = body.name,
-                    type = body.type,
-                    adsoff = body.adsoff,
                     benefits = body.benefits,
-                    categoria = body.categoria,
+                    category = body.category,
                     description = body.description,
-                    disponivel = body.disponivel,
-                    percent = body.percent,
-                    rarity = body.rarity,
-                    url = body.url,
+                    reclaim = body.reclaim,
+                    rarity = body.rarity
                 )
             )
             ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
+                data = listOf(AchievementsV1Dto.fromEntity(result)),
                 message = "Atualizado com sucesso"
             )
         } catch (e: Exception) {
@@ -141,7 +156,7 @@ class AchievementsControllers {
         return try {
             var imageResult: String? = null
             handlerPermissionUser.handleIsAdmin(userAuth)
-            val find: AchievementsEntity = achievementsRepository.findByUid(uid)
+            val find: AchievementsEntity = achievementsRepository.findById(uid).getOrNull()
                 ?: throw BusinessException("Emblema não encontrado")
             if (file != null) {
                 bucketAchievementsRepository.saveImage(uid, file, file.contentType!!)
@@ -150,7 +165,7 @@ class AchievementsControllers {
             val result = achievementsRepository.save(find.copy(url = imageResult!!))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(result),
+                data = listOf(AchievementsV1Dto.fromEntity(result)),
                 total = 1,
                 message = "Sucesso"
             )
@@ -159,27 +174,5 @@ class AchievementsControllers {
         }
     }
 
-    private fun handlerValidateEntity(entity: AchievementsEntity) {
-        // Verificar disponibilidade
-        if ((entity.categoria == "doacao" || entity.categoria == "rank") && entity.disponivel) {
-            throw BusinessException("Esse tipo de emblema não pode estar disponível")
-        }
-        if (entity.categoria != "doacao" && entity.adsoff) {
-            throw BusinessException("Esse tipo de emblema não pode remover propaganda")
-        }
-        // Validar campos obrigatórios
-        validateNonEmptyField(entity.categoria, "categoria")
-        validateNonEmptyField(entity.benefits, "benefícios")
-        validateNonEmptyField(entity.description, "descrição")
-        validateNonEmptyField(entity.url, "url")
-        validateNonEmptyField(entity.name, "nome")
-        validateNonEmptyField(entity.rarity, "raridade")
-        validateNonEmptyField(entity.type, "tipo")
-    }
 
-    private fun validateNonEmptyField(campo: String, nomeCampo: String) {
-        if (campo.isEmpty()) {
-            throw BusinessException(String.format("O campo %s não pode ser vazio", nomeCampo))
-        }
-    }
 }

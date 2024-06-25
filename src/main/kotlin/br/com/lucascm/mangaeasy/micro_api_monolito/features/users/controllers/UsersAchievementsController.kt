@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/v1/users")
@@ -93,11 +94,11 @@ class UsersAchievementsController {
     ): ResultEntity {
         try {
             handlerPermissionUser.handleIsAdmin(userAuth)
-            val resultAchievements = achievementsRepository.findByUid(body.idemblema)
+            val resultAchievements = achievementsRepository.findById(body.idemblema).getOrNull()
                 ?: throw BusinessException("Emblema não encontrado")
             val resultUsers = repository.findAllByUseridAndIdemblema(
                 uid,
-                resultAchievements.uid!!
+                resultAchievements.id!!
             )
 
             if (resultUsers.isNotEmpty()) {
@@ -131,15 +132,15 @@ class UsersAchievementsController {
     ): ResultEntity {
         try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, uid);
-            val resultEmblema = achievementsRepository.findByUid(body.idemblema)
+            val resultEmblema = achievementsRepository.findById(body.idemblema).getOrNull()
                 ?: throw BusinessException("Emblema não encontrado")
-            if (resultEmblema.categoria != "evento") {
+            if (resultEmblema.category != "evento") {
                 throw BusinessException("Este tipo de emblema não pode ser resgatado")
             }
-            if (!resultEmblema.disponivel) {
+            if (!resultEmblema.reclaim) {
                 throw BusinessException("Emblema não disponível")
             }
-            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, resultEmblema.uid!!)
+            val result: List<UsersAchievementsEntity> = repository.findAllByUseridAndIdemblema(uid, resultEmblema.id!!)
 
             if (result.isNotEmpty()) {
                 throw BusinessException("Emblema já adquirido")
@@ -147,7 +148,7 @@ class UsersAchievementsController {
 
             val resultSave = repository.save(
                 body.copy(
-                    idemblema = resultEmblema.uid!!,
+                    idemblema = resultEmblema.id,
                     timecria = Date().time,
                     userid = uid,
                     createdat = Date().time,
