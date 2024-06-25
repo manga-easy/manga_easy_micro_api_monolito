@@ -20,6 +20,6 @@ data class PermissionsEntity(
     @Column(name = "created_at", nullable = false)
     var createdAt: Long = 0,
 
-    @Column(name = "_updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     var updatedAt: Long = 0,
 )
