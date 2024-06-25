@@ -4,22 +4,17 @@ import jakarta.persistence.*
 
 
 @Entity
-@Table(name = "_1_database_1_collection_4")
+@Table(name = "user-achievement")
 data class UsersAchievementsEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "_id")
-    private val id: Long? = null,
+    @Column(name = "id")
+    val id: Long? = null,
+    @Column(name = "achievement_id", nullable = false)
+    val achievementId: String = "",
+    @Column(name = "user_id", nullable = false)
+    val userId: String = "",
 
-    @Column(name = "_uid")
-    val uid: String? = null,
-    val idemblema: String = "",
-    val timecria: Long? = null,
-    val userid: String = "",
-
-    @Column(name = "_createdat")
-    val createdat: Long? = null,
-
-    @Column(name = "_updatedat")
-    val updatedat: Long? = null,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
 )

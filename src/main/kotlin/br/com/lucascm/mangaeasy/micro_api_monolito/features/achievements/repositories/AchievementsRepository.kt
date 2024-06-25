@@ -14,8 +14,8 @@ interface AchievementsRepository : JpaRepository<AchievementsEntity, String> {
         """
             SELECT e FROM AchievementsEntity e 
                 INNER JOIN UsersAchievementsEntity u 
-                ON e.id = u.idemblema 
-            WHERE u.userid = :userId
+                ON e.id = u.achievementId 
+            WHERE u.userId = :userId
         """
     )
     fun findByUser(@Param("userId") userId: String): List<AchievementsEntity>

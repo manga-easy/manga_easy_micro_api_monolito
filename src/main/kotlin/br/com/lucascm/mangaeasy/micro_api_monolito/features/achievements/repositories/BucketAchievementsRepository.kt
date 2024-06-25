@@ -11,14 +11,13 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 
 
-const val namespaceName = "axs7rpnviwd0"
-const val bucketName = "manga-easy-emblemas"
-val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
-
 @Repository
 class BucketAchievementsRepository {
     companion object {
         const val LIMIT_FILE_SIZE_ACHIEVEMENT = 500000
+        const val namespaceName = "axs7rpnviwd0"
+        const val bucketName = "manga-easy-emblemas"
+        val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
     }
 
     fun saveImage(uid: String, file: MultipartFile, contentType: String) {
