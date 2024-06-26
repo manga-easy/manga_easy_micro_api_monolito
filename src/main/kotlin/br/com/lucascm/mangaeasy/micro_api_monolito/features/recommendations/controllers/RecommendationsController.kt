@@ -118,7 +118,7 @@ class RecommendationsController {
         val find = recommendationsRepository.findById(id)
         if (!find.isPresent) throw BusinessException("Recomendação não encontrada")
         val entity = find.get()
-        bucketRecommendationsRepository.saveImage(entity.uniqueid, file, file.contentType!!)
+        bucketRecommendationsRepository.saveImage(entity.uniqueid, file)
         imageResult = bucketRecommendationsRepository.getLinkImage(entity.uniqueid)
         return recommendationsRepository.save(
             entity.copy(
