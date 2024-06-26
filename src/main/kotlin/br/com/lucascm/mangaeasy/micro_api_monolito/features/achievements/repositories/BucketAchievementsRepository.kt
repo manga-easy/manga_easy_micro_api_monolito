@@ -1,73 +1,34 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
-import com.oracle.bmc.ConfigFileReader
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider
-import com.oracle.bmc.objectstorage.ObjectStorage
-import com.oracle.bmc.objectstorage.ObjectStorageClient
-import com.oracle.bmc.objectstorage.requests.PutObjectRequest
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.buckets.BucketService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
-import java.io.InputStream
 
 
 @Repository
 class BucketAchievementsRepository {
+    @Autowired
+    lateinit var bucketService: BucketService
+
     companion object {
         const val LIMIT_FILE_SIZE_ACHIEVEMENT = 500000
-        const val namespaceName = "axs7rpnviwd0"
-        const val bucketName = "manga-easy-emblemas"
+        const val BUCKET_NAME = "manga-easy-emblemas"
         val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
     }
 
     fun saveImage(uid: String, file: MultipartFile, contentType: String) {
         validateImage(file)
-        val configuration = getObjectStorage()
-        val inputStream: InputStream = file.inputStream
-
-        //build upload request
-        val putObjectRequest: PutObjectRequest =
-            PutObjectRequest.builder()
-                .namespaceName(namespaceName)
-                .bucketName(bucketName)
-                .objectName(uid)
-                .contentLength(file.size)
-                .contentType(contentType)
-                .putObjectBody(inputStream).build()
-        //upload the file
-        try {
-            configuration.putObject(putObjectRequest)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            file.inputStream.close()
-            configuration.close()
-        }
+        bucketService.saveImage(uid, file, BUCKET_NAME)
     }
 
     fun getLinkImage(uid: String): String {
-        val configuration = getObjectStorage()
-        try {
-            // Construa a URL base do serviço Object Storage
-            val baseUrl = configuration.endpoint
-            // Combinar a URL base e a URL do objeto para obter o link final
-            return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${uid}"
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            configuration.close()
-        }
+        return bucketService.getLinkImage(uid, BUCKET_NAME)
     }
 
-    private fun getObjectStorage(): ObjectStorage {
-        //load config file
-        val configFile: ConfigFileReader.ConfigFile =
-            ConfigFileReader.parse("src/main/resources/config", "DEFAULT")//OracleIdentityCloudService
-        val provider = ConfigFileAuthenticationDetailsProvider(configFile)
-        //build and return client
-        return ObjectStorageClient.builder().isStreamWarningEnabled(false).build(provider)
+    fun deleteImage(uid: String) {
+        bucketService.deleteImage(uid, BUCKET_NAME)
     }
 
     private fun validateImage(file: MultipartFile) {
