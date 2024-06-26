@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities
 
+@Deprecated("Remover 0.18 -> 0.20")
 data class HistoryV1Dto(
     val uid: String? = null,
     val uniqueid: String = "",

@@ -15,6 +15,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/libraries")
+@Deprecated("Remover 0.18 -> 0.20")
 class LibrariesControllerV1 {
     @Autowired
     lateinit var repository: LibrariesRepository

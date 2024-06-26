@@ -1,6 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities
 
-
+@Deprecated("Remover 0.18 -> 0.20")
 data class LibrariesV1Dto(
     val uid: String? = null,
     val idhost: Long? = null,

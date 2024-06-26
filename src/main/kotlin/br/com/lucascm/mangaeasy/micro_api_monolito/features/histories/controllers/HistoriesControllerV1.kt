@@ -16,6 +16,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/histories")
+@Deprecated("Remover 0.18 -> 0.20")
 class HistoriesControllerV1 {
     @Autowired
     lateinit var repository: HistoriesRepository
