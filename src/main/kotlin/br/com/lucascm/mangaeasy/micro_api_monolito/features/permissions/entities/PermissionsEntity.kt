@@ -1,21 +1,25 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.permissions.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
+
 @Entity
-@Table(name = "_1_database_1_collection_11")
+@Table(name = "permission")
 data class PermissionsEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var _id: Long? = null,
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    var id: String? = null,
+    @Column(name = "user_id", nullable = false)
+    var userId: String = "",
+    var level: Int = 0,
 
-    @Column(name = "_uid")
-    var uid: String? = null,
-    var userid: String? = null,
-    var value: Int? = null,
+    @Column(name = "created_at", nullable = false)
+    var createdAt: Long = 0,
 
-    @Column(name = "_createdat")
-    var createdat: Long? = null,
-
-    @Column(name = "_updatedat")
-    var updatedat: Long? = null,
+    @Column(name = "updated_at", nullable = false)
+    var updatedAt: Long = 0,
 )

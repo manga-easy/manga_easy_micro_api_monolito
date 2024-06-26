@@ -71,3 +71,15 @@ ALTER TABLE appwrite.recommendation CHANGE artistid artist_id varchar(100) CHARA
 ALTER TABLE appwrite.recommendation CHANGE artistname artist_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
 ALTER TABLE appwrite.recommendation ADD CONSTRAINT recommendation_pk PRIMARY KEY (id);
 ALTER TABLE appwrite.recommendation ADD CONSTRAINT recommendation_unique UNIQUE KEY (id);
+
+
+RENAME TABLE appwrite.`_1_database_1_collection_11` TO appwrite.permission;
+
+ALTER TABLE appwrite.permission DROP COLUMN `_id`;
+ALTER TABLE appwrite.permission CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.permission ADD CONSTRAINT permission_pk PRIMARY KEY (id);
+ALTER TABLE appwrite.permission ADD CONSTRAINT permission_unique UNIQUE KEY (id);
+ALTER TABLE appwrite.permission CHANGE `_createdat` created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.permission CHANGE `_updatedat` updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.permission CHANGE userid user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.permission CHANGE value `level` int(11) NOT NULL;
