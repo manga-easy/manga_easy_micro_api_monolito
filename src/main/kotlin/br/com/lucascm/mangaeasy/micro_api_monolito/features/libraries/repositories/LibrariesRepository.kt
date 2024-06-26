@@ -8,17 +8,19 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface LibrariesRepository : JpaRepository<LibrariesEntity, Long> {
+interface LibrariesRepository : JpaRepository<LibrariesEntity, String> {
 
-    fun findByIduserAndUniqueid(iduser: String, uniqueid: String): List<LibrariesEntity>
+    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): List<LibrariesEntity>
 
-    fun findByIduser(iduser: String, pageable: Pageable): List<LibrariesEntity>
+    fun findByUserId(userId: String, pageable: Pageable): List<LibrariesEntity>
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*)
         FROM LibrariesEntity dc 
         WHERE dc.status = 'lido' 
-        AND dc.iduser = :userId
-    """)
+        AND dc.userId = :userId
+    """
+    )
     fun countByStatusAndUserId(@Param("userId") userId: String): Long
 }

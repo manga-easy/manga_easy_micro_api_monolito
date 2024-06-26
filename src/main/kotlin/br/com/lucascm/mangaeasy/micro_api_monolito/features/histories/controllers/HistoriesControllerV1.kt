@@ -16,6 +16,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/histories")
+@Deprecated("Remover 0.18 -> 0.20")
 class HistoriesControllerV1 {
     @Autowired
     lateinit var repository: HistoriesRepository
@@ -64,11 +65,11 @@ class HistoriesControllerV1 {
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            val result = repository.findByUserIdAndUniqueid(
+            val find = repository.findByUserIdAndUniqueid(
                 userId = userAuth.userId,
                 uniqueid = body.uniqueid
             )
-            if (result.isEmpty()) {
+            val result = if (find.isEmpty()) {
                 repository.save(
                     HistoriesEntity(
                         updatedAt = Date().time,
@@ -82,7 +83,7 @@ class HistoriesControllerV1 {
                     )
                 )
             } else {
-                val first = result.first()
+                val first = find.first()
                 repository.save(
                     first.copy(
                         updatedAt = Date().time,
@@ -97,7 +98,7 @@ class HistoriesControllerV1 {
             return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(body),
+                data = listOf(HistoryV1Dto.fromEntity(result)),
                 message = "Adicionado com sucesso"
             )
         } catch (e: Exception) {

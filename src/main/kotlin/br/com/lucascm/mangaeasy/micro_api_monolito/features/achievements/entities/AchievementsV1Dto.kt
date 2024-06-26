@@ -1,6 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities
 
-
+@Deprecated("Remover 0.18 -> 0.20")
 data class AchievementsV1Dto(
     var uid: String? = null,
     var name: String = "",

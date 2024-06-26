@@ -1,22 +1,34 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "_1_database_1_collection_1")
-data class LibrariesEntity (
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "_id")
-        private val id: Long? = null,
-        @Column(name = "_uid")
-        val uid: String? = null,
-        val idhost: Long? = null,
-        val iduser: String = "",
-        val uniqueid: String = "",
-        val manga: String? = null,
-        val status: String? = null,
-        val updatedat: Long? = null,
-        val createdat: Long? = null,
-        val isdeleted: Boolean = false
+@Table(name = "library")
+data class LibrariesEntity(
+    @Id
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+
+    @Column(name = "host_id", nullable = false)
+    val hostId: Long = 0,
+
+    @Column(name = "user_id", nullable = false)
+    val userId: String = "",
+    val uniqueid: String = "",
+    val manga: String = "",
+    val status: String = "",
+
+    @Column(name = "updated_at", nullable = false)
+    val updatedAt: Long = 0,
+
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
+
+    @Column(name = "is_deleted", nullable = false)
+    val hasDeleted: Boolean = false
 )

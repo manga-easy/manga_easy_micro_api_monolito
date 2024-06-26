@@ -54,7 +54,7 @@ class XpTask {
     }
 
     private fun saveRanking(rankingEntity: RankingEntity) {
-        val find = rankingRepository.findByUserId(rankingEntity.userId)
+        val find = rankingRepository.findByPlace(rankingEntity.place)
         if (find == null) {
             rankingRepository.save(rankingEntity)
             return
@@ -65,6 +65,7 @@ class XpTask {
                 name = rankingEntity.name,
                 picture = rankingEntity.picture,
                 place = rankingEntity.place,
+                userId = rankingEntity.userId
             )
         )
     }

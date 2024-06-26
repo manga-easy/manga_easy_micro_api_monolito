@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/v1/achievements")
+@Deprecated("Remover 0.18 -> 0.20")
 class AchievementsV1Controller {
 
     @Autowired

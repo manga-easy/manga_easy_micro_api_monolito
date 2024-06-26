@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RankingRepository : JpaRepository<RankingEntity, String> {
     fun findByUserId(userId: String): RankingEntity?
+    fun findByPlace(place: Long): RankingEntity?
 }
