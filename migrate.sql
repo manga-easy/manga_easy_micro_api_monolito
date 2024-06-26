@@ -122,3 +122,28 @@ ALTER TABLE appwrite.`user-achievement` DROP COLUMN timecria;
 ALTER TABLE appwrite.`user-achievement` DROP COLUMN `_uid`;
 ALTER TABLE appwrite.`user-achievement` DROP COLUMN `_updatedat`;
 ALTER TABLE appwrite.`user-achievement` CHANGE userid user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+
+RENAME TABLE appwrite.`_1_database_1_collection_6` TO appwrite.history;
+
+UPDATE history
+SET currentchapter = JSON_UNQUOTE(JSON_EXTRACT(capatual , '$.title'))
+where capatual is not null
+
+ALTER TABLE appwrite.history DROP COLUMN `_id`;
+ALTER TABLE appwrite.history CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+ALTER TABLE appwrite.history ADD CONSTRAINT history_pk PRIMARY KEY (id);
+ALTER TABLE appwrite.history ADD CONSTRAINT history_unique UNIQUE KEY (id);
+ALTER TABLE appwrite.history DROP COLUMN capatual;
+ALTER TABLE appwrite.history CHANGE chapterlidos chapters_read varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN chapters_read varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history CHANGE createdat created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.history CHANGE currentchapter current_chapter varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL NULL;
+ALTER TABLE appwrite.history CHANGE iduser user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history CHANGE isdeleted is_deleted bit(1) DEFAULT 0 NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN is_deleted bit(1) DEFAULT 0 NOT NULL;
+ALTER TABLE appwrite.history CHANGE updatedat updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN uniqueid varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history MODIFY COLUMN manga longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
