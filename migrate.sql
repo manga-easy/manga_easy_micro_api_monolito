@@ -147,3 +147,22 @@ ALTER TABLE appwrite.history CHANGE updatedat updated_at bigint(20) NOT NULL;
 ALTER TABLE appwrite.history MODIFY COLUMN updated_at bigint(20) NOT NULL;
 ALTER TABLE appwrite.history MODIFY COLUMN uniqueid varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE appwrite.history MODIFY COLUMN manga longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+
+
+RENAME TABLE appwrite.`_1_database_1_collection_1` TO appwrite.library;
+
+ALTER TABLE appwrite.library DROP COLUMN `_id`;
+ALTER TABLE appwrite.library CHANGE createdat created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.library CHANGE idhost host_id bigint(20) DEFAULT 0 NOT NULL;
+ALTER TABLE appwrite.library CHANGE iduser user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library CHANGE isdeleted is_deleted bit(1) DEFAULT 0 NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN manga longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN status varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN uniqueid varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library CHANGE updatedat updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.library CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library MODIFY COLUMN id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.library ADD CONSTRAINT library_pk PRIMARY KEY (id);
+ALTER TABLE appwrite.library ADD CONSTRAINT library_unique UNIQUE KEY (id);
