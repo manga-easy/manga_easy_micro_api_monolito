@@ -1,30 +1,31 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "_1_database_1_collection_5")
+@Table(name = "achievement")
 data class AchievementsEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "_id")
-    private val id: Long? = null,
-    @Column(name = "_uid")
-    var uid: String? = null,
-    var name: String = "",
-    var rarity: String = "",
-    var description: String = "",
-    var percent: Double = 0.0,
-    var url: String = "",
-    var adsoff: Boolean = false,
-    var benefits: String = "",
-    var disponivel: Boolean = false,
-    var categoria: String = "",
-    @Deprecated("Será removido: 0.17")
-    var type: String = "",
-    var time_cria: Long = 0,
-    @Column(name = "_createdat")
-    var createdat: Long? = null,
-    @Column(name = "_updatedat")
-    var updatedat: Long? = null
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+    val name: String = "",
+    val rarity: String = "",
+    val description: String = "",
+    @Column(name = "rarity_percent", nullable = false)
+    val percentRarity: Double = 0.0,
+    @Column(name = "total_acquired", nullable = false)
+    val totalAcquired: Long = 0,
+    val url: String = "",
+    val benefits: String = "",
+    val reclaim: Boolean = false,
+    val category: String = "",
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
+    @Column(name = "updated_at", nullable = false)
+    val updatedAt: Long = 0
 )

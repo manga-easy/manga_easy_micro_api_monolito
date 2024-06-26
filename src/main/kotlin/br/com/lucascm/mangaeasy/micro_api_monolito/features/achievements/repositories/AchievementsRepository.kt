@@ -5,12 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface AchievementsRepository : JpaRepository<AchievementsEntity, Long> {
-    fun findByUid(
-        uid: String
-    ): AchievementsEntity?
-
-    fun findByDisponivelOrderByCreatedatDesc(
+interface AchievementsRepository : JpaRepository<AchievementsEntity, String> {
+    fun findByReclaimOrderByCreatedAtDesc(
         available: Boolean
     ): List<AchievementsEntity>
 
@@ -18,8 +14,8 @@ interface AchievementsRepository : JpaRepository<AchievementsEntity, Long> {
         """
             SELECT e FROM AchievementsEntity e 
                 INNER JOIN UsersAchievementsEntity u 
-                ON e.uid = u.idemblema 
-            WHERE u.userid = :userId
+                ON e.id = u.achievementId 
+            WHERE u.userId = :userId
         """
     )
     fun findByUser(@Param("userId") userId: String): List<AchievementsEntity>

@@ -12,21 +12,24 @@ import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 
-const val LIMIT_FILE_SIZE_GOLD = 3000000
-const val LIMIT_FILE_SIZE_IRON = 2000000
-const val LIMIT_FILE_SIZE_COPPER = 1000000
-const val Membro_Cobre = "61b12f7a0ff25"
-const val Membro_Prata = "61b12fddd7201"
-const val Membro_Ouro = "61b1302ef0d76"
-const val Membro_Platina = "61b130768bd07"
-const val Membro_Ferro = "627daca5e13281a2e330"
-
-val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
-const val namespaceName = "axs7rpnviwd0"
-const val bucketName = "manga-easy-profile"
 
 @Repository
 class BucketProfileRepository {
+    companion object {
+        const val LIMIT_FILE_SIZE_GOLD = 3000000
+        const val LIMIT_FILE_SIZE_IRON = 2000000
+        const val LIMIT_FILE_SIZE_COPPER = 1000000
+        const val Membro_Cobre = "61b12f7a0ff25"
+        const val Membro_Prata = "61b12fddd7201"
+        const val Membro_Ouro = "61b1302ef0d76"
+        const val Membro_Platina = "61b130768bd07"
+        const val Membro_Ferro = "627daca5e13281a2e330"
+
+        val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
+        const val namespaceName = "axs7rpnviwd0"
+        const val bucketName = "manga-easy-profile"
+    }
+
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
     fun saveImage(userID: String, file: MultipartFile, contentType: String) {
@@ -95,19 +98,19 @@ class BucketProfileRepository {
     }
 
     private fun getLimitFileByDontion(userID: String): Int {
-        val achievements = usersAchievementsRepository.findAllByUserid(userID)
+        val achievements = usersAchievementsRepository.findAllByUserId(userID)
         var limit = 0
         for (achievement in achievements) {
-            if (achievement.idemblema == Membro_Ouro || achievement.idemblema == Membro_Platina) {
+            if (achievement.achievementId == Membro_Ouro || achievement.achievementId == Membro_Platina) {
                 limit = LIMIT_FILE_SIZE_GOLD
                 break
             }
-            if (achievement.idemblema == Membro_Ferro || achievement.idemblema == Membro_Prata) {
+            if (achievement.achievementId == Membro_Ferro || achievement.achievementId == Membro_Prata) {
                 if (limit < LIMIT_FILE_SIZE_IRON) {
                     limit = LIMIT_FILE_SIZE_IRON
                 }
             }
-            if (achievement.idemblema == Membro_Cobre) {
+            if (achievement.achievementId == Membro_Cobre) {
                 if (limit < LIMIT_FILE_SIZE_COPPER) {
                     limit = LIMIT_FILE_SIZE_COPPER
                 }

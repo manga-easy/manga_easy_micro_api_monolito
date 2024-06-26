@@ -83,3 +83,42 @@ ALTER TABLE appwrite.permission CHANGE `_createdat` created_at bigint(20) NOT NU
 ALTER TABLE appwrite.permission CHANGE `_updatedat` updated_at bigint(20) NOT NULL;
 ALTER TABLE appwrite.permission CHANGE userid user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE appwrite.permission CHANGE value `level` int(11) NOT NULL;
+
+
+RENAME TABLE appwrite.`_1_database_1_collection_5` TO appwrite.achievement;
+
+ALTER TABLE appwrite.achievement DROP COLUMN adsoff;
+ALTER TABLE appwrite.achievement DROP COLUMN `type`;
+ALTER TABLE appwrite.achievement DROP COLUMN image;
+ALTER TABLE appwrite.achievement DROP COLUMN `_id`;
+ALTER TABLE appwrite.achievement CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement ADD CONSTRAINT achievement_pk PRIMARY KEY (id);
+ALTER TABLE appwrite.achievement ADD CONSTRAINT achievement_unique UNIQUE KEY (id);
+ALTER TABLE appwrite.achievement MODIFY COLUMN url varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement DROP COLUMN time_cria;
+ALTER TABLE appwrite.achievement CHANGE `_createdat` created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.achievement CHANGE `_updatedat` updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN updated_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN rarity varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN description varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN categoria varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement MODIFY COLUMN benefits varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement CHANGE categoria category varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.achievement CHANGE disponivel reclaim bit(1) NOT NULL;
+ALTER TABLE appwrite.achievement CHANGE percent rarity_percent double NOT NULL;
+ALTER TABLE appwrite.achievement ADD total_acquired BIGINT(20) DEFAULT 0 NOT NULL;
+
+RENAME TABLE appwrite.`_1_database_1_collection_4` TO appwrite.`user-achievement`;
+
+UPDATE `user-achievement`
+SET `_createdat` = timecria
+
+ALTER TABLE appwrite.`user-achievement` CHANGE `_id` id bigint(20) auto_increment NOT NULL;
+ALTER TABLE appwrite.`user-achievement` CHANGE `_createdat` created_at bigint(20) NOT NULL;
+ALTER TABLE appwrite.`user-achievement` CHANGE idemblema achievement_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.`user-achievement` DROP COLUMN timecria;
+ALTER TABLE appwrite.`user-achievement` DROP COLUMN `_uid`;
+ALTER TABLE appwrite.`user-achievement` DROP COLUMN `_updatedat`;
+ALTER TABLE appwrite.`user-achievement` CHANGE userid user_id varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
