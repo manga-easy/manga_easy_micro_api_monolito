@@ -3,10 +3,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.controlle
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -36,20 +36,20 @@ class HistoriesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                repository.findByIduserAndUniqueid(
-                    iduser = userAuth.userId,
+                repository.findByUserIdAndUniqueid(
+                    userId = userAuth.userId,
                     uniqueid = uniqueId
                 )
             } else {
-                repository.findByIduser(
-                    iduser = userAuth.userId,
+                repository.findByUserId(
+                    userId = userAuth.userId,
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
             }
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
-                data = result,
+                data = result.map { HistoryV1Dto.fromEntity(it) }.toList(),
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
@@ -60,34 +60,37 @@ class HistoriesControllerV1 {
     @PutMapping
     @ResponseBody
     fun update(
-        @RequestBody body: HistoriesEntity,
+        @RequestBody body: HistoryV1Dto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            val result = repository.findByIduserAndUniqueid(
-                iduser = userAuth.userId,
+            val result = repository.findByUserIdAndUniqueid(
+                userId = userAuth.userId,
                 uniqueid = body.uniqueid
             )
             if (result.isEmpty()) {
                 repository.save(
-                    body.copy(
-                        uid = GetUidByFeature().get("users-histories"),
-                        createdat = Date().time,
-                        updatedat = Date().time,
-                        iduser = userAuth.userId
+                    HistoriesEntity(
+                        updatedAt = Date().time,
+                        createdAt = Date().time,
+                        userId = userAuth.userId,
+                        uniqueid = body.uniqueid,
+                        chaptersRead = body.chapterlidos ?: "",
+                        currentChapter = body.currentchapter,
+                        isDeleted = body.isdeleted,
+                        manga = body.manga
                     )
                 )
             } else {
                 val first = result.first()
                 repository.save(
                     first.copy(
-                        updatedat = body.updatedat,
-                        capatual = body.capatual,
-                        chapterlidos = body.chapterlidos,
-                        currentchapter = body.currentchapter,
-                        isdeleted = body.isdeleted,
-                        manga = body.manga,
-                        uniqueid = body.uniqueid
+                        updatedAt = Date().time,
+                        uniqueid = body.uniqueid,
+                        chaptersRead = body.chapterlidos ?: "",
+                        currentChapter = body.currentchapter,
+                        isDeleted = body.isdeleted,
+                        manga = body.manga
                     )
                 )
             }
