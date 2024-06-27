@@ -124,7 +124,7 @@ class ProfileController {
             val find: ProfileEntity =
                 profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             if (file != null) {
-                bucketProfileRepository.saveImage(userID, file, file.contentType!!)
+                bucketProfileRepository.saveImage(userID, file)
                 image = bucketProfileRepository.getLinkImage(userID)
             }
             val result = profileRepository.save(find.copy(picture = image))

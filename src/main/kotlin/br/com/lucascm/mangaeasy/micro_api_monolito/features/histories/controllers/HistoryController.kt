@@ -52,8 +52,8 @@ class HistoryController {
             userId = userAuth.userId,
             uniqueid = body.uniqueid
         )
-        if (result.isEmpty()) {
-            return repository.save(
+        return if (result.isEmpty()) {
+            repository.save(
                 HistoriesEntity(
                     updatedAt = Date().time,
                     createdAt = Date().time,
@@ -67,7 +67,7 @@ class HistoryController {
             )
         } else {
             val first = result.first()
-            return repository.save(
+            repository.save(
                 first.copy(
                     updatedAt = Date().time,
                     uniqueid = body.uniqueid,
