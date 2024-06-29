@@ -86,7 +86,7 @@ class LibrariesControllerV1 {
                         status = body.status!!,
                         hasDeleted = body.isdeleted,
                         manga = body.manga!!,
-                        hostId = body.idhost!!,
+                        hostId = body.idhost ?: 0,
                         uniqueid = body.uniqueid
                     )
                 )
