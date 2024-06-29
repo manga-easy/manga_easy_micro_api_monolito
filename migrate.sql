@@ -134,7 +134,7 @@ ALTER TABLE appwrite.history CHANGE `_uid` id varchar(255) CHARACTER SET utf8mb4
 ALTER TABLE appwrite.history ADD CONSTRAINT history_pk PRIMARY KEY (id);
 ALTER TABLE appwrite.history ADD CONSTRAINT history_unique UNIQUE KEY (id);
 ALTER TABLE appwrite.history DROP COLUMN capatual;
-ALTER TABLE appwrite.history CHANGE chapterlidos chapters_read varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE appwrite.history CHANGE chapterlidos chapters_read longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE appwrite.history MODIFY COLUMN chapters_read varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE appwrite.history CHANGE createdat created_at bigint(20) NOT NULL;
 ALTER TABLE appwrite.history MODIFY COLUMN created_at bigint(20) NOT NULL;
