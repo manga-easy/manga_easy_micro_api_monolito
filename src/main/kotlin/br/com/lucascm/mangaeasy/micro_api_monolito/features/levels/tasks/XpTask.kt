@@ -64,7 +64,6 @@ class XpTask {
                 totalXp = rankingEntity.totalXp,
                 name = rankingEntity.name,
                 picture = rankingEntity.picture,
-                place = rankingEntity.place,
                 userId = rankingEntity.userId
             )
         )
