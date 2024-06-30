@@ -72,9 +72,9 @@ class LevelController {
                 ?: throw BusinessException("Manga não catalogado")
             messageService.sendXp(
                 XpConsumerDto(
-                    userID,
-                    body.chapterNumber,
-                    body.uniqueID
+                    uniqueID = body.uniqueID,
+                    chapterNumber = body.chapterNumber,
+                    useId = userID,
                 )
             )
             ResultEntity(listOf(false))
