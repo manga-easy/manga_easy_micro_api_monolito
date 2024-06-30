@@ -49,9 +49,9 @@ services:
     networks:
       - api_monolith
     volumes:
-      - adc.json:src/main/resources/adc.json
-      - config:src/main/resources/config
-      - profile.pem:src/main/resources/profile.pem
+      - ./adc.json:/app/src/main/resources/adc.json
+      - ./config:/app/src/main/resources/config
+      - ./profile.pem:/app/src/main/resources/profile.pem
     ports:
       - "8080:8080"
   nginx:
