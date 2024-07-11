@@ -7,18 +7,21 @@ import org.springframework.data.repository.query.Param
 
 
 interface UsersAchievementsRepository : JpaRepository<UsersAchievementsEntity, Long> {
-    fun findAllByUserid(
+    fun findAllByUserId(
         userId: String
     ): List<UsersAchievementsEntity>
 
-    fun findAllByUseridAndIdemblema(
+    fun findAllByUserIdAndAchievementId(
         userId: String,
-        idemblema: String
+        achievementId: String
     ): List<UsersAchievementsEntity>
-    @Query("""
+
+    @Query(
+        """
         SELECT COUNT(*)
         FROM UsersAchievementsEntity dc 
-        WHERE dc.userid = :userId
-    """)
+        WHERE dc.userId = :userId
+    """
+    )
     fun countByUserId(@Param("userId") userId: String): Long
 }

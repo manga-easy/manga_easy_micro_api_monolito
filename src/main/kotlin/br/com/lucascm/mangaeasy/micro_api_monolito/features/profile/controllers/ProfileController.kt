@@ -50,23 +50,21 @@ class ProfileController {
     @ResponseBody
     fun getProfile(@PathVariable userID: String): ResultEntity {
         return try {
-            val user = userRepository.search(userID)
-            if (user.isEmpty()) throw BusinessException("Usuario não encontrado")
             var result = profileRepository.findByUserID(userID)
             if (result == null) {
+                val user = userRepository.getId(userID)
                 val totalMangaRead = librariesRepository.countByStatusAndUserId(userID)
                 val totalAchievements = usersAchievementsRepository.countByUserId(userID)
                 result = ProfileEntity(
                     updatedAt = Date().time,
                     biography = "",
-                    createdAt = Date.from(Instant.parse(user.first().registration)).time,
+                    createdAt = Date.from(Instant.parse(user.registration)).time,
                     achievementsHighlight = listOf(),
                     mangasHighlight = listOf(),
                     userID = userID,
                     totalMangaRead = totalMangaRead,
                     totalAchievements = totalAchievements,
                     role = "Aventureiro",
-                    name = user.first().name,
                     totalXp = 0,
                 )
                 profileRepository.save(result)
@@ -126,7 +124,7 @@ class ProfileController {
             val find: ProfileEntity =
                 profileRepository.findByUserID(userID) ?: throw BusinessException("Perfil não encontrado")
             if (file != null) {
-                bucketProfileRepository.saveImage(userID, file, file.contentType!!)
+                bucketProfileRepository.saveImage(userID, file)
                 image = bucketProfileRepository.getLinkImage(userID)
             }
             val result = profileRepository.save(find.copy(picture = image))

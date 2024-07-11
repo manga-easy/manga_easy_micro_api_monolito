@@ -36,12 +36,11 @@ class XpTask {
                 for (i in xp) {
                     val userId = i["userId"].toString()
                     val profile = profileRepository.findByUserID(userId)
-                        ?: continue
                     saveRanking(
                         RankingEntity(
                             totalXp = i["Total"] as Long,
-                            name = profile.name,
-                            picture = profile.picture,
+                            name = profile?.name,
+                            picture = profile?.picture,
                             place = ++place,
                             userId = userId
                         )
@@ -55,7 +54,7 @@ class XpTask {
     }
 
     private fun saveRanking(rankingEntity: RankingEntity) {
-        val find = rankingRepository.findByUserId(rankingEntity.userId)
+        val find = rankingRepository.findByPlace(rankingEntity.place)
         if (find == null) {
             rankingRepository.save(rankingEntity)
             return
@@ -65,7 +64,7 @@ class XpTask {
                 totalXp = rankingEntity.totalXp,
                 name = rankingEntity.name,
                 picture = rankingEntity.picture,
-                place = rankingEntity.place,
+                userId = rankingEntity.userId
             )
         )
     }

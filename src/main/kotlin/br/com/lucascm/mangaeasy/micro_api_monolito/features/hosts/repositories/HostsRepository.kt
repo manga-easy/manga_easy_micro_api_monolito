@@ -5,11 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface HostsRepository : JpaRepository<HostsEntity, Long> {
+interface HostsRepository : JpaRepository<HostsEntity, String> {
     fun findByStatus(
         status: String
     ): List<HostsEntity>
 
-    fun findByIdhost(idhost: Int): List<HostsEntity>
-    fun findByUid(uid: String): HostsEntity?
+    fun findByHostId(idhost: Int): List<HostsEntity>
 }

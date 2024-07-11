@@ -8,7 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.MessageService
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/level")
+@Deprecated("Remover na 0.18.0 -> 0.20.0")
 class LevelController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
@@ -71,9 +72,9 @@ class LevelController {
                 ?: throw BusinessException("Manga não catalogado")
             messageService.sendXp(
                 XpConsumerDto(
-                    userID,
-                    body.chapterNumber,
-                    body.uniqueID
+                    uniqueID = body.uniqueID,
+                    chapterNumber = body.chapterNumber,
+                    useId = userID,
                 )
             )
             ResultEntity(listOf(false))
@@ -90,16 +91,18 @@ class LevelController {
                 PageRequest.of(page ?: 0, 25)
                     .withSort(Sort.by("place"))
             )
-            ResultEntity(result.toList())
+            val listDto = result.map {
+                RankingV1Dto(
+                    name = it.name,
+                    id = it.userId,
+                    totalXp = it.totalXp,
+                    place = it.place,
+                    picture = it.picture
+                )
+            }.toList()
+            ResultEntity(listDto)
         } catch (e: Exception) {
             HandleExceptions().handleCatch(e)
         }
-    }
-
-    @GetMapping("/ranking/{userId}")
-    @ResponseBody
-    fun getRankingByUser(@PathVariable userId: String): RankingEntity {
-        return rankingRepository.findByUserId(userId)
-            ?: throw BusinessException("Ranking não encontrado ou em processamento")
     }
 }

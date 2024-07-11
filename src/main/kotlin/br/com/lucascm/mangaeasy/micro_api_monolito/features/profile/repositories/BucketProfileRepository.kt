@@ -1,87 +1,45 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.buckets.BucketService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
-import com.oracle.bmc.ConfigFileReader
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider
-import com.oracle.bmc.objectstorage.ObjectStorage
-import com.oracle.bmc.objectstorage.ObjectStorageClient
-import com.oracle.bmc.objectstorage.requests.PutObjectRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
-import java.io.InputStream
 
-const val LIMIT_FILE_SIZE_GOLD = 3000000
-const val LIMIT_FILE_SIZE_IRON = 2000000
-const val LIMIT_FILE_SIZE_COPPER = 1000000
-const val Membro_Cobre = "61b12f7a0ff25"
-const val Membro_Prata = "61b12fddd7201"
-const val Membro_Ouro = "61b1302ef0d76"
-const val Membro_Platina = "61b130768bd07"
-const val Membro_Ferro = "627daca5e13281a2e330"
-
-val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
-const val namespaceName = "axs7rpnviwd0"
-const val bucketName = "manga-easy-profile"
 
 @Repository
 class BucketProfileRepository {
     @Autowired
+    lateinit var bucketService: BucketService
+
+    companion object {
+        const val LIMIT_FILE_SIZE_GOLD = 3000000
+        const val LIMIT_FILE_SIZE_IRON = 2000000
+        const val LIMIT_FILE_SIZE_COPPER = 1000000
+        const val Membro_Cobre = "61b12f7a0ff25"
+        const val Membro_Prata = "61b12fddd7201"
+        const val Membro_Ouro = "61b1302ef0d76"
+        const val Membro_Platina = "61b130768bd07"
+        const val Membro_Ferro = "627daca5e13281a2e330"
+        val TYPE_CONTENT_IMAGE = listOf("JPG", "GIF", "PNG", "JPEG")
+        const val BUCKET_NAME = "manga-easy-profile"
+    }
+
+    @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
-    fun saveImage(userID: String, file: MultipartFile, contentType: String) {
+    fun saveImage(userID: String, file: MultipartFile) {
         // valida os requesitos para ter imagem e o tipo
         validateImage(file, userID)
-        val configuration = getObjectStorage()
-        val inputStream: InputStream = file.inputStream
-
-        //build upload request
-        val putObjectRequest: PutObjectRequest = PutObjectRequest.builder()
-            .namespaceName(namespaceName)
-            .bucketName(bucketName)
-            .objectName(userID)
-            .contentLength(file.size)
-            .contentType(contentType)
-            .putObjectBody(inputStream)
-            .build()
-        //upload the file
-        try {
-            configuration.putObject(putObjectRequest)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            file.inputStream.close()
-            configuration.close()
-        }
+        bucketService.saveImage(userID, file, BUCKET_NAME)
     }
 
     fun getLinkImage(userID: String): String {
-        val configuration = getObjectStorage()
-        try {
-            // Construa a URL base do serviço Object Storage
-            val baseUrl = configuration.endpoint
-            // Combinar a URL base e a URL do objeto para obter o link final
-            return "${baseUrl}/n/${namespaceName}/b/${bucketName}/o/${userID}"
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            configuration.close()
-        }
+        return bucketService.getLinkImage(userID, BUCKET_NAME)
     }
 
-    private fun getObjectStorage(): ObjectStorage {
-
-        //load config file
-        val configFile: ConfigFileReader.ConfigFile = ConfigFileReader
-            .parse("src/main/resources/config", "DEFAULT")//OracleIdentityCloudService
-        val provider = ConfigFileAuthenticationDetailsProvider(configFile)
-
-        //build and return client
-        return ObjectStorageClient.builder()
-            .isStreamWarningEnabled(false)
-            .build(provider)
+    fun deleteImage(userID: String) {
+        bucketService.deleteImage(userID, BUCKET_NAME)
     }
 
     private fun validateImage(file: MultipartFile, userID: String) {
@@ -95,19 +53,19 @@ class BucketProfileRepository {
     }
 
     private fun getLimitFileByDontion(userID: String): Int {
-        val achievements = usersAchievementsRepository.findAllByUserid(userID)
+        val achievements = usersAchievementsRepository.findAllByUserId(userID)
         var limit = 0
         for (achievement in achievements) {
-            if (achievement.idemblema == Membro_Ouro || achievement.idemblema == Membro_Platina) {
+            if (achievement.achievementId == Membro_Ouro || achievement.achievementId == Membro_Platina) {
                 limit = LIMIT_FILE_SIZE_GOLD
                 break
             }
-            if (achievement.idemblema == Membro_Ferro || achievement.idemblema == Membro_Prata) {
+            if (achievement.achievementId == Membro_Ferro || achievement.achievementId == Membro_Prata) {
                 if (limit < LIMIT_FILE_SIZE_IRON) {
                     limit = LIMIT_FILE_SIZE_IRON
                 }
             }
-            if (achievement.idemblema == Membro_Cobre) {
+            if (achievement.achievementId == Membro_Cobre) {
                 if (limit < LIMIT_FILE_SIZE_COPPER) {
                     limit = LIMIT_FILE_SIZE_COPPER
                 }

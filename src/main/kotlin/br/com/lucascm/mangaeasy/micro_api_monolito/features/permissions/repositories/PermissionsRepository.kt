@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PermissionsRepository : JpaRepository<PermissionsEntity, Long> {
-    fun  findByUserid(userID: String): PermissionsEntity?
-    fun findByUid(uid: String): PermissionsEntity?
+interface PermissionsRepository : JpaRepository<PermissionsEntity, String> {
+    fun findByUserId(userId: String): PermissionsEntity?
 
 }

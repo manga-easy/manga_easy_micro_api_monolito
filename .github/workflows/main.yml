@@ -18,8 +18,19 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: |
+          gradle wrapper
+          chmod +x ./gradlew
+
+      - name: Set Sentry Auth Token
+        run: echo "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}" >> $GITHUB_ENV
+
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: ./gradlew clean build -x test
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -33,5 +44,16 @@ jobs:
       - name: Build Docker image
         run: docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/api_monolith:latest --push .
 
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/api_monolith:latest
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TEST }}
+
+      - name: Pull new image and restart container
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_TEST }} "cd docker && sudo docker compose pull && sudo docker compose up -d"

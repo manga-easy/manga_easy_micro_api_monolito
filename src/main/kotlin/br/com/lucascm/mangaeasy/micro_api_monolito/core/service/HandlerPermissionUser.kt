@@ -11,9 +11,9 @@ class HandlerPermissionUser {
     @Autowired
     lateinit var repository: PermissionsRepository
     fun handleIsAdmin(userAuth: UserAuth) {
-        val result = repository.findByUserid(userAuth.userId)
+        val result = repository.findByUserId(userAuth.userId)
         ///significa que é um admin
-        if (result?.value != 90) {
+        if (result?.level != 90) {
             throw BusinessException("O usuario não tem permissão")
         }
     }

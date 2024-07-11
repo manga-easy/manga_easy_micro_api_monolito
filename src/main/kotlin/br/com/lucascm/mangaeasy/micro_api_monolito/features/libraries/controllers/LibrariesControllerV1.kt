@@ -3,9 +3,9 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.controlle
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -15,6 +15,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/v1/libraries")
+@Deprecated("Remover 0.18 -> 0.20")
 class LibrariesControllerV1 {
     @Autowired
     lateinit var repository: LibrariesRepository
@@ -32,20 +33,20 @@ class LibrariesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                repository.findByIduserAndUniqueid(
-                    iduser = userAuth.userId,
+                repository.findByUserIdAndUniqueid(
+                    userId = userAuth.userId,
                     uniqueid = uniqueId
                 )
             } else {
-                repository.findByIduser(
-                    iduser = userAuth.userId,
+                repository.findByUserId(
+                    userId = userAuth.userId,
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
             }
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
-                data = result,
+                data = result.map { LibrariesV1Dto.fromEntity(it) }.toList(),
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
@@ -56,40 +57,44 @@ class LibrariesControllerV1 {
     @PutMapping
     @ResponseBody
     fun update(
-        @RequestBody body: LibrariesEntity,
+        @RequestBody body: LibrariesV1Dto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            val result = repository.findByIduserAndUniqueid(
-                iduser = body.iduser,
+            val find = repository.findByUserIdAndUniqueid(
+                userId = body.iduser,
                 uniqueid = body.uniqueid
             )
-            if (result.isEmpty()) {
+            val result = if (find.isEmpty()) {
                 repository.save(
-                    body.copy(
-                        uid = GetUidByFeature().get("users-libraries"),
-                        createdat = Date().time,
-                        updatedat = Date().time,
-                        iduser = body.iduser
+                    LibrariesEntity(
+                        createdAt = Date().time,
+                        updatedAt = Date().time,
+                        userId = userAuth.userId,
+                        hostId = body.idhost ?: 0,
+                        hasDeleted = body.isdeleted,
+                        manga = body.manga!!,
+                        uniqueid = body.uniqueid,
+                        status = body.status!!
                     )
                 )
             } else {
-                val first = result.first()
+                val first = find.first()
                 repository.save(
                     first.copy(
-                        updatedat = body.updatedat,
-                        status = body.status,
-                        isdeleted = body.isdeleted,
-                        manga = body.manga,
-                        idhost = body.idhost,
-                        uniqueid = body.uniqueid,
+                        updatedAt = Date().time,
+                        status = body.status!!,
+                        hasDeleted = body.isdeleted,
+                        manga = body.manga!!,
+                        hostId = body.idhost ?: 0,
+                        uniqueid = body.uniqueid
                     )
                 )
             }
             return ResultEntity(
                 total = 1,
                 status = StatusResultEnum.SUCCESS,
-                data = listOf(body),
+                data = listOf(LibrariesV1Dto.fromEntity(result)),
                 message = "Adicionado com sucesso"
             )
         } catch (e: Exception) {
