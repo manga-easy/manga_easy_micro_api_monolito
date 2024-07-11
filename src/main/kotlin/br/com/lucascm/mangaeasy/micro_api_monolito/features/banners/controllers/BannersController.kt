@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @RestController
-@Tag(name = "Banners")
 @RequestMapping("/banners")
+@Tag(name = "Banners")
 class BannersController {
     @Autowired
     lateinit var repository: BannersRepository
@@ -23,24 +24,23 @@ class BannersController {
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping("/v1")
-    fun list(
-        @RequestParam status: String?,
-        @RequestParam idhost: Int?
-    ): List<BannersEntity> {
+    fun list(): List<BannersEntity> {
         return repository.findAll()
     }
 
-    @DeleteMapping("/v1/{uid}")
+    @GetMapping("/v1/{id}")
+    fun getById(@PathVariable id: String): BannersEntity {
+        return repository.findById(id).getOrNull()
+            ?: throw BusinessException("Banner não encontrado")
+    }
+
+    @DeleteMapping("/v1/{id}")
     fun delete(
         @AuthenticationPrincipal userAuth: UserAuth,
-        @PathVariable uid: String
+        @PathVariable id: String
     ) {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        val find = repository.findById(uid)
-        if (!find.isPresent) {
-            throw BusinessException("Banner não encontrado")
-        }
-        repository.deleteById(find.get().id!!)
+        return repository.deleteById(id)
     }
 
     @PostMapping("/v1")
@@ -48,7 +48,7 @@ class BannersController {
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: CreateBannerDto
     ): BannersEntity {
-        handleValidatorWrite(userAuth, body)
+        handlerPermissionUser.handleIsAdmin(userAuth)
         return repository.save(
             BannersEntity(
                 updatedAt = Date().time,

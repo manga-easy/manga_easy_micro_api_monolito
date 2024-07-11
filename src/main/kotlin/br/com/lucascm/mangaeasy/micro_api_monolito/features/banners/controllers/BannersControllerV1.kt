@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/banners")
-@Tag(name = "Banners")
 @Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Banners")
 class BannersControllerV1(@Autowired val repository: BannersRepository) {
     @GetMapping("/list")
     @ResponseBody
