@@ -23,6 +23,10 @@ import kotlin.jvm.optionals.getOrNull
 @RequestMapping("/hosts/{hostId}")
 @Tag(name = "Hosts")
 class HostsMangasController {
+    companion object {
+        const val CACHE_NOT_FOUND = "Cache não encontrado"
+    }
+
     @Autowired
     lateinit var repository: LatestMangaRepository
 
@@ -41,7 +45,7 @@ class HostsMangasController {
     @GetMapping("/mangas/v1/last-updated")
     fun getLastUpdated(@PathVariable hostId: Int): List<MangaEntity> {
         val result = repository.findById("$hostId").getOrNull()
-            ?: throw BusinessException("Cache não encontrado")
+            ?: throw BusinessException(CACHE_NOT_FOUND)
         return result.data
     }
 
@@ -64,7 +68,7 @@ class HostsMangasController {
     ): DetailsEntity {
         val result = mangaDetailsRepository.findById("$hostId<>$uniqueId")
         if (!result.isPresent) {
-            throw BusinessException("Cache não encontrado")
+            throw BusinessException(CACHE_NOT_FOUND)
         }
         return result.get().data
     }
@@ -102,7 +106,7 @@ class HostsMangasController {
     ): List<ImageChapterEntity> {
         val result = contentChapterRepository.findById("$hostId<>$uniqueId<>$chapterId")
         if (!result.isPresent) {
-            throw BusinessException("Cache não encontrado")
+            throw BusinessException(CACHE_NOT_FOUND)
         }
         return result.get().data
     }
@@ -134,7 +138,7 @@ class HostsMangasController {
         @RequestParam search: String
     ): List<MangaEntity> {
         val result = hostMangaSearchRepository.findById("$hostId<>$search").getOrNull()
-            ?: throw BusinessException("Cache não encontrado")
+            ?: throw BusinessException(CACHE_NOT_FOUND)
         return result.data
     }
 
