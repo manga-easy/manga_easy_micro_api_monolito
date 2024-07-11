@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities
 
 data class DetailsEntity(
     val id: String?,
@@ -15,7 +15,3 @@ data class DetailsEntity(
     val status: String,
     val idHost: Int
 )
-
-
-
-

@@ -2,11 +2,11 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.GenderEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LikeMangaRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

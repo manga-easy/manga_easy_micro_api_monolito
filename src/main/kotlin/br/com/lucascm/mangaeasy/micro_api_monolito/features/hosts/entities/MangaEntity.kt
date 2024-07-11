@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities
 
 data class MangaEntity(
     val uniqueid: String,
