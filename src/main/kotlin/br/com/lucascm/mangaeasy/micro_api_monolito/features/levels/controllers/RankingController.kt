@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/ranking")
-@Tag(name = "Ranking")
+@Tag(name = "Levels")
 class RankingController {
     @Autowired
     lateinit var rankingRepository: RankingRepository

@@ -14,6 +14,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earn
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/v1/level")
 @Deprecated("Remover na 0.18.0 -> 0.20.0")
+@Tag(name = "Levels")
 class LevelController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser

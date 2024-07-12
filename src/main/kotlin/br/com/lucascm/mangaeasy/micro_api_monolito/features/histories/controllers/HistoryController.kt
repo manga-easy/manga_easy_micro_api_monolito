@@ -61,18 +61,19 @@ class HistoryController {
         val result = repository.findByUserIdAndUniqueid(
             userId = userId,
             uniqueid = uniqueId
-        )?: throw BusinessException("Manga não encontrado")
+        ) ?: throw BusinessException("Manga não encontrado")
         return repository.save(
             result.copy(
-                    updatedAt = Date().time,
-                    uniqueid = result.uniqueid,
-                    chaptersRead = body.chaptersRead,
-                    currentChapter = body.currentChapter,
-                    isDeleted = body.hasDeleted,
-                    manga = body.manga
-                )
+                updatedAt = Date().time,
+                uniqueid = result.uniqueid,
+                chaptersRead = body.chaptersRead,
+                currentChapter = body.currentChapter,
+                isDeleted = body.hasDeleted,
+                manga = body.manga
             )
-        }
+        )
+    }
+
     @PostMapping("/v1")
     fun create(
         @PathVariable userId: String,
@@ -87,18 +88,17 @@ class HistoryController {
         if (result != null) {
             throw BusinessException("Manga já cadastrado")
         }
-        return  repository.save(
-                HistoriesEntity(
-                    updatedAt = Date().time,
-                    createdAt = Date().time,
-                    userId = userAuth.userId,
-                    uniqueid = body.uniqueId,
-                    chaptersRead = body.chaptersRead,
-                    currentChapter = body.currentChapter,
-                    isDeleted = body.hasDeleted,
-                    manga = body.manga
-                )
+        return repository.save(
+            HistoriesEntity(
+                updatedAt = Date().time,
+                createdAt = Date().time,
+                userId = userAuth.userId,
+                uniqueid = body.uniqueId,
+                chaptersRead = body.chaptersRead,
+                currentChapter = body.currentChapter,
+                isDeleted = body.hasDeleted,
+                manga = body.manga
             )
-        }
+        )
     }
 }
