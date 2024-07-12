@@ -1,6 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos
 
-data class ViewMangaConsumerDto(
-    val uniqueid: String = "",
+data class CatalogsViewsConsumerDto(
+    val catalogId: String = "",
     val userId: String = "",
 )

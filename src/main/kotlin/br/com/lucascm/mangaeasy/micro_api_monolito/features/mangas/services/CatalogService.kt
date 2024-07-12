@@ -3,7 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogViewRepository
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 
 @Service
@@ -21,7 +22,7 @@ class CatalogService {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var viewMangaRepository: ViewMangaRepository
+    lateinit var viewMangaRepository: CatalogViewRepository
 
     @Cacheable(RedisCacheName.LIST_CATALOG)
     fun list(
@@ -105,9 +106,9 @@ class CatalogService {
 
     @Cacheable(RedisCacheName.GET_MANGA_WEEKLY)
     fun mostMangaWeekly(): CatalogEntity {
-        val uniqueid = viewMangaRepository.mostMangaReadWeekly()
+        val catalogId = viewMangaRepository.mostMangaReadWeekly()
             ?: return catalogRepository.findMangaRandom(false)
-        var result = catalogRepository.findByUniqueid(uniqueid)
+        var result = catalogRepository.findById(catalogId).getOrNull()
         if (result == null) {
             result = catalogRepository.findMangaRandom(false)
         }

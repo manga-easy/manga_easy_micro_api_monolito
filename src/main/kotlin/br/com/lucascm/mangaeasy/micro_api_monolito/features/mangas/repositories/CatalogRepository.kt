@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 
 
 @Repository
-interface CatalogRepository : JpaSpecificationExecutor<CatalogEntity>, JpaRepository<CatalogEntity, Long> {
+interface CatalogRepository : JpaSpecificationExecutor<CatalogEntity>, JpaRepository<CatalogEntity, String> {
 
     fun findByUniqueid(uniqueid: String): CatalogEntity?
 
