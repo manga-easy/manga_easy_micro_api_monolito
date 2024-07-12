@@ -1,6 +1,8 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.UpdateLibraryDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
@@ -12,65 +14,91 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/library")
-@Tag(name = "Library")
+@RequestMapping("/users/{userId}/libraries")
+@Tag(name = "Libraries")
 class LibraryController {
     @Autowired
     lateinit var repository: LibrariesRepository
 
+    @Autowired
+    lateinit var handlerPermissionUser: HandlerPermissionUser
+
     @GetMapping("/v1")
     fun list(
-        @RequestParam uniqueId: String?,
+        @PathVariable userId: String,
         @RequestParam limit: Int?,
         @RequestParam offset: Int?,
         @AuthenticationPrincipal userAuth: UserAuth
     ): List<LibrariesEntity> {
-        return if (uniqueId != null) {
-            repository.findByUserIdAndUniqueid(
-                userId = userAuth.userId,
-                uniqueid = uniqueId
-            )
-        } else {
-            repository.findByUserId(
-                userId = userAuth.userId,
-                pageable = PageRequest.of(offset ?: 0, limit ?: 25)
-            )
-        }
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return repository.findByUserId(
+            userId = userId,
+            pageable = PageRequest.of(offset ?: 0, limit ?: 25)
+        )
     }
 
-    @PutMapping("/v1")
+    @GetMapping("/v1/{uniqueId}")
+    fun getByUniqueId(
+        @PathVariable uniqueId: String,
+        @PathVariable userId: String,
+        @AuthenticationPrincipal userAuth: UserAuth
+    ): LibrariesEntity {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return repository.findByUserIdAndUniqueid(
+            userId = userId,
+            uniqueid = uniqueId
+        ) ?: throw BusinessException("Manga não encontrado")
+    }
+
+    @PutMapping("/v1/{uniqueId}")
     fun update(
+        @PathVariable userId: String,
+        @PathVariable uniqueId: String,
         @RequestBody body: UpdateLibraryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): LibrariesEntity {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val result = repository.findByUserIdAndUniqueid(
-            userId = userAuth.userId,
-            uniqueid = body.uniqueid
-        )
-        if (result.isEmpty()) {
-            return repository.save(
-                LibrariesEntity(
-                    createdAt = Date().time,
-                    updatedAt = Date().time,
-                    userId = userAuth.userId,
-                    hostId = body.hostId,
-                    hasDeleted = body.hasDeleted,
-                    manga = body.manga,
-                    uniqueid = body.uniqueid,
-                    status = body.status
-
-                )
-            )
-        }
-        val first = result.first()
+            userId = userId,
+            uniqueid = uniqueId
+        ) ?: throw BusinessException("Manga não encontrado")
         return repository.save(
-            first.copy(
+            result.copy(
                 updatedAt = Date().time,
-                status = body.status,
+                uniqueid = result.uniqueid,
                 hasDeleted = body.hasDeleted,
                 manga = body.manga,
+                status = body.status,
                 hostId = body.hostId,
-                uniqueid = body.uniqueid
+                userId = userId
+            )
+        )
+    }
+
+    @PostMapping("/v1")
+    fun create(
+        @PathVariable userId: String,
+        @RequestBody body: UpdateLibraryDto,
+        @AuthenticationPrincipal userAuth: UserAuth
+    ): LibrariesEntity {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        val result = repository.findByUserIdAndUniqueid(
+            userId = userId,
+            uniqueid = body.uniqueId!!
+        )
+        if (result != null) {
+            throw BusinessException("Manga já cadastrado")
+        }
+        return repository.save(
+            LibrariesEntity(
+                updatedAt = Date().time,
+                createdAt = Date().time,
+                userId = userId,
+                uniqueid = body.uniqueId,
+                manga = body.manga,
+                hostId = body.hostId,
+                status = body.status,
+                hasDeleted = body.hasDeleted
             )
         )
     }
