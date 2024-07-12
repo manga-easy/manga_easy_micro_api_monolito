@@ -8,6 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -17,6 +18,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/histories")
 @Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Histories")
 class HistoriesControllerV1 {
     @Autowired
     lateinit var repository: HistoriesRepository

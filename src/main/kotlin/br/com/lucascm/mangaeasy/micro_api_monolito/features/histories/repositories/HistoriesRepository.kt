@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface HistoriesRepository : JpaRepository<HistoriesEntity, String> {
 
-    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): List<HistoriesEntity>
+    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): HistoriesEntity?
 
     fun findByUserId(userId: String, pageable: Pageable): List<HistoriesEntity>
 }
