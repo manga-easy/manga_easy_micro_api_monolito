@@ -19,7 +19,7 @@ class MessageService {
     }
 
     fun sendViewManga(view: CatalogsViewsConsumerDto) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.VIEW_MANGA, view, Duration.ofSeconds(5))
+        rqueueMessageEnqueuer.enqueueIn(QueueName.CATALOG_VIEW, view, Duration.ofSeconds(5))
     }
 
     fun sendNotification(notification: NotificationsEntity) {
