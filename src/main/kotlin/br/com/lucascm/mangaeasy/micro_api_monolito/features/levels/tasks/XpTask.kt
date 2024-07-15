@@ -35,7 +35,7 @@ class XpTask {
                 log.info("---------- ${xp.size}")
                 for (i in xp) {
                     val userId = i["userId"].toString()
-                    val profile = profileRepository.findByUserID(userId)
+                    val profile = profileRepository.findByUserId(userId)
                     saveRanking(
                         RankingEntity(
                             totalXp = i["Total"] as Long,

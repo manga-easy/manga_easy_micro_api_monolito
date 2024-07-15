@@ -43,7 +43,7 @@ class XpConsumer {
                     totalMinutes = 1
                 )
             )
-            val profile = profileRepository.findByUserID(xp.useId)
+            val profile = profileRepository.findByUserId(xp.useId)
             if (profile != null) {
                 val totalXp = xpRepository.countXpTotalByUserId(xp.useId)
                 profileRepository.save(profile.copy(totalXp = totalXp!!))
