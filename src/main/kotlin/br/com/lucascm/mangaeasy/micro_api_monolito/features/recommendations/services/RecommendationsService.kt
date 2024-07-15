@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.services
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class RecommendationsService {
@@ -33,13 +35,25 @@ class RecommendationsService {
         val result = recommendationsRepository.findAll(pageRequest).content
         for (recommendation in result) {
             if (recommendation.artistId != null) {
-                val user = profileRepository.findByUserID(recommendation.artistId)
+                val user = profileRepository.findByUserId(recommendation.artistId)
                 if (user != null) {
                     recommendation.artistName = user.name
                 }
             }
         }
         return result
+    }
+
+    fun findById(id: String): RecommendationsEntity {
+        val recommendation = recommendationsRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Permission não encontrado")
+        if (recommendation.artistId != null) {
+            val user = profileRepository.findByUserId(recommendation.artistId)
+            if (user != null) {
+                recommendation.artistName = user.name
+            }
+        }
+        return recommendation
     }
 
     @Cacheable(RedisCacheName.RECOMMENDATIONS_ANILIST)
