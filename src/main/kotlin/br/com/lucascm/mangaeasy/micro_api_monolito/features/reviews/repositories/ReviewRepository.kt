@@ -20,7 +20,7 @@ interface ReviewRepository : JpaRepository<ReviewEntity, String> {
     @Query(
         """
             SELECT COUNT(*)
-            FROM ReviewMangaEntity dc 
+            FROM ReviewEntity dc 
             WHERE dc.catalogId = :catalogId
         """
     )

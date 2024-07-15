@@ -12,6 +12,6 @@ data class ReviewLikeEntity(
     val reviewId: String = "",
     @Column(name = "user_id", nullable = false)
     val userId: String = "",
-    @Column(name = "created_at")
-    val createdAt: Long? = 0,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
 )
