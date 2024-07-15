@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
@@ -18,17 +19,17 @@ class ReviewService {
     lateinit var profileRepository: ProfileRepository
 
     @Autowired
-    lateinit var likeReviewRepository: ReviewRepository
+    lateinit var likeReviewRepository: ReviewLikeRepository
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
-    fun list(uniqueid: String, page: Int): List<ListReviewDto> {
-        val result = reviewRepository.findByUniqueid(uniqueid, PageRequest.of(page, 25))
+    fun list(catalogId: String, page: Int): List<ListReviewDto> {
+        val result = reviewRepository.findByCatalogId(catalogId, PageRequest.of(page, 25))
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
-            val profile = profileRepository.findByUserID(review.userId)
-            val totalLike = likeReviewRepository.countByUniqueid(review.uniqueid)
+            val profile = profileRepository.findByUserId(review.userId)
+            val totalLike = likeReviewRepository.countByReviewId(review.catalogId)
             list.add(
-                ListReviewDto.fromEntity(
+                ListReviewDto(
                     review.copy(totalLikes = totalLike),
                     profile?.name,
                     profile?.picture
