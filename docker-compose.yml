@@ -1,5 +1,4 @@
-x-logging:
-  &x-logging
+x-logging: &x-logging
   logging:
     driver: 'json-file'
     options:
@@ -46,6 +45,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       CACHE_DB: ${CACHE_DB}
       TOGGLE_URL: ${TOGGLE_URL}
+      BUCKET_CONFIG: ${BUCKET_CONFIG}
     networks:
       - api_monolith
     volumes:
@@ -57,8 +57,13 @@ services:
   nginx:
     restart: always
     container_name: gateway
-    build: nginx
+    image: nginx:latest
     <<: *x-logging
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certificate.pem:/etc/nginx/certificate.pem
+      - ./server.pem:/etc/nginx/server.pem
+      - web-dash:/etc/nginx/deploy
     ports:
       - "443:443"
     networks:
@@ -72,6 +77,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
     networks:
       - api_monolith
+    volumes:
+      - mongo-db:/data/db
     ports:
       - "27017:27017"
   cache:
@@ -94,6 +101,13 @@ volumes:
   appwrite-mariadb:
   cache:
     driver: local
-
+  mongo-db:
+    driver: local
+  web-dash:
+    driver: local # Define the driver and options under the volume name
+    driver_opts:
+      type: none
+      device: ./web
+      o: bind
     # compose up -d --no-build --remove-orphans
     # .\gradlew clean build -x test

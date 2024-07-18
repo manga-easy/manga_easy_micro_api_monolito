@@ -1,8 +1,9 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.DetailsEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.DetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
 
+@Deprecated("Remover 0.18 -> 0.20")
 class MangaDetailsDto(
     val idhost: Int,
     val uniqueid: String,

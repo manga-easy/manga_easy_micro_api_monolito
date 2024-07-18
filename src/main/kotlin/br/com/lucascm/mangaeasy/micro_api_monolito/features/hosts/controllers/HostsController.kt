@@ -14,8 +14,8 @@ import java.util.*
 
 
 @RestController
-@Tag(name = "Hosts")
 @RequestMapping("/hosts")
+@Tag(name = "Hosts")
 class HostsController {
     @Autowired
     lateinit var repository: HostsRepository
