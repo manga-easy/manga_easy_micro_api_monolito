@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface LibrariesRepository : JpaRepository<LibrariesEntity, String> {
 
-    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): List<LibrariesEntity>
+    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): LibrariesEntity?
 
     fun findByUserId(userId: String, pageable: Pageable): List<LibrariesEntity>
 

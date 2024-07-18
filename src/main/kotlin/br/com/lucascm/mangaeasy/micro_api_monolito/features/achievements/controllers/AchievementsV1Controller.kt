@@ -11,6 +11,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entitie
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.CreateAchievementsDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -23,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
 @RestController
 @RequestMapping("/v1/achievements")
 @Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Achievements")
 class AchievementsV1Controller {
 
     @Autowired

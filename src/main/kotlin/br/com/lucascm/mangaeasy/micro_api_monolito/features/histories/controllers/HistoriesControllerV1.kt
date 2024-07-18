@@ -8,6 +8,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -17,6 +18,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/histories")
 @Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Histories")
 class HistoriesControllerV1 {
     @Autowired
     lateinit var repository: HistoriesRepository
@@ -37,10 +39,11 @@ class HistoriesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                repository.findByUserIdAndUniqueid(
+                val find = repository.findByUserIdAndUniqueid(
                     userId = userAuth.userId,
                     uniqueid = uniqueId
                 )
+                listOf(find)
             } else {
                 repository.findByUserId(
                     userId = userAuth.userId,
@@ -50,7 +53,7 @@ class HistoriesControllerV1 {
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
-                data = result.map { HistoryV1Dto.fromEntity(it) }.toList(),
+                data = result.requireNoNulls().map { HistoryV1Dto.fromEntity(it) }.toList(),
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
@@ -69,7 +72,7 @@ class HistoriesControllerV1 {
                 userId = userAuth.userId,
                 uniqueid = body.uniqueid
             )
-            val result = if (find.isEmpty()) {
+            val result = if (find == null) {
                 repository.save(
                     HistoriesEntity(
                         updatedAt = Date().time,
@@ -83,9 +86,8 @@ class HistoriesControllerV1 {
                     )
                 )
             } else {
-                val first = find.first()
                 repository.save(
-                    first.copy(
+                    find.copy(
                         updatedAt = Date().time,
                         uniqueid = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",

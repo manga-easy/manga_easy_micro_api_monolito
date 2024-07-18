@@ -1,31 +1,40 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities
 
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.index.Indexed
-import org.springframework.data.mongodb.core.mapping.Document
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.converters.FavoriteAchievementListConverter
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.converters.FavoriteMangaListConverter
+import jakarta.persistence.*
+import org.hibernate.annotations.UuidGenerator
 
-@Document("profile")
+@Entity
+@Table(name = "profile")
 data class ProfileEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var id: ObjectId? = null,
-    var role: String = "",
-    var biography: String? = null,
-    @Indexed(unique = true)
-    var userID: String = "",
-    var mangasHighlight: List<FavoriteManga> = listOf(),
-    var achievementsHighlight: List<FavoriteAchievement> = listOf(),
-    var createdAt: Long? = null,
-    var updatedAt: Long? = null,
-    var totalMangaRead: Long = 0,
-    var totalXp: Long = 0,
-    var totalAchievements: Long = 0,
-    var picture: String? = null,
-    var name: String? = null,
-    var visibleStatics: Boolean = true,
-    var visibleAchievements: Boolean = true,
-    var visibleMangas: Boolean = true,
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+    val role: String = "",
+    val biography: String? = null,
+
+    @Column(name = "user_id", unique = true, nullable = false)
+    val userId: String = "",
+
+    @Lob
+    @Convert(converter = FavoriteMangaListConverter::class)
+    @Column(name = "mangas_highlight", columnDefinition = "json")
+    val mangasHighlight: List<FavoriteManga> = listOf(),
+
+    @Lob
+    @Convert(converter = FavoriteAchievementListConverter::class)
+    @Column(name = "achievements_highlight", columnDefinition = "json")
+    val achievementsHighlight: List<FavoriteAchievement> = listOf(),
+    val createdAt: Long = 0,
+    val updatedAt: Long = 0,
+    val totalMangaRead: Long = 0,
+    val totalXp: Long = 0,
+    val totalAchievements: Long = 0,
+    val picture: String? = null,
+    val name: String? = null,
+    val visibleStatics: Boolean = true,
+    val visibleAchievements: Boolean = true,
+    val visibleMangas: Boolean = true,
 )

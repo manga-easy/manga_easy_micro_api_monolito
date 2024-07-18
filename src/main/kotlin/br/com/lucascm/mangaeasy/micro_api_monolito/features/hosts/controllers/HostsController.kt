@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
@@ -36,6 +37,12 @@ class HostsController {
             return repository.findByHostId(hostId)
         }
         return repository.findByStatus(status ?: "enable")
+    }
+
+    @GetMapping("/v1/{id}")
+    fun getById(@PathVariable id: String): HostsEntity {
+        return repository.findById(id).getOrNull()
+            ?: throw BusinessException("Host não encontrado")
     }
 
 

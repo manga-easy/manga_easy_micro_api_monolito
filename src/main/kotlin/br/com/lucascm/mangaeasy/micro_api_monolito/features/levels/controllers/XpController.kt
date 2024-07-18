@@ -16,8 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/xp")
-@Tag(name = "Xp")
+@RequestMapping("/users/{userId}/experiences")
+@Tag(name = "Levels")
 class XpController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
@@ -34,22 +34,22 @@ class XpController {
     @Autowired
     lateinit var catalogRepository: CatalogRepository
 
-    @GetMapping("/v1/{userID}")
+    @GetMapping("/v1")
     @ResponseBody
-    fun getXp(@AuthenticationPrincipal userAuth: UserAuth, @PathVariable userID: String): Long {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
-        val result = xpRepository.countXpTotalByUserId(userID)
+    fun getXp(@AuthenticationPrincipal userAuth: UserAuth, @PathVariable userId: String): Long {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        val result = xpRepository.countXpTotalByUserId(userId)
         return result ?: 0
     }
 
-    @PutMapping("/v1/{userID}/earn-xp")
+    @PutMapping("/v1/earn-xp")
     @ResponseBody
     fun earnXp(
         @AuthenticationPrincipal userAuth: UserAuth,
-        @PathVariable userID: String,
+        @PathVariable userId: String,
         @RequestBody body: earnXpDto,
     ) {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
         if (!toggle) {
             throw BusinessException("Nível está desativado")
@@ -60,7 +60,7 @@ class XpController {
             XpConsumerDto(
                 uniqueID = body.uniqueID,
                 chapterNumber = body.chapterNumber,
-                useId = userID,
+                useId = userId,
             )
         )
 

@@ -1,28 +1,28 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewMangaEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface ReviewRepository : JpaRepository<ReviewMangaEntity, Long> {
-    fun findByUniqueidAndUserId(
-        uniqueid: String,
+interface ReviewRepository : JpaRepository<ReviewEntity, String> {
+    fun findByCatalogIdAndUserId(
+        catalogId: String,
         userId: String,
-    ): ReviewMangaEntity?
+    ): ReviewEntity?
 
-    fun findByUniqueid(
-        uniqueid: String,
+    fun findByCatalogId(
+        catalogId: String,
         pageable: Pageable,
-    ): List<ReviewMangaEntity>
+    ): List<ReviewEntity>
 
     @Query(
         """
             SELECT COUNT(*)
-            FROM ReviewMangaEntity dc 
-            WHERE dc.uniqueid = :uniqueid
+            FROM ReviewEntity dc 
+            WHERE dc.catalogId = :catalogId
         """
     )
-    fun countByUniqueid(@Param("uniqueid") uniqueid: String): Long
+    fun countByCatalogId(@Param("catalogId") catalogId: String): Long
 }

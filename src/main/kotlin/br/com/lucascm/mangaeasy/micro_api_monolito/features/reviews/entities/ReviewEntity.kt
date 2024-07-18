@@ -1,15 +1,20 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "review-manga")
-data class ReviewMangaEntity(
+@Table(name = "review")
+data class ReviewEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    @Column(nullable = false)
-    val uniqueid: String = "",
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
+    @Column(nullable = false, name = "catalog_id")
+    val catalogId: String = "",
     @Column(nullable = false, name = "user_id")
     val userId: String = "",
     val commentary: String? = null,

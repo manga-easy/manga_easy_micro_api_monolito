@@ -1,14 +1,18 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.UuidGenerator
 
 @Entity
 @Table(name = "catalog")
 data class CatalogEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long? = null,
-    val uid: String? = null,
+    @UuidGenerator
+    @Column(name = "id", updatable = false, unique = true, nullable = false)
+    val id: String? = null,
     val name: String = "",
     val uniqueid: String = "",
     @Column(name = "last_chapter")

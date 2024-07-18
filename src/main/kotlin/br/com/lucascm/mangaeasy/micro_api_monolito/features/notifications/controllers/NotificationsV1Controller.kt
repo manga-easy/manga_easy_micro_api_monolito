@@ -11,6 +11,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entiti
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.repositories.NotificationsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -20,6 +21,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/notifications")
 @Deprecated("Remover na 0.18.0 -> 0.20.0")
+@Tag(name = "Notifications")
 class NotificationsV1Controller(@Autowired val repository: NotificationsRepository) {
     @Autowired
     lateinit var handleExceptions: HandleExceptions

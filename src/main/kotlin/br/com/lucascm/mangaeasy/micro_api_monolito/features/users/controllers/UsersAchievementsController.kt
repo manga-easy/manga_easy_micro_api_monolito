@@ -7,6 +7,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.reposit
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.CreateUserAchievementDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.entities.UsersAchievementsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -14,7 +15,8 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users/{userId}")
+@Tag(name = "Users")
 class UsersAchievementsController {
     @Autowired
     lateinit var repository: UsersAchievementsRepository
@@ -26,7 +28,7 @@ class UsersAchievementsController {
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
 
-    @GetMapping("/v1/{userId}/achievement")
+    @GetMapping("/v1/achievements")
     fun listAchievements(
         @PathVariable userId: String,
         @RequestParam achievementId: String?,
@@ -40,7 +42,7 @@ class UsersAchievementsController {
         }
     }
 
-    @DeleteMapping("/v1/{userId}/achievement/{achievementId}")
+    @DeleteMapping("/v1/achievements/{achievementId}")
     fun removeAchievement(
         @PathVariable userId: String,
         @PathVariable achievementId: String,
@@ -59,7 +61,7 @@ class UsersAchievementsController {
         )
     }
 
-    @PostMapping("/v1/{userId}/achievement")
+    @PostMapping("/v1/achievements")
     fun addUserAchievement(
         @PathVariable userId: String,
         @RequestBody body: CreateUserAchievementDto,
@@ -80,38 +82,6 @@ class UsersAchievementsController {
                 createdAt = Date().time,
                 userId = userId,
                 achievementId = body.achievementId
-            )
-        )
-    }
-
-    @PostMapping("/v1/{userId}/achievement/acquire")
-    fun acquire(
-        @PathVariable userId: String,
-        @RequestBody body: UsersAchievementsEntity,
-        @AuthenticationPrincipal userAuth: UserAuth
-    ): UsersAchievementsEntity {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userId);
-        val resultEmblema = achievementsRepository.findById(body.achievementId).getOrNull()
-            ?: throw BusinessException("Emblema não encontrado")
-        if (resultEmblema.category != "evento") {
-            throw BusinessException("Este tipo de emblema não pode ser resgatado")
-        }
-        if (!resultEmblema.reclaim) {
-            throw BusinessException("Emblema não disponível")
-        }
-        val result = repository.findAllByUserIdAndAchievementId(
-            userId, resultEmblema.id!!
-        )
-
-        if (result.isNotEmpty()) {
-            throw BusinessException("Emblema já adquirido")
-        }
-        return repository.save(
-            UsersAchievementsEntity(
-                createdAt = Date().time,
-                userId = userId,
-                achievementId = body.achievementId
-
             )
         )
     }
