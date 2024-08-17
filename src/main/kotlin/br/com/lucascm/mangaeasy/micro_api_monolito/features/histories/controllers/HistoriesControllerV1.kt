@@ -5,7 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -74,11 +74,11 @@ class HistoriesControllerV1 {
             )
             val result = if (find == null) {
                 repository.save(
-                    HistoriesEntity(
+                    HistoryEntity(
                         updatedAt = Date().time,
                         createdAt = Date().time,
                         userId = userAuth.userId,
-                        uniqueid = body.uniqueid,
+                        uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
                         isDeleted = body.isdeleted,
@@ -89,7 +89,7 @@ class HistoriesControllerV1 {
                 repository.save(
                     find.copy(
                         updatedAt = Date().time,
-                        uniqueid = body.uniqueid,
+                        uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
                         isDeleted = body.isdeleted,
