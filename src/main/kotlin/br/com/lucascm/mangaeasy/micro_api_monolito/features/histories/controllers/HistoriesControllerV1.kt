@@ -39,7 +39,7 @@ class HistoriesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                val find = repository.findByUserIdAndUniqueid(
+                val find = repository.findByUserIdAndUniqueId(
                     userId = userAuth.userId,
                     uniqueid = uniqueId
                 )
@@ -68,7 +68,7 @@ class HistoriesControllerV1 {
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            val find = repository.findByUserIdAndUniqueid(
+            val find = repository.findByUserIdAndUniqueId(
                 userId = userAuth.userId,
                 uniqueid = body.uniqueid
             )
@@ -82,7 +82,8 @@ class HistoriesControllerV1 {
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
                         isDeleted = body.isdeleted,
-                        manga = body.manga
+                        manga = body.manga,
+                        catalogId = null,
                     )
                 )
             } else {

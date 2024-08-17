@@ -45,7 +45,7 @@ class HistoryController {
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return repository.findByUserIdAndUniqueid(
+        return repository.findByUserIdAndUniqueId(
             userId = userId,
             uniqueid = uniqueId
         ) ?: throw BusinessException("Manga não encontrado")
@@ -80,7 +80,7 @@ class HistoryController {
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val result = repository.findByUserIdAndUniqueid(
+        val result = repository.findByUserIdAndUniqueId(
             userId = userId,
             uniqueid = body.uniqueId!!
         )
@@ -96,7 +96,8 @@ class HistoryController {
                 chaptersRead = body.chaptersRead,
                 currentChapter = body.currentChapter,
                 isDeleted = body.hasDeleted,
-                manga = body.manga
+                manga = body.manga,
+                catalogId = null,
             )
         )
     }
