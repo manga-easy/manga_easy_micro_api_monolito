@@ -23,7 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
-@RequestMapping("/users/{userId}/profiles")
+@RequestMapping("/profiles")
 @Tag(name = "Profiles")
 class ProfileController {
     @Autowired
@@ -44,7 +44,10 @@ class ProfileController {
     @Autowired
     lateinit var librariesRepository: LibrariesRepository
 
-    @GetMapping("/v1")
+    val notFoudMessage: String = "Perfil não encontrado"
+
+
+    @GetMapping("/v1/{userId}")
     fun getProfileByUser(@PathVariable userId: String): ProfileEntity {
         var result = profileRepository.findByUserId(userId)
         if (result == null) {
@@ -71,19 +74,16 @@ class ProfileController {
     @GetMapping("/v1/{id}")
     fun getProfileById(@PathVariable id: String): ProfileEntity {
         return profileRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Perfil não encontrado")
+            ?: throw BusinessException(notFoudMessage)
     }
 
     @PutMapping("/v1/{id}")
     fun updateProfile(
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: UpdateProfileDto,
-        @PathVariable userId: String,
         @PathVariable id: String
     ): ProfileEntity {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val find = profileRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Perfil não encontrado")
+        val find = getProfile(id, userAuth)
         return profileRepository.save(
             find.copy(
                 biography = body.biography,
@@ -99,17 +99,14 @@ class ProfileController {
     @PutMapping("/v1/{id}/images")
     fun handleFileUpload(
         @RequestPart file: MultipartFile?,
-        @PathVariable userId: String,
         @AuthenticationPrincipal userAuth: UserAuth,
         @PathVariable id: String
     ): ProfileEntity {
         var image: String? = null
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val find = profileRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Perfil não encontrado")
+        val find = getProfile(id, userAuth)
         if (file != null) {
-            bucketProfileRepository.saveImage(userId, file)
-            image = bucketProfileRepository.getLinkImage(userId)
+            bucketProfileRepository.saveImage(find.userId, file)
+            image = bucketProfileRepository.getLinkImage(find.userId)
         }
         return profileRepository.save(find.copy(picture = image))
     }
@@ -119,12 +116,9 @@ class ProfileController {
     fun updateFavorteManga(
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: FavoriteManga,
-        @PathVariable userId: String,
         @PathVariable id: String
     ): ProfileEntity {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val find = profileRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Perfil não encontrado")
+        val find = getProfile(id, userAuth)
         val mangas = find.mangasHighlight.toMutableList()
         mangas.removeIf { it.order == body.order }
         if (body.manga != null) {
@@ -143,12 +137,9 @@ class ProfileController {
     fun updateFavorteAchievement(
         @AuthenticationPrincipal userAuth: UserAuth,
         @RequestBody body: FavoriteAchievement,
-        @PathVariable userId: String,
         @PathVariable id: String
     ): ProfileEntity {
-        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val find = profileRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Perfil não encontrado")
+        val find = getProfile(id, userAuth)
         val achievements = find.achievementsHighlight.toMutableList()
         achievements.removeIf { it.order == body.order }
         if (body.achievement != null) {
@@ -160,5 +151,12 @@ class ProfileController {
                 achievementsHighlight = achievements,
             )
         )
+    }
+
+    private fun getProfile(id: String, userAuth: UserAuth): ProfileEntity {
+        val find = profileRepository.findById(id).getOrNull()
+            ?: throw BusinessException(notFoudMessage)
+        handlerPermissionUser.handleIsOwnerToken(userAuth, find.userId)
+        return find
     }
 }
