@@ -8,12 +8,15 @@ import org.hibernate.annotations.UuidGenerator
 
 @Entity
 @Table(name = "history")
-data class HistoriesEntity(
+data class HistoryEntity(
     @Id
     @UuidGenerator
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     val id: String? = null,
-    val uniqueid: String = "",
+    @Column(name = "uniqueid")
+    val uniqueId: String = "",
+
+    @Deprecated("Usar catalog_id")
     val manga: String = "",
 
     @Column(name = "user_id", nullable = false)
@@ -32,5 +35,8 @@ data class HistoriesEntity(
     val isDeleted: Boolean = false,
 
     @Column(name = "chapters_read", nullable = false)
-    val chaptersRead: String = ""
+    val chaptersRead: String = "",
+
+    @Column(name = "")
+    val catalogId: String?
 )

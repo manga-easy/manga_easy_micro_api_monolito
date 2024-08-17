@@ -13,10 +13,10 @@ data class HistoryV1Dto(
     val chapterlidos: String? = null
 ) {
     companion object {
-        fun fromEntity(entity: HistoriesEntity): HistoryV1Dto {
+        fun fromEntity(entity: HistoryEntity): HistoryV1Dto {
             return HistoryV1Dto(
                 uid = entity.id,
-                uniqueid = entity.uniqueid,
+                uniqueid = entity.uniqueId,
                 manga = entity.manga,
                 iduser = entity.userId,
                 currentchapter = entity.currentChapter,

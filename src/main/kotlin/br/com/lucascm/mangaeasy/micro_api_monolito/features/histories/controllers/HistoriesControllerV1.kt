@@ -5,7 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -39,7 +39,7 @@ class HistoriesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                val find = repository.findByUserIdAndUniqueid(
+                val find = repository.findByUserIdAndUniqueId(
                     userId = userAuth.userId,
                     uniqueid = uniqueId
                 )
@@ -68,28 +68,29 @@ class HistoriesControllerV1 {
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
-            val find = repository.findByUserIdAndUniqueid(
+            val find = repository.findByUserIdAndUniqueId(
                 userId = userAuth.userId,
                 uniqueid = body.uniqueid
             )
             val result = if (find == null) {
                 repository.save(
-                    HistoriesEntity(
+                    HistoryEntity(
                         updatedAt = Date().time,
                         createdAt = Date().time,
                         userId = userAuth.userId,
-                        uniqueid = body.uniqueid,
+                        uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
                         isDeleted = body.isdeleted,
-                        manga = body.manga
+                        manga = body.manga,
+                        catalogId = null,
                     )
                 )
             } else {
                 repository.save(
                     find.copy(
                         updatedAt = Date().time,
-                        uniqueid = body.uniqueid,
+                        uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
                         isDeleted = body.isdeleted,

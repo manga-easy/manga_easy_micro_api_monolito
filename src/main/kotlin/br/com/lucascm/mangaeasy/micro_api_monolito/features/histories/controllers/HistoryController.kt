@@ -3,7 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.controlle
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoriesEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.UpdateHistoryDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/users/{userId}/histories")
@@ -29,7 +30,7 @@ class HistoryController {
         @RequestParam limit: Int?,
         @RequestParam offset: Int?,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): List<HistoriesEntity> {
+    ): List<HistoryEntity> {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         return repository.findByUserId(
             userId = userId,
@@ -42,34 +43,32 @@ class HistoryController {
         @PathVariable uniqueId: String,
         @PathVariable userId: String,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): HistoriesEntity {
+    ): HistoryEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return repository.findByUserIdAndUniqueid(
+        return repository.findByUserIdAndUniqueId(
             userId = userId,
             uniqueid = uniqueId
         ) ?: throw BusinessException("Manga não encontrado")
     }
 
-    @PutMapping("/v1/{uniqueId}")
+    @PutMapping("/v1/{historyId}")
     fun update(
         @PathVariable userId: String,
-        @PathVariable uniqueId: String,
+        @PathVariable historyId: String,
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): HistoriesEntity {
+    ): HistoryEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val result = repository.findByUserIdAndUniqueid(
-            userId = userId,
-            uniqueid = uniqueId
-        ) ?: throw BusinessException("Manga não encontrado")
+        val result = repository.findById(historyId).getOrNull()
+            ?: throw BusinessException("Manga não encontrado")
         return repository.save(
             result.copy(
                 updatedAt = Date().time,
-                uniqueid = result.uniqueid,
                 chaptersRead = body.chaptersRead,
                 currentChapter = body.currentChapter,
                 isDeleted = body.hasDeleted,
-                manga = body.manga
+                manga = body.manga,
+                uniqueId = body.uniqueId
             )
         )
     }
@@ -79,9 +78,9 @@ class HistoryController {
         @PathVariable userId: String,
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): HistoriesEntity {
+    ): HistoryEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val result = repository.findByUserIdAndUniqueid(
+        val result = repository.findByUserIdAndUniqueId(
             userId = userId,
             uniqueid = body.uniqueId!!
         )
@@ -89,15 +88,16 @@ class HistoryController {
             throw BusinessException("Manga já cadastrado")
         }
         return repository.save(
-            HistoriesEntity(
+            HistoryEntity(
                 updatedAt = Date().time,
                 createdAt = Date().time,
                 userId = userAuth.userId,
-                uniqueid = body.uniqueId,
+                uniqueId = body.uniqueId,
                 chaptersRead = body.chaptersRead,
                 currentChapter = body.currentChapter,
                 isDeleted = body.hasDeleted,
-                manga = body.manga
+                manga = body.manga,
+                catalogId = null,
             )
         )
     }
