@@ -68,19 +68,6 @@ services:
       - "443:443"
     networks:
       - api_monolith
-  mongo:
-    image: mongo:7.0.0
-    container_name: mongodb
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
-    networks:
-      - api_monolith
-    volumes:
-      - mongo-db:/data/db
-    ports:
-      - "27017:27017"
   cache:
     image: redis:6.2-alpine
     container_name: redisdb
