@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProfileV1Repository : MongoRepository<ProfileV1Entity, String> {
-    fun findByIsV2(isV2: Boolean): List<ProfileV1Entity>
+    fun findByIsV2(isV2: Boolean?): List<ProfileV1Entity>
 }
