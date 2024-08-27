@@ -25,7 +25,6 @@ class MigrateProfileV2 {
         log.info("total de perfil: {}", profiles.size)
         if (profiles.isEmpty()) return
         profiles.forEach {
-            log.info("Perfil: {}", it)
             try {
                 profileRepository.save(
                     ProfileEntity(

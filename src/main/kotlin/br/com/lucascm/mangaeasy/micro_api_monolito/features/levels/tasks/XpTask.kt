@@ -32,7 +32,6 @@ class XpTask {
             while (true) {
                 val xp = xpRepository.countXpRanking(offset * 100)
                 if (xp.isEmpty()) break
-                log.info("---------- ${xp.size}")
                 for (i in xp) {
                     val userId = i["userId"].toString()
                     val profile = profileRepository.findByUserId(userId)
