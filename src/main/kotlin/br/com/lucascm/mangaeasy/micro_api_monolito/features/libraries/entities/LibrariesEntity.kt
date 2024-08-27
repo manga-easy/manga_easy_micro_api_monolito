@@ -30,5 +30,8 @@ data class LibrariesEntity(
     val createdAt: Long = 0,
 
     @Column(name = "is_deleted", nullable = false)
-    val hasDeleted: Boolean = false
+    val hasDeleted: Boolean = false,
+
+    @Column(name = "catalog_id")
+    val catalogId: String? = null
 )
