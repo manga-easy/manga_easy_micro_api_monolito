@@ -37,6 +37,6 @@ data class HistoryEntity(
     @Column(name = "chapters_read", nullable = false)
     val chaptersRead: String = "",
 
-    @Column(name = "")
-    val catalogId: String?
+    @Column(name = "catalog_id")
+    val catalogId: String? = null
 )
