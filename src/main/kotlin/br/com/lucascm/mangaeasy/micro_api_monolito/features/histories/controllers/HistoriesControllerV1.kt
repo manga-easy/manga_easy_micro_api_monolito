@@ -53,7 +53,7 @@ class HistoriesControllerV1 {
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
-                data = result.requireNoNulls().map { HistoryV1Dto.fromEntity(it) }.toList(),
+                data = result.filterNotNull().map { HistoryV1Dto.fromEntity(it) }.toList(),
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {

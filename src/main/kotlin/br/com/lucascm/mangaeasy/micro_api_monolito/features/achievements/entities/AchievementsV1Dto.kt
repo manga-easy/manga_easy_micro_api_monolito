@@ -29,12 +29,31 @@ data class AchievementsV1Dto(
                 benefits = entity.benefits,
                 disponivel = entity.reclaim,
                 categoria = entity.category,
-                time_cria = entity.totalAcquired,
+                time_cria = entity.createdAt,
                 createdat = entity.createdAt,
                 updatedat = entity.updatedAt,
                 adsoff = false,
                 type = "link"
             )
         }
+
+
+    }
+
+    fun toEntity(): AchievementsEntity {
+        return AchievementsEntity(
+            id = uid,
+            name = name,
+            rarity = rarity,
+            description = description,
+            percentRarity = percent,
+            url = url,
+            benefits = benefits,
+            reclaim = disponivel,
+            category = categoria,
+            createdAt = createdat ?: time_cria,
+            updatedAt = updatedat ?: time_cria,
+            totalAcquired = 0
+        )
     }
 }

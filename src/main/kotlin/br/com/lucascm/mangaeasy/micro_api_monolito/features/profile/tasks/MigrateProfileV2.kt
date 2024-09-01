@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.tasks
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteAchievement
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileV1Repository
@@ -28,7 +29,6 @@ class MigrateProfileV2 {
             try {
                 profileRepository.save(
                     ProfileEntity(
-                        id = it.id.toString(),
                         name = it.name,
                         userId = it.userID,
                         totalMangaRead = it.totalMangaRead,
@@ -37,7 +37,12 @@ class MigrateProfileV2 {
                         mangasHighlight = it.mangasHighlight,
                         visibleStatics = it.visibleStatics,
                         totalAchievements = it.totalAchievements,
-                        achievementsHighlight = it.achievementsHighlight,
+                        achievementsHighlight = it.achievementsHighlight.map { its ->
+                            FavoriteAchievement(
+                                order = its.order,
+                                achievement = its.achievement?.toEntity()
+                            )
+                        }.toList(),
                         visibleAchievements = it.visibleAchievements,
                         visibleMangas = it.visibleMangas,
                         totalXp = it.totalXp,
