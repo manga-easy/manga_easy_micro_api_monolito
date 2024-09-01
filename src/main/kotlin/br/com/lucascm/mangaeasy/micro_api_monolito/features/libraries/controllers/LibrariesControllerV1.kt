@@ -49,7 +49,7 @@ class LibrariesControllerV1 {
             return ResultEntity(
                 total = result.size,
                 status = StatusResultEnum.SUCCESS,
-                data = result.requireNoNulls().map { LibrariesV1Dto.fromEntity(it) }.toList(),
+                data = result.filterNotNull().map { LibrariesV1Dto.fromEntity(it) }.toList(),
                 message = "Listado com sucesso"
             )
         } catch (e: Exception) {
