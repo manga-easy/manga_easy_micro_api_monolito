@@ -6,7 +6,7 @@ import jakarta.persistence.Id
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Deprecated("Remover 0.18 -> 0.20")
+@Deprecated("Use ProfileEntity, remover 0.18 -> 0.20")
 @Document("profile")
 data class ProfileV1Entity(
     @Id
