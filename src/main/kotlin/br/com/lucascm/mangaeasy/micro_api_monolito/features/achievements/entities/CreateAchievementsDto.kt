@@ -16,7 +16,6 @@ data class CreateAchievementsDto(
         validateNonEmptyField(category, "categoria")
         validateNonEmptyField(benefits, "benefícios")
         validateNonEmptyField(description, "descrição")
-        validateNonEmptyField(url, "url")
         validateNonEmptyField(name, "nome")
         validateNonEmptyField(rarity, "raridade")
         validateNonEmptyField(category, "tipo")
