@@ -27,16 +27,11 @@ class HostsController {
     @GetMapping("/v1")
     fun list(
         @RequestParam status: String?,
-        @RequestParam isAll: Boolean = false,
-        @RequestParam hostId: Int?
     ): List<HostsEntity> {
-        if (isAll) {
-            return repository.findAll()
+        if (status != null) {
+            return repository.findByStatus(status)
         }
-        if (hostId != null) {
-            return repository.findByHostId(hostId)
-        }
-        return repository.findByStatus(status ?: "enable")
+        return repository.findAll()
     }
 
     @GetMapping("/v1/{id}")
