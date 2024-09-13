@@ -48,26 +48,13 @@ services:
       BUCKET_CONFIG: ${BUCKET_CONFIG}
     networks:
       - api_monolith
+      - kong-net
     volumes:
       - ./adc.json:/app/src/main/resources/adc.json
       - ./config:/app/src/main/resources/config
       - ./profile.pem:/app/src/main/resources/profile.pem
     ports:
       - "8080:8080"
-  nginx:
-    restart: always
-    container_name: gateway
-    image: nginx:latest
-    <<: *x-logging
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./certificate.pem:/etc/nginx/certificate.pem
-      - ./server.pem:/etc/nginx/server.pem
-      - web-dash:/etc/nginx/deploy
-    ports:
-      - "443:443"
-    networks:
-      - api_monolith
   mongo:
     image: mongo:7.0.0
     container_name: mongodb
@@ -95,7 +82,8 @@ services:
 
 networks:
   api_monolith:
-
+  kong-net:
+    external: true
 
 volumes:
   appwrite-mariadb:
@@ -103,11 +91,5 @@ volumes:
     driver: local
   mongo-db:
     driver: local
-  web-dash:
-    driver: local # Define the driver and options under the volume name
-    driver_opts:
-      type: none
-      device: ./web
-      o: bind
     # compose up -d --no-build --remove-orphans
     # .\gradlew clean build -x test
