@@ -3,6 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +24,20 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
     fun list(catalogId: String, page: Int): List<ListReviewDto> {
-        val result = reviewRepository.findByCatalogId(catalogId, PageRequest.of(page, 25))
+        val result = reviewRepository.findByCatalogId(
+            catalogId,
+            PageRequest.of(page, 25)
+        )
+        return getInfo(result)
+    }
+
+    @Cacheable(RedisCacheName.LIST_REVIEW_LAST)
+    fun listLast(catalogId: String): List<ListReviewDto> {
+        val result = reviewRepository.findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId)
+        return getInfo(result)
+    }
+
+    private fun getInfo(result: List<ReviewEntity>): List<ListReviewDto> {
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
             val profile = profileRepository.findByUserId(review.userId)

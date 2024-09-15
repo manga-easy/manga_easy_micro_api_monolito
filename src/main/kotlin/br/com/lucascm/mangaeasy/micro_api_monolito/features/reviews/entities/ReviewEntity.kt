@@ -25,7 +25,7 @@ data class ReviewEntity(
     val hasUpdated: Boolean = false,
     val rating: Double = 0.0,
     @Column(name = "updated_at")
-    val updatedAt: Long? = 0,
+    val updatedAt: Long = 0,
     @Column(name = "created_at")
-    val createdAt: Long? = 0,
+    val createdAt: Long = 0,
 )

@@ -38,6 +38,11 @@ class ReviewController {
         return reviewService.list(catalogId, page ?: 0)
     }
 
+    @GetMapping("/v1/last")
+    fun last(@PathVariable catalogId: String): List<ListReviewDto> {
+        return reviewService.listLast(catalogId)
+    }
+
     @PostMapping("/v1")
     fun create(
         @PathVariable catalogId: String,
