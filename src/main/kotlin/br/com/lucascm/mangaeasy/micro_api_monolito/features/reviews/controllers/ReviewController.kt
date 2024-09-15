@@ -59,23 +59,7 @@ class ReviewController {
         @RequestBody body: ReviewDto,
         @AuthenticationPrincipal userAuth: UserAuth,
     ): ReviewEntity {
-        val review = reviewRepository.findByCatalogIdAndUserId(catalogId, userAuth.userId)
-        if (review != null) {
-            throw BusinessException("Review já foi feito: ${review.catalogId}")
-        }
-        return reviewRepository.save(
-            ReviewEntity(
-                catalogId = catalogId,
-                createdAt = Date().time,
-                totalLikes = 0,
-                userId = userAuth.userId,
-                updatedAt = Date().time,
-                commentary = body.commentary,
-                rating = body.rating,
-                hasSpoiler = body.hasSpoiler,
-                hasUpdated = false
-            )
-        )
+        return reviewService.create(body, catalogId, userAuth.userId)
     }
 
     @PutMapping("/v1/{id}")
@@ -85,7 +69,7 @@ class ReviewController {
         @AuthenticationPrincipal userAuth: UserAuth,
     ): ReviewEntity {
         val review = reviewRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Avaliação não encontrada: $id")
+            ?: throw BusinessException("Avaliação não encontrada")
         return reviewRepository.save(
             review.copy(
                 commentary = body.commentary,
