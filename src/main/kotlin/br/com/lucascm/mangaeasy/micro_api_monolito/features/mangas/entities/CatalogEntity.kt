@@ -23,6 +23,8 @@ data class CatalogEntity(
     val totalLikes: Long = 0,
     @Column(name = "total_comments", nullable = false)
     val totalComments: Long = 0,
+    @Column(name = "total_reviews", nullable = false)
+    val totalReviews: Long = 0,
     val author: String = "",
     val thumb: String = "",
     val synopsis: String = "",
