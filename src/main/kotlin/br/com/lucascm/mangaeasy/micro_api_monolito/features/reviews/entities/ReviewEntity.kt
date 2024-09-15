@@ -18,14 +18,15 @@ data class ReviewEntity(
     @Column(nullable = false, name = "user_id")
     val userId: String = "",
     val commentary: String? = null,
+    @Column(name = "total_likes", nullable = false)
     val totalLikes: Long = 0,
     @Column(nullable = false, name = "is_spoiler")
     val hasSpoiler: Boolean = false,
     @Column(nullable = false, name = "is_updated")
     val hasUpdated: Boolean = false,
     val rating: Double = 0.0,
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     val updatedAt: Long = 0,
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     val createdAt: Long = 0,
 )
