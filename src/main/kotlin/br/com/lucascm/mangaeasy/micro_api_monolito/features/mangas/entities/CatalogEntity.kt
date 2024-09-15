@@ -16,20 +16,22 @@ data class CatalogEntity(
     val name: String = "",
     val uniqueid: String = "",
     @Column(name = "last_chapter")
-    val lastChapter: String = "",
-    @Column(name = "total_views")
+    val lastChapter: String? = null,
+    @Column(name = "total_views", nullable = false)
     val totalViews: Long = 0,
-    @Column(name = "total_likes")
+    @Column(name = "total_likes", nullable = false)
     val totalLikes: Long = 0,
+    @Column(name = "total_comments", nullable = false)
+    val totalComments: Long = 0,
     val author: String = "",
     val thumb: String = "",
     val synopsis: String = "",
     val ratio: Double = 0.0,
     val scans: String = "",
-    @Column(name = "updated_at")
-    val updatedAt: Long? = 0,
-    @Column(name = "created_at")
-    val createdAt: Long? = 0,
+    @Column(name = "updated_at", nullable = false)
+    val updatedAt: Long = 0,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Long = 0,
     val genres: String = "",
     val year: Long? = null,
 )
