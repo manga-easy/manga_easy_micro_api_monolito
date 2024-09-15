@@ -50,7 +50,7 @@ class ReviewService {
         val review = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
         if (review != null) {
             throw BusinessException(
-                "Você já avaliou essa obra!, As avaliações demoram cerca de duas horas para serem contabilizadas."
+                "Você já avaliou essa obra! As avaliações são contabilizadas em cerca de duas horas."
             )
         }
 
