@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
+
 interface ReviewRepository : JpaRepository<ReviewEntity, String> {
     fun findByCatalogIdAndUserId(
         catalogId: String,
@@ -25,4 +26,7 @@ interface ReviewRepository : JpaRepository<ReviewEntity, String> {
         """
     )
     fun countByCatalogId(@Param("catalogId") catalogId: String): Long
+
+    fun findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId: String): List<ReviewEntity>
+
 }

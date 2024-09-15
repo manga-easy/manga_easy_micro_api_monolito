@@ -38,29 +38,28 @@ class ReviewController {
         return reviewService.list(catalogId, page ?: 0)
     }
 
+    @GetMapping("/v1/users/{userId}")
+    fun findByUser(
+        @PathVariable catalogId: String,
+        @AuthenticationPrincipal userAuth: UserAuth,
+        @PathVariable userId: String,
+    ): ReviewEntity? {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
+    }
+
+    @GetMapping("/v1/last")
+    fun last(@PathVariable catalogId: String): List<ListReviewDto> {
+        return reviewService.listLast(catalogId)
+    }
+
     @PostMapping("/v1")
     fun create(
         @PathVariable catalogId: String,
         @RequestBody body: ReviewDto,
         @AuthenticationPrincipal userAuth: UserAuth,
     ): ReviewEntity {
-        val review = reviewRepository.findByCatalogIdAndUserId(catalogId, userAuth.userId)
-        if (review != null) {
-            throw BusinessException("Review já foi feito: ${review.catalogId}")
-        }
-        return reviewRepository.save(
-            ReviewEntity(
-                catalogId = catalogId,
-                createdAt = Date().time,
-                totalLikes = 0,
-                userId = userAuth.userId,
-                updatedAt = Date().time,
-                commentary = body.commentary,
-                rating = body.rating,
-                hasSpoiler = body.hasSpoiler,
-                hasUpdated = false
-            )
-        )
+        return reviewService.create(body, catalogId, userAuth.userId)
     }
 
     @PutMapping("/v1/{id}")
@@ -70,7 +69,7 @@ class ReviewController {
         @AuthenticationPrincipal userAuth: UserAuth,
     ): ReviewEntity {
         val review = reviewRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Avaliação não encontrada: $id")
+            ?: throw BusinessException("Avaliação não encontrada")
         return reviewRepository.save(
             review.copy(
                 commentary = body.commentary,
