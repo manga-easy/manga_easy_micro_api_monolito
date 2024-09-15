@@ -38,6 +38,16 @@ class ReviewController {
         return reviewService.list(catalogId, page ?: 0)
     }
 
+    @GetMapping("/v1/users/{userId}")
+    fun findByUser(
+        @PathVariable catalogId: String,
+        @AuthenticationPrincipal userAuth: UserAuth,
+        @PathVariable userId: String,
+    ): ReviewEntity? {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
+    }
+
     @GetMapping("/v1/last")
     fun last(@PathVariable catalogId: String): List<ListReviewDto> {
         return reviewService.listLast(catalogId)
