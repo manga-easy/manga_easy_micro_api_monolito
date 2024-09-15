@@ -84,6 +84,9 @@ class ProfileController {
         @PathVariable id: String
     ): ProfileEntity {
         val find = getProfile(id, userAuth)
+        if (body.name == null || body.name == "") {
+            throw BusinessException("Nome não pode ser vazio")
+        }
         return profileRepository.save(
             find.copy(
                 biography = body.biography,
