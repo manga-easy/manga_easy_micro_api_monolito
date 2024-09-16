@@ -60,7 +60,7 @@ class XpController {
             XpConsumerDto(
                 uniqueID = body.uniqueID,
                 chapterNumber = body.chapterNumber,
-                useId = userId,
+                userId = userId,
             )
         )
 

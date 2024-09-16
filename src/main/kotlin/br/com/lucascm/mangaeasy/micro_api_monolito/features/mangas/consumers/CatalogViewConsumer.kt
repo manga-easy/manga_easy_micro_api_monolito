@@ -14,7 +14,7 @@ class CatalogViewConsumer {
     @Autowired
     lateinit var viewMangaRepository: CatalogViewRepository
 
-    @RqueueListener(QueueName.CATALOG_VIEW, numRetries = "3")
+    @RqueueListener(QueueName.CATALOG_VIEW, numRetries = "3", concurrency = "1")
     fun onMessage(view: CatalogsViewsConsumerDto) {
         val result = viewMangaRepository.findByCatalogIdAndUserId(view.catalogId, view.userId)
         if (result == null) {

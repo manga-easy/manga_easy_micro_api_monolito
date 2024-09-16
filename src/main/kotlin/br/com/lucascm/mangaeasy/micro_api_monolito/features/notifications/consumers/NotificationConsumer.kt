@@ -18,7 +18,7 @@ class NotificationConsumer {
     lateinit var repository: NotificationsRepository
     private val log = KotlinLogging.logger("NotificationConsumer")
 
-    @RqueueListener(QueueName.NOTIFICATION, numRetries = "0")
+    @RqueueListener(QueueName.NOTIFICATION, numRetries = "0", concurrency = "1")
     fun onMessage(notification: NotificationsEntity) {
         try {
             // This registration token comes from the client FCM SDKs.
