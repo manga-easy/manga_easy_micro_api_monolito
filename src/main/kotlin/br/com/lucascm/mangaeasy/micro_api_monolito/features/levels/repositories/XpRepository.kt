@@ -35,16 +35,4 @@ interface XpRepository : JpaRepository<XpEntity, Long> {
     ): Long?
 
     fun findByUserIDAndUniqueIDAndChapterNumber(userID: String, uniqueID: String, chapterNumber: String): List<XpEntity>
-
-    @Query(
-        """
-        SELECT sum(quantity) as Total, userID as userId
-        FROM XpEntity
-        group by userID
-        ORDER by Total desc
-        LIMIT 100
-        OFFSET :offset
-        """
-    )
-    fun countXpRanking(offset: Long): List<Map<String, Any>>
 }
