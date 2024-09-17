@@ -9,6 +9,7 @@ import com.github.sonus21.rqueue.annotation.RqueueListener
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.util.*
 import kotlin.random.Random
 
@@ -57,7 +58,8 @@ class XpConsumer {
                 )
             )
         }
-        log.warn("---------- onMessage finish ----------------")
+        Thread.sleep(Duration.ofSeconds(5).toMillis())
+        log.warn("---------- onMessage finish quantity: {} ----------------", resultFirst.quantity)
     }
 
     private fun updateTotalXp(userId: String) {

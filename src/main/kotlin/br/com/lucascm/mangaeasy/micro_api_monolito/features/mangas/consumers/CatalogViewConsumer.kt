@@ -7,6 +7,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.
 import com.github.sonus21.rqueue.annotation.RqueueListener
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.util.*
 
 @Component
@@ -26,5 +27,6 @@ class CatalogViewConsumer {
                 )
             )
         }
+        Thread.sleep(Duration.ofSeconds(5).toMillis())
     }
 }

@@ -11,6 +11,7 @@ import com.google.firebase.messaging.Notification
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 @Component
 class NotificationConsumer {
@@ -52,5 +53,6 @@ class NotificationConsumer {
             )
 
         }
+        Thread.sleep(Duration.ofSeconds(5).toMillis())
     }
 }
