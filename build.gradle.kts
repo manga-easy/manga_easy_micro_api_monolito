@@ -50,7 +50,7 @@ dependencies {
     implementation("net.swiftzer.semver:semver:2.0.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     implementation("org.springdoc:springdoc-openapi-starter-common:2.5.0")
-    implementation("com.github.sonus21:rqueue-spring:3.1.1-RELEASE")
+    implementation("com.github.sonus21:rqueue-spring:3.2.0-RELEASE")
 }
 
 tasks.withType<KotlinCompile> {
