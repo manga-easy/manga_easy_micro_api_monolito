@@ -22,12 +22,12 @@ class XpConsumer {
     lateinit var profileRepository: ProfileRepository
     val log = KotlinLogging.logger("XpConsumer")
 
-    @RqueueListener(QueueName.XP, numRetries = "3")
+    @RqueueListener(QueueName.XP, numRetries = "3", concurrency = "1")
     fun onMessage(xp: XpConsumerDto) {
-        log.info("---------- onMessage init ----------------")
-        log.info("---------- onMessage xp {} ----------------", xp)
+        log.warn("---------- onMessage init ----------------")
+        log.warn("---------- onMessage xp {} ----------------", xp)
         val result = xpRepository.findByUserIDAndUniqueIDAndChapterNumber(
-            xp.useId,
+            xp.userId,
             xp.uniqueID,
             xp.chapterNumber
         )
@@ -36,22 +36,19 @@ class XpConsumer {
                 XpEntity(
                     uniqueID = xp.uniqueID,
                     chapterNumber = xp.chapterNumber,
-                    userID = xp.useId,
+                    userID = xp.userId,
                     createdAt = Date().time,
                     updatedAt = Date().time,
                     quantity = Random.nextInt(1, 6).toLong(),
                     totalMinutes = 1
                 )
             )
-            val profile = profileRepository.findByUserId(xp.useId)
-            if (profile != null) {
-                val totalXp = xpRepository.countXpTotalByUserId(xp.useId)
-                profileRepository.save(profile.copy(totalXp = totalXp!!))
-            }
+            updateTotalXp(xp.userId)
             return
         }
         val resultFirst = result.first()
         if (resultFirst.quantity < 50) {
+            updateTotalXp(xp.userId)
             xpRepository.save(
                 resultFirst.copy(
                     updatedAt = Date().time,
@@ -60,6 +57,14 @@ class XpConsumer {
                 )
             )
         }
-        log.info("---------- onMessage finish ----------------")
+        log.warn("---------- onMessage finish ----------------")
+    }
+
+    private fun updateTotalXp(userId: String) {
+        val profile = profileRepository.findByUserId(userId)
+        if (profile != null) {
+            val totalXp = xpRepository.countXpTotalByUserId(userId)
+            profileRepository.save(profile.copy(totalXp = totalXp!!))
+        }
     }
 }

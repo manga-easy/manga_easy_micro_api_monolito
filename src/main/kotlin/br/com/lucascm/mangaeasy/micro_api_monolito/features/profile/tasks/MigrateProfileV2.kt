@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.concurrent.TimeUnit
 
 @Component
 class MigrateProfileV2 {
@@ -19,7 +18,7 @@ class MigrateProfileV2 {
     lateinit var profileV1Repository: ProfileV1Repository
     val log = LoggerFactory.getLogger(MigrateProfileV2::class.java)
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    @Scheduled(cron = "0 0 4 * * *")
     fun run() {
         log.info("------------------ inicia MigrateProfileV2 --------------")
         val profiles = profileV1Repository.findByIsV2(null)

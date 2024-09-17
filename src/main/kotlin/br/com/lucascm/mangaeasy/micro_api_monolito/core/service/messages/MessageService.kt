@@ -15,11 +15,11 @@ class MessageService {
     lateinit var rqueueMessageEnqueuer: RqueueMessageEnqueuer
 
     fun sendXp(xp: XpConsumerDto) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.XP, xp, Duration.ofSeconds(5))
+        rqueueMessageEnqueuer.enqueueIn(QueueName.XP, xp, Duration.ofSeconds(10))
     }
 
     fun sendViewManga(view: CatalogsViewsConsumerDto) {
-        rqueueMessageEnqueuer.enqueueIn(QueueName.CATALOG_VIEW, view, Duration.ofSeconds(5))
+        rqueueMessageEnqueuer.enqueueIn(QueueName.CATALOG_VIEW, view, Duration.ofSeconds(10))
     }
 
     fun sendNotification(notification: NotificationsEntity) {

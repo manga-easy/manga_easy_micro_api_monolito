@@ -76,7 +76,7 @@ class LevelController {
                 XpConsumerDto(
                     uniqueID = body.uniqueID,
                     chapterNumber = body.chapterNumber,
-                    useId = userID,
+                    userId = userID,
                 )
             )
             ResultEntity(listOf(false))

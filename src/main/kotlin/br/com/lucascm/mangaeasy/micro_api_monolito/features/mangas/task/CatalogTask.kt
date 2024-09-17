@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
+import kotlin.time.measureTimedValue
 
 @Component
 class CatalogTask {
@@ -34,8 +35,8 @@ class CatalogTask {
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
-        chainDetailsCache(0)
-        log.info("------------------ Finish CatalogTask --------------")
+        val time = measureTimedValue { chainDetailsCache(0) }
+        log.info("------------------ finish CatalogTask time: {} --------------", time.duration.inWholeMinutes)
     }
 
     private fun chainDetailsCache(page: Int) {
@@ -102,8 +103,8 @@ class CatalogTask {
     @Scheduled(cron = "0 0 4 * * *")
     fun deleteMangaInative() {
         log.info("------------------ Initial deleteMangaInative --------------")
-        val result = catalogRepository.deleteMangaInactive()
-        log.info("------- {}", result)
+        //val result = catalogRepository.deleteMangaInactive()
+        // log.info("------- {}", result)
         log.info("------------------ Finish deleteMangaInative --------------")
     }
 
