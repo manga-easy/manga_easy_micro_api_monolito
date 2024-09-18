@@ -41,6 +41,7 @@ class ProfileService {
         if (profile == null) {
             val resultV1 = profileV1Repository.findByUserID(userId)
             profile = resultV1?.toV2()
+            if (profile != null) profileRepository.save(profile)
         }
         if (profile == null) {
             profile = createProfile(userId)
