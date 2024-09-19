@@ -13,8 +13,8 @@ interface ProfileRepository : JpaRepository<ProfileEntity, String> {
         """
         select user_id, total_xp, name, picture from profile p 
         WHERE total_xp <> 0 
-        ORDER by total_xp 
-        DESC limit 100
+        ORDER by total_xp DESC
+        limit 100
         OFFSET :offset
         """,
         nativeQuery = true,
