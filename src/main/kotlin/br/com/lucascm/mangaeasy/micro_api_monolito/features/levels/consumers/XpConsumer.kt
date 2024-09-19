@@ -4,7 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.QueueNa
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import com.github.sonus21.rqueue.annotation.RqueueListener
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +19,7 @@ class XpConsumer {
     lateinit var xpRepository: XpRepository
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var profileService: ProfileService
     val log = KotlinLogging.logger("XpConsumer")
 
     @RqueueListener(QueueName.XP, numRetries = "3", concurrency = "1")
@@ -61,10 +61,9 @@ class XpConsumer {
     }
 
     private fun updateTotalXp(userId: String) {
-        val profile = profileRepository.findByUserId(userId)
-        if (profile != null) {
-            val totalXp = xpRepository.countXpTotalByUserId(userId)
-            profileRepository.save(profile.copy(totalXp = totalXp!!))
-        }
+        val profile = profileService.findByUserId(userId)
+        val totalXp = xpRepository.countXpTotalByUserId(userId)
+        profileService.save(profile.copy(totalXp = totalXp!!))
+
     }
 }

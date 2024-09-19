@@ -25,6 +25,8 @@ class RedisConfig {
             RedisCacheName.RECOMMENDATIONS_ANILIST
                     to config(Duration.ofDays(30)),
             RedisCacheName.RECOMMENDATIONS
+                    to config(Duration.ofDays(1)),
+            RedisCacheName.PROFILE
                     to config(Duration.ofDays(1))
         )
         return RedisCacheManager.builder(connectionFactory)

@@ -31,4 +31,30 @@ data class ProfileV1Entity(
     var visibleAchievements: Boolean = true,
     var visibleMangas: Boolean = true,
     var isV2: Boolean = false
-)
+) {
+    fun toV2(): ProfileEntity {
+        return ProfileEntity(
+            id = _id?.toString(),
+            role = role,
+            biography = biography,
+            userId = userID,
+            name = name,
+            updatedAt = updatedAt ?: 0,
+            createdAt = createdAt ?: 0,
+            picture = picture,
+            totalXp = totalXp,
+            visibleMangas = visibleMangas,
+            visibleAchievements = visibleAchievements,
+            achievementsHighlight = achievementsHighlight.map {
+                FavoriteAchievement(
+                    order = it.order,
+                    achievement = it.achievement?.toEntity()
+                )
+            }.toList(),
+            totalAchievements = totalAchievements,
+            visibleStatics = visibleStatics,
+            mangasHighlight = mangasHighlight,
+            totalMangaRead = totalMangaRead
+        )
+    }
+}

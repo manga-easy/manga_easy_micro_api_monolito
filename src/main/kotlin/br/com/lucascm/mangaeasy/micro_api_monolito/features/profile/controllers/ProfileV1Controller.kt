@@ -1,26 +1,21 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteAchievement
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteManga
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketProfileRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UserRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.time.Instant
 import java.util.*
 
 
@@ -33,46 +28,19 @@ class ProfileV1Controller {
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
-
-    @Autowired
     lateinit var handleExceptions: HandleExceptions
-
-    @Autowired
-    lateinit var userRepository: UserRepository
 
     @Autowired
     lateinit var bucketProfileRepository: BucketProfileRepository
 
     @Autowired
-    lateinit var usersAchievementsRepository: UsersAchievementsRepository
-
-    @Autowired
-    lateinit var librariesRepository: LibrariesRepository
+    lateinit var profileService: ProfileService
 
     @GetMapping("/{userID}")
     @ResponseBody
     fun getProfile(@PathVariable userID: String): ResultEntity {
         return try {
-            var result = profileRepository.findByUserId(userID)
-            if (result == null) {
-                val user = userRepository.getId(userID)
-                val totalMangaRead = librariesRepository.countByStatusAndUserId(userID)
-                val totalAchievements = usersAchievementsRepository.countByUserId(userID)
-                result = ProfileEntity(
-                    updatedAt = Date().time,
-                    biography = "",
-                    createdAt = Date.from(Instant.parse(user.registration)).time,
-                    achievementsHighlight = listOf(),
-                    mangasHighlight = listOf(),
-                    userId = userID,
-                    totalMangaRead = totalMangaRead,
-                    totalAchievements = totalAchievements,
-                    role = "Aventureiro",
-                    totalXp = 0,
-                )
-                profileRepository.save(result)
-            }
+            val result = profileService.findByUserId(userID)
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(ProfileV1Dto.fromEntity(result)),
@@ -93,9 +61,8 @@ class ProfileV1Controller {
     ): ResultEntity {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
-            val find = profileRepository.findByUserId(userID)
-                ?: throw BusinessException("Perfil não encontrado")
-            val result = profileRepository.save(
+            val find = profileService.findByUserId(userID)
+            val result = profileService.save(
                 find.copy(
                     biography = body.biography,
                     updatedAt = Date().time,
@@ -126,12 +93,12 @@ class ProfileV1Controller {
             var image: String? = null
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find: ProfileEntity =
-                profileRepository.findByUserId(userID) ?: throw BusinessException("Perfil não encontrado")
+                profileService.findByUserId(userID)
             if (file != null) {
                 bucketProfileRepository.saveImage(userID, file)
                 image = bucketProfileRepository.getLinkImage(userID)
             }
-            val result = profileRepository.save(find.copy(picture = image))
+            val result = profileService.save(find.copy(picture = image))
             ResultEntity(
                 status = StatusResultEnum.SUCCESS,
                 data = listOf(ProfileV1Dto.fromEntity(result)),
@@ -152,13 +119,13 @@ class ProfileV1Controller {
     ): ResultEntity {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
-            val find = profileRepository.findByUserId(userID) ?: throw BusinessException("Perfil não encontrado")
+            val find = profileService.findByUserId(userID)
             val mangas = find.mangasHighlight.toMutableList()
             mangas.removeIf { it.order == body.order }
             if (body.manga != null) {
                 mangas.add(body)
             }
-            val result = profileRepository.save(
+            val result = profileService.save(
                 find.copy(
                     updatedAt = Date().time,
                     mangasHighlight = mangas,
@@ -179,13 +146,13 @@ class ProfileV1Controller {
     ): ResultEntity {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
-            val find = profileRepository.findByUserId(userID) ?: throw BusinessException("Perfil não encontrado")
+            val find = profileService.findByUserId(userID)
             val achievements = find.achievementsHighlight.toMutableList()
             achievements.removeIf { it.order == body.order }
             if (body.achievement != null) {
                 achievements.add(body)
             }
-            val result = profileRepository.save(
+            val result = profileService.save(
                 find.copy(
                     updatedAt = Date().time,
                     achievementsHighlight = achievements,

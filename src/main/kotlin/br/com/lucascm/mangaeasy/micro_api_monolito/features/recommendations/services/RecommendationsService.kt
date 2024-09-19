@@ -4,7 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.CreateRecommendationDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
@@ -32,7 +32,7 @@ class RecommendationsService {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var profileService: ProfileService
 
     @Autowired
     lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
@@ -43,10 +43,8 @@ class RecommendationsService {
         val result = recommendationsRepository.findAll(pageRequest).content
         for (recommendation in result) {
             if (recommendation.artistId != null) {
-                val user = profileRepository.findByUserId(recommendation.artistId)
-                if (user != null) {
-                    recommendation.artistName = user.name
-                }
+                val user = profileService.findByUserId(recommendation.artistId)
+                recommendation.artistName = user.name
             }
         }
         return result
@@ -56,10 +54,8 @@ class RecommendationsService {
         val recommendation = recommendationsRepository.findById(id).getOrNull()
             ?: throw BusinessException("Permission não encontrado")
         if (recommendation.artistId != null) {
-            val user = profileRepository.findByUserId(recommendation.artistId)
-            if (user != null) {
-                recommendation.artistName = user.name
-            }
+            val user = profileService.findByUserId(recommendation.artistId)
+            recommendation.artistName = user.name
         }
         return recommendation
     }
@@ -68,8 +64,7 @@ class RecommendationsService {
     fun update(body: CreateRecommendationDto, id: String): RecommendationsEntity {
         val result = recommendationsRepository.findById(id)
         if (!result.isPresent) throw BusinessException("Recomendação não encontrado")
-        val user = profileRepository.findByUserId(body.artistId)
-            ?: throw BusinessException("Artista não tem perfil")
+        val user = profileService.findByUserId(body.artistId)
         return recommendationsRepository.save(
             RecommendationsEntity(
                 title = body.title,
@@ -103,8 +98,7 @@ class RecommendationsService {
         if (resultVCheck != null) {
             throw BusinessException("Mangá já tem recomendação")
         }
-        val user = profileRepository.findByUserId(body.artistId)
-            ?: throw BusinessException("Artista não tem perfil")
+        val user = profileService.findByUserId(body.artistId)
         return recommendationsRepository.save(
             RecommendationsEntity(
                 createdAt = Date().time,

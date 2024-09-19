@@ -2,7 +2,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
@@ -20,7 +20,7 @@ class ReviewService {
     lateinit var reviewRepository: ReviewRepository
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var profileService: ProfileService
 
     @Autowired
     lateinit var likeReviewRepository: ReviewLikeRepository
@@ -41,8 +41,8 @@ class ReviewService {
     }
 
     fun create(body: ReviewDto, catalogId: String, userId: String): ReviewEntity {
-        val profile = profileRepository.findByUserId(userId)
-        if (profile?.name == null || profile.name == "") {
+        val profile = profileService.findByUserId(userId)
+        if (profile.name == null || profile.name == "") {
             throw BusinessException(
                 "Defina um nome no seu perfil para poder realizar uma avaliação"
             )
@@ -72,13 +72,13 @@ class ReviewService {
     private fun getInfo(result: List<ReviewEntity>): List<ListReviewDto> {
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
-            val profile = profileRepository.findByUserId(review.userId)
+            val profile = profileService.findByUserId(review.userId)
             val totalLike = likeReviewRepository.countByReviewId(review.catalogId)
             list.add(
                 ListReviewDto(
                     review.copy(totalLikes = totalLike),
-                    profile?.name,
-                    profile?.picture
+                    profile.name,
+                    profile.picture
                 )
             )
         }
