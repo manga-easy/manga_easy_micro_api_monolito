@@ -47,7 +47,13 @@ class CatalogsController {
     @GetMapping("/v1/{id}")
     fun getById(@PathVariable id: String): CatalogEntity {
         return catalogRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Host não encontrado")
+            ?: throw BusinessException("Manga não encontrado")
+    }
+
+    @GetMapping("/v1/manga/{uniqueId}")
+    fun getByUniqueId(@PathVariable uniqueId: String): CatalogEntity {
+        return catalogService.getByuniqueId(uniqueId)
+            ?: throw BusinessException("Manga não encontrado")
     }
 
     @GetMapping("/v1/over-18")

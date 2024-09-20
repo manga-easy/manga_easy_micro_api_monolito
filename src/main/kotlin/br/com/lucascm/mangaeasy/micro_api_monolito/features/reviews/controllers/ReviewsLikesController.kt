@@ -1,6 +1,8 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.FoundReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewLikeEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewLikeRepository
@@ -16,6 +18,9 @@ import kotlin.jvm.optionals.getOrNull
 @RequestMapping("/reviews/{reviewId}/likes")
 @Tag(name = "Reviews")
 class ReviewsLikesController {
+    @Autowired
+    lateinit var handlerPermissionUser: HandlerPermissionUser
+
     @Autowired
     lateinit var reviewLikeRepository: ReviewLikeRepository
 
@@ -44,7 +49,10 @@ class ReviewsLikesController {
     }
 
     @DeleteMapping("/v1/{id}")
-    fun delete(@PathVariable id: Long) {
+    fun delete(@PathVariable id: Long, @AuthenticationPrincipal userAuth: UserAuth) {
+        val like = reviewLikeRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Like não encontrado")
+        handlerPermissionUser.handleIsOwnerToken(userAuth, like.userId)
         return reviewLikeRepository.deleteById(id)
     }
 }

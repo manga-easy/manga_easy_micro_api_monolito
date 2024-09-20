@@ -47,24 +47,17 @@ class ProfileService {
             profile = createProfile(userId)
             return profileRepository.save(profile)
         }
-        val totalMangaRead = librariesRepository.countByStatusAndUserId(userId)
-        val totalAchievements = usersAchievementsRepository.countByUserId(userId)
-        val totalXp = xpRepository.countXpTotalByUserId(userId)
-        return profile.copy(
-            totalMangaRead = totalMangaRead,
-            totalAchievements = totalAchievements,
-            totalXp = totalXp ?: 0,
-        )
+        return updateTotals(profile)
     }
 
     fun findById(id: String): ProfileEntity? {
         val result = profileRepository.findById(id)
         if (result.isPresent) {
-            return result.get()
+            return updateTotals(result.get())
         }
         val resultV1 = profileV1Repository.findById(id)
         if (resultV1.isPresent) {
-            return resultV1.get().toV2()
+            return updateTotals(resultV1.get().toV2())
         }
         return null
     }
@@ -72,6 +65,17 @@ class ProfileService {
     @CacheEvict(value = [RedisCacheName.PROFILE], key = "#profile.userId")
     fun save(profile: ProfileEntity): ProfileEntity {
         return profileRepository.save(profile)
+    }
+
+    private fun updateTotals(profile: ProfileEntity): ProfileEntity {
+        val totalMangaRead = librariesRepository.countByStatusAndUserId(profile.userId)
+        val totalAchievements = usersAchievementsRepository.countByUserId(profile.userId)
+        val totalXp = xpRepository.countXpTotalByUserId(profile.userId)
+        return profile.copy(
+            totalMangaRead = totalMangaRead,
+            totalAchievements = totalAchievements,
+            totalXp = totalXp ?: 0,
+        )
     }
 
     private fun createProfile(userId: String): ProfileEntity {

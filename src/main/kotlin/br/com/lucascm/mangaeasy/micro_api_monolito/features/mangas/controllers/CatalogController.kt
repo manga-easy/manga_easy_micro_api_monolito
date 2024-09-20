@@ -43,7 +43,6 @@ class CatalogController {
                 isAdult = isAdult ?: false,
                 limit = limit,
                 page = page,
-                uniqueid = uniqueid,
                 yearAt = yearAt,
                 yearFrom = yearFrom,
                 scans = scans,
