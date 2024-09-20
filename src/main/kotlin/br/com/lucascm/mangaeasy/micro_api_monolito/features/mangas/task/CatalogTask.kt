@@ -4,9 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.Gende
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogViewRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -24,13 +22,6 @@ class CatalogTask {
 
     @Autowired
     lateinit var catalogRepository: CatalogRepository
-
-
-    @Autowired
-    lateinit var viewMangaRepository: CatalogViewRepository
-
-    @Autowired
-    lateinit var likeMangaRepository: CatalogLikeRepository
 
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
@@ -74,8 +65,6 @@ class CatalogTask {
                     )
                 )
             } else {
-                val totalLikes = likeMangaRepository.countByCatalogId(catalog.id!!)
-                val totalViews = viewMangaRepository.countByCatalogId(catalog.id)
                 catalogRepository.save(
                     catalog.copy(
                         updatedAt = Date().time,
@@ -85,9 +74,7 @@ class CatalogTask {
                         scans = manga.data.scans,
                         synopsis = manga.data.sinopse,
                         year = manga.data.ano.toLongOrNull(),
-                        author = manga.data.autor,
-                        totalLikes = totalLikes,
-                        totalViews = totalViews,
+                        author = manga.data.autor
                     )
                 )
             }
