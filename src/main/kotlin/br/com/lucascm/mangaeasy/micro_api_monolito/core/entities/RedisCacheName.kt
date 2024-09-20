@@ -8,7 +8,9 @@ class RedisCacheName {
         const val RECOMMENDATIONS_ANILIST = "recommendations-anilist"
         const val RECOMMENDATIONS = "recommendations"
         const val LIST_REVIEW_LAST = "list-review-last"
+        const val REVIEW_RATING_STATISTICS = "review-rating-statistics"
         const val PROFILE = "profile"
+        const val CATALOG = "catalog"
     }
 
 }

@@ -5,6 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewRatingStatistics
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
@@ -38,6 +39,36 @@ class ReviewService {
     fun listLast(catalogId: String): List<ListReviewDto> {
         val result = reviewRepository.findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId)
         return getInfo(result)
+    }
+
+    @Cacheable(RedisCacheName.REVIEW_RATING_STATISTICS, key = "#catalogId")
+    fun ratingStatisticsByCatalog(catalogId: String): ReviewRatingStatistics {
+        val result = reviewRepository.ratingStatisticsByCatalog(catalogId)
+        return ReviewRatingStatistics(
+            rating = result["rating"] as Double,
+            quantity = result["quantity"].toString().toLong(),
+            quantity1 = result["quantity1"].toString().toLong(),
+            quantity2 = result["quantity2"].toString().toLong(),
+            quantity3 = result["quantity3"].toString().toLong(),
+            quantity4 = result["quantity4"].toString().toLong(),
+            quantity5 = result["quantity5"].toString().toLong(),
+            rating1 = result["rating1"] as Double,
+            rating2 = result["rating2"] as Double,
+            rating3 = result["rating3"] as Double,
+            rating4 = result["rating4"] as Double,
+            rating5 = result["rating5"] as Double
+        )
+    }
+
+    fun findByCatalogIdAndUserId(
+        catalogId: String,
+        userId: String,
+    ): ReviewEntity? {
+        val result = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
+            ?: return null
+        val totalLikes = likeReviewRepository.countByReviewId(catalogId)
+        return reviewRepository.save(result.copy(totalLikes = totalLikes))
+
     }
 
     fun create(body: ReviewDto, catalogId: String, userId: String): ReviewEntity {

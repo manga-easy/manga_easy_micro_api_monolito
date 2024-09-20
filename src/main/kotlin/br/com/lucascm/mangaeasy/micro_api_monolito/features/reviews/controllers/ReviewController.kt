@@ -6,6 +6,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissio
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewRatingStatistics
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services.ReviewService
@@ -45,7 +46,14 @@ class ReviewController {
         @PathVariable userId: String,
     ): ReviewEntity? {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
+        return reviewService.findByCatalogIdAndUserId(catalogId, userId)
+    }
+
+    @GetMapping("/v1/rating-statistics")
+    fun getRatingStatistics(@PathVariable catalogId: String): ReviewRatingStatistics {
+        val review = reviewRepository.findByCatalogId(catalogId)
+        if (review.isEmpty()) throw BusinessException("Obra não tem avaliações")
+        return reviewService.ratingStatisticsByCatalog(catalogId)
     }
 
     @GetMapping("/v1/last")
