@@ -46,10 +46,17 @@ class ReviewsLikesController {
     }
 
     @DeleteMapping("/v1/users/{userId}")
-    fun delete(@PathVariable id: Long, @AuthenticationPrincipal userAuth: UserAuth) {
-        val like = reviewLikeRepository.findById(id).getOrNull()
+    fun delete(
+        @PathVariable userId: String,
+        @AuthenticationPrincipal userAuth: UserAuth,
+        @PathVariable reviewId: String
+    ) {
+        val like = reviewLikeRepository.findByReviewIdAndUserId(
+            userId = userId,
+            reviewId = reviewId
+        ).getOrNull()
             ?: throw BusinessException("Like não encontrado")
-        handlerPermissionUser.handleIsOwnerToken(userAuth, like.userId)
-        return reviewLikeRepository.deleteById(id)
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return reviewLikeRepository.deleteById(like.id!!)
     }
 }
