@@ -36,19 +36,16 @@ class ReviewsLikesController {
             )
     }
 
-    @GetMapping("/v1/{id}")
-    fun get(@PathVariable id: Long): FoundReviewDto {
-        val result = reviewLikeRepository.findById(id)
-        return FoundReviewDto(liked = result.isPresent)
-    }
-
     @GetMapping("/v1/users/{userId}")
     fun getByUser(@PathVariable userId: String, @PathVariable reviewId: String): FoundReviewDto {
-        val result = reviewLikeRepository.findByReviewIdAndUserId(userId = userId, reviewId = reviewId)
+        val result = reviewLikeRepository.findByReviewIdAndUserId(
+            userId = userId,
+            reviewId = reviewId
+        )
         return FoundReviewDto(liked = result.isPresent)
     }
 
-    @DeleteMapping("/v1/{id}")
+    @DeleteMapping("/v1/users/{userId}")
     fun delete(@PathVariable id: Long, @AuthenticationPrincipal userAuth: UserAuth) {
         val like = reviewLikeRepository.findById(id).getOrNull()
             ?: throw BusinessException("Like não encontrado")
