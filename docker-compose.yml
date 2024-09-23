@@ -1,5 +1,4 @@
-x-logging:
-  &x-logging
+x-logging: &x-logging
   logging:
     driver: 'json-file'
     options:
@@ -46,23 +45,16 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       CACHE_DB: ${CACHE_DB}
       TOGGLE_URL: ${TOGGLE_URL}
+      BUCKET_CONFIG: ${BUCKET_CONFIG}
     networks:
       - api_monolith
+      - kong-net
     volumes:
       - ./adc.json:/app/src/main/resources/adc.json
       - ./config:/app/src/main/resources/config
       - ./profile.pem:/app/src/main/resources/profile.pem
     ports:
       - "8080:8080"
-  nginx:
-    restart: always
-    container_name: gateway
-    build: nginx
-    <<: *x-logging
-    ports:
-      - "443:443"
-    networks:
-      - api_monolith
   mongo:
     image: mongo:7.0.0
     container_name: mongodb
@@ -72,6 +64,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: VjxC2cJlKwdE6Q61
     networks:
       - api_monolith
+    volumes:
+      - mongo-db:/data/db
     ports:
       - "27017:27017"
   cache:
@@ -88,12 +82,14 @@ services:
 
 networks:
   api_monolith:
-
+  kong-net:
+    external: true
 
 volumes:
   appwrite-mariadb:
   cache:
     driver: local
-
+  mongo-db:
+    driver: local
     # compose up -d --no-build --remove-orphans
     # .\gradlew clean build -x test

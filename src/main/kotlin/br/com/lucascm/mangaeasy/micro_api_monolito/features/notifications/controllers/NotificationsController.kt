@@ -13,11 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
-@RequestMapping("/notification")
-@Tag(name = "Notification")
+@RequestMapping("/notifications")
+@Tag(name = "Notifications")
 class NotificationsController {
     @Autowired
     lateinit var repository: NotificationsRepository
@@ -30,11 +31,14 @@ class NotificationsController {
 
     @GetMapping("/v1")
     @ResponseBody
-    fun list(
-        @RequestParam status: String?,
-        @RequestParam idhost: Int?
-    ): List<NotificationsEntity> {
+    fun list(): List<NotificationsEntity> {
         return repository.findTop25ByOrderByCreatedAtDesc()
+    }
+
+    @GetMapping("/v1/{id}")
+    fun getById(@PathVariable id: String): NotificationsEntity {
+        return repository.findById(id).getOrNull()
+            ?: throw BusinessException("Notification não encontrado")
     }
 
     @DeleteMapping("/v1/{id}")

@@ -5,12 +5,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.dtos.BannerDtoV1
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositories.BannersRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/banners")
 @Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Banners")
 class BannersControllerV1(@Autowired val repository: BannersRepository) {
     @GetMapping("/list")
     @ResponseBody

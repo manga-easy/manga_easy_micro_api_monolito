@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
-@Tag(name = "Hosts")
 @RequestMapping("/hosts")
+@Tag(name = "Hosts")
 class HostsController {
     @Autowired
     lateinit var repository: HostsRepository
@@ -26,16 +27,17 @@ class HostsController {
     @GetMapping("/v1")
     fun list(
         @RequestParam status: String?,
-        @RequestParam isAll: Boolean = false,
-        @RequestParam hostId: Int?
     ): List<HostsEntity> {
-        if (isAll) {
-            return repository.findAll()
+        if (status != null) {
+            return repository.findByStatus(status)
         }
-        if (hostId != null) {
-            return repository.findByHostId(hostId)
-        }
-        return repository.findByStatus(status ?: "enable")
+        return repository.findAll()
+    }
+
+    @GetMapping("/v1/{id}")
+    fun getById(@PathVariable id: String): HostsEntity {
+        return repository.findById(id).getOrNull()
+            ?: throw BusinessException("Host não encontrado")
     }
 
 

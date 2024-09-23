@@ -7,6 +7,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entitie
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.CreateAchievementsDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -17,14 +18,14 @@ import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
-@RequestMapping("/achievement")
+@RequestMapping("/achievements")
+@Tag(name = "Achievements")
 class AchievementsController {
     @Autowired
     lateinit var achievementsRepository: AchievementsRepository
 
     @Autowired
     lateinit var bucketAchievementsRepository: BucketAchievementsRepository
-
 
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
@@ -39,14 +40,15 @@ class AchievementsController {
         )
     }
 
-    @GetMapping("/v1/user/{userId}")
+    @GetMapping("/v1/users/{userId}")
     fun listByUser(@PathVariable userId: String): List<AchievementsEntity> {
         return achievementsRepository.findByUser(userId)
     }
 
     @GetMapping("/v1/{id}")
     fun getOne(@PathVariable id: String): AchievementsEntity {
-        return achievementsRepository.findById(id).getOrNull() ?: throw BusinessException("Emblema não encontrado")
+        return achievementsRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Emblema não encontrado")
     }
 
     @PostMapping("/v1")
@@ -72,8 +74,7 @@ class AchievementsController {
         )
     }
 
-    @PutMapping("/{id}")
-    @ResponseBody
+    @PutMapping("/v1/{id}")
     fun update(
         @RequestBody body: CreateAchievementsDto,
         @AuthenticationPrincipal userAuth: UserAuth,
@@ -96,7 +97,7 @@ class AchievementsController {
         )
     }
 
-    @PutMapping("/{id}/image")
+    @PutMapping("/v1/{id}/image")
     fun uploadImage(
         @RequestPart file: MultipartFile,
         @PathVariable id: String,

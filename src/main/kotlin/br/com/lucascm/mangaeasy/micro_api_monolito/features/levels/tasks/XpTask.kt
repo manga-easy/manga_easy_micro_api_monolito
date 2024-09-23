@@ -2,19 +2,15 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.tasks
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.RankingEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.concurrent.TimeUnit
 import kotlin.time.measureTimedValue
 
 @Component
 class XpTask {
-    @Autowired
-    lateinit var xpRepository: XpRepository
 
     @Autowired
     lateinit var rankingRepository: RankingRepository
@@ -23,24 +19,23 @@ class XpTask {
     lateinit var profileRepository: ProfileRepository
     val log = LoggerFactory.getLogger(XpTask::class.java)
 
-    @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
+    @Scheduled(cron = "0 0 4 * * *")
     fun updateRanking() {
         log.info("------------------ inicia updateRanking --------------")
         var place: Long = 0
         var offset: Long = 0
         val time = measureTimedValue {
             while (true) {
-                val xp = xpRepository.countXpRanking(offset * 100)
+                val xp = profileRepository.countXpRanking(offset * 100)
+                log.info("------------------ xp total: {} --------------", xp.size)
                 if (xp.isEmpty()) break
-                log.info("---------- ${xp.size}")
                 for (i in xp) {
-                    val userId = i["userId"].toString()
-                    val profile = profileRepository.findByUserID(userId)
+                    val userId = i["user_id"].toString()
                     saveRanking(
                         RankingEntity(
-                            totalXp = i["Total"] as Long,
-                            name = profile?.name,
-                            picture = profile?.picture,
+                            totalXp = i["total_xp"] as Long,
+                            name = i["name"] as String?,
+                            picture = i["picture"] as String?,
                             place = ++place,
                             userId = userId
                         )

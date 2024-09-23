@@ -1,19 +1,17 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.GetUidByFeature
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.GenderEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.GenderEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LikeMangaRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
+import kotlin.time.measureTimedValue
 
 @Component
 class CatalogTask {
@@ -25,20 +23,11 @@ class CatalogTask {
     @Autowired
     lateinit var catalogRepository: CatalogRepository
 
-    @Autowired
-    lateinit var getUidByFeature: GetUidByFeature
-
-    @Autowired
-    lateinit var viewMangaRepository: ViewMangaRepository
-
-    @Autowired
-    lateinit var likeMangaRepository: LikeMangaRepository
-
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
         log.info("------------------ Initial CatalogTask --------------")
-        chainDetailsCache(0)
-        log.info("------------------ Finish CatalogTask --------------")
+        val time = measureTimedValue { chainDetailsCache(0) }
+        log.info("------------------ finish CatalogTask time: {} --------------", time.duration.inWholeMinutes)
     }
 
     private fun chainDetailsCache(page: Int) {
@@ -55,9 +44,8 @@ class CatalogTask {
         try {
             log.info("Update manga: {}", manga.data.title)
             val catalog = catalogRepository.findByUniqueid(manga.data.uniqueid)
-            val totalLikes = likeMangaRepository.countByUniqueid(manga.data.uniqueid)
-            val totalViews = viewMangaRepository.countByUniqueid(manga.data.uniqueid)
             if (catalog == null) {
+
                 catalogRepository.save(
                     CatalogEntity(
                         name = manga.data.title,
@@ -71,10 +59,9 @@ class CatalogTask {
                         ratio = 0.0,
                         scans = manga.data.scans,
                         thumb = manga.data.capa,
-                        totalViews = totalViews,
+                        totalViews = 0,
                         year = manga.data.ano.toLongOrNull(),
-                        uid = getUidByFeature.get("catalog"),
-                        totalLikes = totalLikes,
+                        totalLikes = 0
                     )
                 )
             } else {
@@ -87,9 +74,7 @@ class CatalogTask {
                         scans = manga.data.scans,
                         synopsis = manga.data.sinopse,
                         year = manga.data.ano.toLongOrNull(),
-                        author = manga.data.autor,
-                        totalLikes = totalLikes,
-                        totalViews = totalViews,
+                        author = manga.data.autor
                     )
                 )
             }
@@ -105,8 +90,8 @@ class CatalogTask {
     @Scheduled(cron = "0 0 4 * * *")
     fun deleteMangaInative() {
         log.info("------------------ Initial deleteMangaInative --------------")
-        val result = catalogRepository.deleteMangaInactive()
-        log.info("------- {}", result)
+        //val result = catalogRepository.deleteMangaInactive()
+        // log.info("------- {}", result)
         log.info("------------------ Finish deleteMangaInative --------------")
     }
 

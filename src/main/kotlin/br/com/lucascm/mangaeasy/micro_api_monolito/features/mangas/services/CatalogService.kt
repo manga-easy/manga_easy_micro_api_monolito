@@ -2,8 +2,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ViewMangaRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogViewRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
@@ -13,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 
 @Service
@@ -21,7 +24,13 @@ class CatalogService {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var viewMangaRepository: ViewMangaRepository
+    lateinit var viewMangaRepository: CatalogViewRepository
+
+    @Autowired
+    lateinit var likeMangaRepository: CatalogLikeRepository
+
+    @Autowired
+    lateinit var reviewRepository: ReviewRepository
 
     @Cacheable(RedisCacheName.LIST_CATALOG)
     fun list(
@@ -29,7 +38,6 @@ class CatalogService {
         search: String? = null,
         author: String? = null,
         page: Int? = null,
-        uniqueid: String? = null,
         limit: Int? = null,
         yearAt: Int? = null,
         yearFrom: Int? = null,
@@ -69,14 +77,6 @@ class CatalogService {
                         )
                     )
                 }
-                if (uniqueid != null) {
-                    predicates.add(
-                        builder.equal(
-                            builder.lower(root.get("uniqueid")),
-                            uniqueid.lowercase()
-                        )
-                    )
-                }
                 if (yearAt != null && yearFrom != null) {
                     predicates.add(builder.between(root.get("year"), yearAt, yearFrom))
                 }
@@ -103,14 +103,42 @@ class CatalogService {
         return result.content
     }
 
+    @Cacheable(RedisCacheName.CATALOG, key = "#uniqueId")
+    fun getByuniqueId(uniqueId: String): CatalogEntity? {
+        val result = catalogRepository.findByUniqueid(uniqueId) ?: return null
+        return updateTotals(result)
+    }
+
     @Cacheable(RedisCacheName.GET_MANGA_WEEKLY)
     fun mostMangaWeekly(): CatalogEntity {
-        val uniqueid = viewMangaRepository.mostMangaReadWeekly()
+        val catalogId = viewMangaRepository.mostMangaReadWeekly()
             ?: return catalogRepository.findMangaRandom(false)
-        var result = catalogRepository.findByUniqueid(uniqueid)
+        var result = catalogRepository.findById(catalogId).getOrNull()
         if (result == null) {
             result = catalogRepository.findMangaRandom(false)
         }
         return result
+    }
+
+    private fun updateTotals(catalog: CatalogEntity): CatalogEntity {
+        val totalLikes = likeMangaRepository.countByCatalogId(catalog.id!!)
+        val totalViews = viewMangaRepository.countByCatalogId(catalog.id)
+        val totalReviews = reviewRepository.countReviewsByCatalog(catalog.id)
+
+        val totalComments = if (totalReviews.toInt() == 0) 0 else
+            reviewRepository.countCommentsByCatalog(catalog.id)
+
+        val rating = if (totalReviews.toInt() == 0) 0.0 else
+            reviewRepository.ratingByCatalog(catalog.id)
+        
+        return catalogRepository.save(
+            catalog.copy(
+                ratio = rating,
+                totalReviews = totalReviews,
+                totalComments = totalComments,
+                totalLikes = totalLikes,
+                totalViews = totalViews,
+            )
+        )
     }
 }

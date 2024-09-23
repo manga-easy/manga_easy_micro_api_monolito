@@ -1,17 +1,24 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.services
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.CreateRecommendationDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationAnilistRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.RecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class RecommendationsService {
@@ -25,7 +32,10 @@ class RecommendationsService {
     lateinit var catalogRepository: CatalogRepository
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var profileService: ProfileService
+
+    @Autowired
+    lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
 
     @Cacheable(RedisCacheName.RECOMMENDATIONS)
     fun list(page: Int): List<RecommendationsEntity> {
@@ -33,13 +43,78 @@ class RecommendationsService {
         val result = recommendationsRepository.findAll(pageRequest).content
         for (recommendation in result) {
             if (recommendation.artistId != null) {
-                val user = profileRepository.findByUserID(recommendation.artistId)
-                if (user != null) {
-                    recommendation.artistName = user.name
-                }
+                val user = profileService.findByUserId(recommendation.artistId)
+                recommendation.artistName = user.name
             }
         }
         return result
+    }
+
+    fun findById(id: String): RecommendationsEntity {
+        val recommendation = recommendationsRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Permission não encontrado")
+        if (recommendation.artistId != null) {
+            val user = profileService.findByUserId(recommendation.artistId)
+            recommendation.artistName = user.name
+        }
+        return recommendation
+    }
+
+    @CacheEvict(value = [RedisCacheName.RECOMMENDATIONS], allEntries = true)
+    fun update(body: CreateRecommendationDto, id: String): RecommendationsEntity {
+        val result = recommendationsRepository.findById(id)
+        if (!result.isPresent) throw BusinessException("Recomendação não encontrado")
+        val user = profileService.findByUserId(body.artistId)
+        return recommendationsRepository.save(
+            RecommendationsEntity(
+                title = body.title,
+                updatedAt = Date().time,
+                uniqueid = body.uniqueId,
+                artistId = body.uniqueId,
+                artistName = user.name,
+            )
+        )
+    }
+
+    @CacheEvict(value = [RedisCacheName.RECOMMENDATIONS], allEntries = true)
+    fun updateImage(id: String, image: MultipartFile): RecommendationsEntity {
+        val find = recommendationsRepository.findById(id)
+        if (!find.isPresent) throw BusinessException("Recomendação não encontrada")
+        val entity = find.get()
+        bucketRecommendationsRepository.saveImage(entity.uniqueid, image)
+        val imageResult: String?
+        imageResult = bucketRecommendationsRepository.getLinkImage(entity.uniqueid)
+        return recommendationsRepository.save(
+            entity.copy(
+                link = imageResult,
+                updatedAt = Date().time
+            )
+        )
+    }
+
+    @CacheEvict(value = [RedisCacheName.RECOMMENDATIONS], allEntries = true)
+    fun create(body: CreateRecommendationDto): RecommendationsEntity {
+        val resultVCheck = recommendationsRepository.findByUniqueid(body.uniqueId)
+        if (resultVCheck != null) {
+            throw BusinessException("Mangá já tem recomendação")
+        }
+        val user = profileService.findByUserId(body.artistId)
+        return recommendationsRepository.save(
+            RecommendationsEntity(
+                createdAt = Date().time,
+                title = body.title,
+                updatedAt = Date().time,
+                uniqueid = body.uniqueId,
+                artistId = user.name
+            )
+        )
+    }
+
+    @CacheEvict(value = [RedisCacheName.RECOMMENDATIONS], allEntries = true)
+    fun delete(id: String) {
+        val result = recommendationsRepository.findById(id).get()
+        recommendationsRepository.deleteById(id)
+        bucketRecommendationsRepository.deleteImage(result.uniqueid)
     }
 
     @Cacheable(RedisCacheName.RECOMMENDATIONS_ANILIST)

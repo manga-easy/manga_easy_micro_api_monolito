@@ -5,17 +5,20 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.ContentChapterRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.LatestMangaRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.ContentChapterDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.LatestMangaDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.MangaDetailsDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.ContentChapterRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.LatestMangaRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.MangaDetailsRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/host-query")
+@Deprecated("Remover 0.18 -> 0.20")
+@Tag(name = "Hosts")
 class HostQueryController {
     @Autowired
     lateinit var repository: LatestMangaRepository

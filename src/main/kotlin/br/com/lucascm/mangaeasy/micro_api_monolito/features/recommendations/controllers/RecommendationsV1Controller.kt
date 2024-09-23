@@ -24,7 +24,7 @@ import java.util.*
 @RestController
 @RequestMapping("/v1/recommendations")
 @Deprecated("Remover 0.18 -> 0.20")
-@Tag(name = "Recommendation")
+@Tag(name = "Recommendations")
 class RecommendationsV1Controller {
     @Autowired
     lateinit var recommendationsRepository: RecommendationsRepository

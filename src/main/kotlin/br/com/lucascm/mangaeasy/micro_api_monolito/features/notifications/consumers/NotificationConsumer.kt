@@ -11,6 +11,7 @@ import com.google.firebase.messaging.Notification
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 @Component
 class NotificationConsumer {
@@ -18,7 +19,7 @@ class NotificationConsumer {
     lateinit var repository: NotificationsRepository
     private val log = KotlinLogging.logger("NotificationConsumer")
 
-    @RqueueListener(QueueName.NOTIFICATION, numRetries = "0")
+    @RqueueListener(QueueName.NOTIFICATION, numRetries = "0", concurrency = "1")
     fun onMessage(notification: NotificationsEntity) {
         try {
             // This registration token comes from the client FCM SDKs.
@@ -52,5 +53,6 @@ class NotificationConsumer {
             )
 
         }
+        Thread.sleep(Duration.ofSeconds(5).toMillis())
     }
 }

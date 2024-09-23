@@ -4,7 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages.QueueNa
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import com.github.sonus21.rqueue.annotation.RqueueListener
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,15 +19,15 @@ class XpConsumer {
     lateinit var xpRepository: XpRepository
 
     @Autowired
-    lateinit var profileRepository: ProfileRepository
+    lateinit var profileService: ProfileService
     val log = KotlinLogging.logger("XpConsumer")
 
-    @RqueueListener(QueueName.XP, numRetries = "3")
+    @RqueueListener(QueueName.XP, numRetries = "3", concurrency = "1")
     fun onMessage(xp: XpConsumerDto) {
-        log.info("---------- onMessage init ----------------")
-        log.info("---------- onMessage xp {} ----------------", xp)
+        log.warn("---------- onMessage init ----------------")
+        log.warn("---------- onMessage xp {} ----------------", xp)
         val result = xpRepository.findByUserIDAndUniqueIDAndChapterNumber(
-            xp.useId,
+            xp.userId,
             xp.uniqueID,
             xp.chapterNumber
         )
@@ -36,22 +36,19 @@ class XpConsumer {
                 XpEntity(
                     uniqueID = xp.uniqueID,
                     chapterNumber = xp.chapterNumber,
-                    userID = xp.useId,
+                    userID = xp.userId,
                     createdAt = Date().time,
                     updatedAt = Date().time,
                     quantity = Random.nextInt(1, 6).toLong(),
                     totalMinutes = 1
                 )
             )
-            val profile = profileRepository.findByUserID(xp.useId)
-            if (profile != null) {
-                val totalXp = xpRepository.countXpTotalByUserId(xp.useId)
-                profileRepository.save(profile.copy(totalXp = totalXp!!))
-            }
+            updateTotalXp(xp.userId)
             return
         }
         val resultFirst = result.first()
         if (resultFirst.quantity < 50) {
+            updateTotalXp(xp.userId)
             xpRepository.save(
                 resultFirst.copy(
                     updatedAt = Date().time,
@@ -60,6 +57,13 @@ class XpConsumer {
                 )
             )
         }
-        log.info("---------- onMessage finish ----------------")
+        log.warn("---------- onMessage finish quantity: {} ----------------", resultFirst.quantity)
+    }
+
+    private fun updateTotalXp(userId: String) {
+        val profile = profileService.findByUserId(userId)
+        val totalXp = xpRepository.countXpTotalByUserId(userId)
+        profileService.save(profile.copy(totalXp = totalXp!!))
+
     }
 }
