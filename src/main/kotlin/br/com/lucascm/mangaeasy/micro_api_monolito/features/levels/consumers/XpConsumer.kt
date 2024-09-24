@@ -31,14 +31,14 @@ class XpConsumer {
 
     @RqueueListener(QueueName.XP, numRetries = "1", concurrency = "1")
     fun onMessage(xp: XpConsumerDto) {
-        log.info("---------- onMessage init ----------------")
-        log.info("---------- onMessage xp {} ----------------", xp)
+        log.debug("---------- onMessage init ----------------")
+        log.debug("---------- onMessage xp {} ----------------", xp)
         val result = xpRepository.findByUserIDAndUniqueIDAndChapterNumber(
             xp.userId,
             xp.uniqueID,
             xp.chapterNumber
         )
-        log.info("---------- findByUserIDAndUniqueIDAndChapterNumber {} ----------------", result)
+        log.debug("---------- findByUserIDAndUniqueIDAndChapterNumber {} ----------------", result)
         if (result.isEmpty()) {
             xpRepository.save(
                 XpEntity(
@@ -51,7 +51,7 @@ class XpConsumer {
                     totalMinutes = 1
                 )
             )
-            log.info("---------- xpRepository.save {} ----------------", result)
+            log.debug("---------- xpRepository.save {} ----------------", result)
             updateTotalXp(xp.userId)
             return
         }
@@ -64,10 +64,10 @@ class XpConsumer {
                     quantity = resultFirst.quantity + Random.nextInt(1, 6).toLong()
                 )
             )
-            log.info("---------- xpRepository.save {} ----------------", result)
+            log.debug("---------- xpRepository.save {} ----------------", result)
             updateTotalXp(xp.userId)
         }
-        log.info("---------- onMessage finish quantity: {} ----------------", resultFirst.quantity)
+        log.debug("---------- onMessage finish quantity: {} ----------------", resultFirst.quantity)
     }
 
     private fun updateTotalXp(userId: String) {
@@ -75,7 +75,7 @@ class XpConsumer {
             val profile = profileService.findByUserId(userId)
             val totalXp = xpRepository.countXpTotalByUserId(userId)
             profileRepository.save(profile.copy(totalXp = totalXp!!))
-            log.info("---------- profileRepository.save  ----------------")
+            log.debug("---------- profileRepository.save  ----------------")
         } catch (e: Exception) {
             log.error(e.message, e)
         }

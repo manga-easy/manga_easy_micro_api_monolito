@@ -21,13 +21,13 @@ class XpTask {
 
     @Scheduled(cron = "0 0 4 * * *")
     fun updateRanking() {
-        log.info("------------------ inicia updateRanking --------------")
+        log.debug("------------------ inicia updateRanking --------------")
         var place: Long = 0
         var offset: Long = 0
         val time = measureTimedValue {
             while (true) {
                 val xp = profileRepository.countXpRanking(offset * 100)
-                log.info("------------------ xp total: {} --------------", xp.size)
+                log.debug("------------------ xp total: {} --------------", xp.size)
                 if (xp.isEmpty()) break
                 for (i in xp) {
                     val userId = i["user_id"].toString()
@@ -45,7 +45,7 @@ class XpTask {
                 ++offset
             }
         }
-        log.info("------------------ finaliza updateRanking time: {} --------------", time.duration.inWholeMinutes)
+        log.debug("------------------ finaliza updateRanking time: {} --------------", time.duration.inWholeMinutes)
     }
 
     private fun saveRanking(rankingEntity: RankingEntity) {
