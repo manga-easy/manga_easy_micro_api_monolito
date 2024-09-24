@@ -57,6 +57,9 @@ class LibraryController {
         @RequestBody body: UpdateLibraryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): LibrariesEntity {
+        if (body.uniqueId.isEmpty()) {
+            throw BusinessException("UniqueId não pode ser vazio")
+        }
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val result = repository.findByUserIdAndUniqueid(
             userId = userId,
@@ -84,7 +87,7 @@ class LibraryController {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val result = repository.findByUserIdAndUniqueid(
             userId = userId,
-            uniqueid = body.uniqueId!!
+            uniqueid = body.uniqueId
         )
         if (result != null) {
             throw BusinessException("Manga já cadastrado")
