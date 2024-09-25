@@ -4,7 +4,8 @@ import com.github.sonus21.rqueue.spring.EnableRqueue
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import mu.KotlinLogging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
@@ -17,6 +18,8 @@ import javax.annotation.PostConstruct
 @EnableCaching
 @EnableRqueue
 class MicroApiMonolitoApplication {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+
     @PostConstruct
     fun init() {
         try {
@@ -26,7 +29,7 @@ class MicroApiMonolitoApplication {
                 .build()
             FirebaseApp.initializeApp(options)
         } catch (e: Exception) {
-            KotlinLogging.logger("MicroApiMonolitoApplication").catching(e)
+            log.error("Exception", e)
         }
     }
 }

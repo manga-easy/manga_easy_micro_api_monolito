@@ -58,6 +58,9 @@ class HistoryController {
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
+        if (body.uniqueId.isEmpty()) {
+            throw BusinessException("UniqueId não pode ser vazio")
+        }
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val result = repository.findById(historyId).getOrNull()
             ?: throw BusinessException("Manga não encontrado")
@@ -79,10 +82,13 @@ class HistoryController {
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
+        if (body.uniqueId.isEmpty()) {
+            throw BusinessException("UniqueId não pode ser vazio")
+        }
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         val result = repository.findByUserIdAndUniqueId(
             userId = userId,
-            uniqueid = body.uniqueId!!
+            uniqueid = body.uniqueId
         )
         if (result != null) {
             throw BusinessException("Manga já cadastrado")

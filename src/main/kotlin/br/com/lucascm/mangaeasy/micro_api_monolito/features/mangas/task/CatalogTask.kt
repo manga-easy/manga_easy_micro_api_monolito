@@ -25,14 +25,14 @@ class CatalogTask {
 
     @Scheduled(cron = "0 0 4 * * *")
     fun reportCurrentTime() {
-        log.info("------------------ Initial CatalogTask --------------")
+        log.debug("------------------ Initial CatalogTask --------------")
         val time = measureTimedValue { chainDetailsCache(0) }
-        log.info("------------------ finish CatalogTask time: {} --------------", time.duration.inWholeMinutes)
+        log.debug("------------------ finish CatalogTask time: {} --------------", time.duration.inWholeMinutes)
     }
 
     private fun chainDetailsCache(page: Int) {
         val result = mangaDetailsRepository.findAll(PageRequest.of(page, 100))
-        log.info("------------------Page: $page, quantity: ${result.content.size}")
+        log.debug("------------------Page: $page, quantity: ${result.content.size}")
         for (item in result.content) {
             if (item == null) continue
             updateCatalog(manga = item)
@@ -42,7 +42,7 @@ class CatalogTask {
 
     fun updateCatalog(manga: MangaDetailsEntity) {
         try {
-            log.info("Update manga: {}", manga.data.title)
+            log.debug("Update manga: {}", manga.data.title)
             val catalog = catalogRepository.findByUniqueid(manga.data.uniqueid)
             if (catalog == null) {
 
@@ -89,10 +89,10 @@ class CatalogTask {
 
     @Scheduled(cron = "0 0 4 * * *")
     fun deleteMangaInative() {
-        log.info("------------------ Initial deleteMangaInative --------------")
+        log.debug("------------------ Initial deleteMangaInative --------------")
         //val result = catalogRepository.deleteMangaInactive()
-        // log.info("------- {}", result)
-        log.info("------------------ Finish deleteMangaInative --------------")
+        // log.debug("------- {}", result)
+        log.debug("------------------ Finish deleteMangaInative --------------")
     }
 
 }

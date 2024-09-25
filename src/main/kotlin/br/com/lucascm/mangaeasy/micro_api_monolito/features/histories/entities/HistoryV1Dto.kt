@@ -5,7 +5,7 @@ data class HistoryV1Dto(
     val uid: String? = null,
     val uniqueid: String = "",
     val manga: String = "",
-    val iduser: String = "",
+    var iduser: String = "",
     var currentchapter: String? = null,
     val updatedat: Long? = null,
     val createdat: Long? = null,

@@ -4,7 +4,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities
 data class LibrariesV1Dto(
     val uid: String? = null,
     val idhost: Long? = null,
-    val iduser: String = "",
+    var iduser: String = "",
     val uniqueid: String = "",
     val manga: String? = null,
     val status: String? = null,

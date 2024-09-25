@@ -8,7 +8,8 @@ import com.github.sonus21.rqueue.annotation.RqueueListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
-import mu.KotlinLogging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -17,7 +18,7 @@ import java.time.Duration
 class NotificationConsumer {
     @Autowired
     lateinit var repository: NotificationsRepository
-    private val log = KotlinLogging.logger("NotificationConsumer")
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     @RqueueListener(QueueName.NOTIFICATION, numRetries = "0", concurrency = "1")
     fun onMessage(notification: NotificationsEntity) {
@@ -37,15 +38,14 @@ class NotificationConsumer {
             val response = FirebaseMessaging.getInstance().send(message)
 
             // Response is a message ID string.
-            log.info("Successfully sent message: $response")
+            log.debug("Successfully sent message: $response")
             repository.save(
                 notification.copy(
                     status = NotificationStatus.SUCCESS
                 )
             )
         } catch (e: Exception) {
-            log.catching(e)
-
+            log.error("Exception", e)
             repository.save(
                 notification.copy(
                     status = NotificationStatus.ERROR

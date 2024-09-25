@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
@@ -68,6 +69,13 @@ class HistoriesControllerV1 {
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
+            if (body.uniqueid.isEmpty()) {
+                throw BusinessException("UniqueId não pode ser vazio")
+            }
+            if (body.iduser.isEmpty()) {
+                body.iduser = userAuth.userId
+            }
+            handlerPermissionUser.handleIsOwnerToken(userAuth, body.iduser)
             val find = repository.findByUserIdAndUniqueId(
                 userId = userAuth.userId,
                 uniqueid = body.uniqueid
