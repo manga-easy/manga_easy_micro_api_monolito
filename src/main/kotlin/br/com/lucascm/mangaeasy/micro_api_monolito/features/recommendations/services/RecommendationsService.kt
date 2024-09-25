@@ -39,7 +39,11 @@ class RecommendationsService {
 
     @Cacheable(RedisCacheName.RECOMMENDATIONS)
     fun list(page: Int): List<RecommendationsEntity> {
-        val pageRequest = PageRequest.of(page, 25, Sort.by(RecommendationsEntity::updatedAt.name))
+        val pageRequest = PageRequest.of(
+            page,
+            25,
+            Sort.by(RecommendationsEntity::updatedAt.name).descending()
+        )
         val result = recommendationsRepository.findAll(pageRequest).content
         for (recommendation in result) {
             if (recommendation.artistId != null) {
@@ -52,7 +56,7 @@ class RecommendationsService {
 
     fun findById(id: String): RecommendationsEntity {
         val recommendation = recommendationsRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Permission não encontrado")
+            ?: throw BusinessException("Recomendação não encontrado")
         if (recommendation.artistId != null) {
             val user = profileService.findByUserId(recommendation.artistId)
             recommendation.artistName = user.name
