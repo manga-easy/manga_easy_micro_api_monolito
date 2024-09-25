@@ -1,6 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.core.configs
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.TokenService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,6 +21,9 @@ import org.springframework.web.reactive.config.ResourceHandlerRegistry
 class SecurityConfig(
     private val tokenService: TokenService,
 ) {
+    @Autowired
+    lateinit var appVersionFilter: AppVersionFilter
+
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         // Define public and private routes
@@ -57,7 +61,7 @@ class SecurityConfig(
 
     @Bean
     fun appVersionFilterRegistration(): FilterRegistrationBean<AppVersionFilter> {
-        val registration = FilterRegistrationBean(AppVersionFilter())
+        val registration = FilterRegistrationBean(appVersionFilter)
         registration.addUrlPatterns("/*")
         return registration
     }

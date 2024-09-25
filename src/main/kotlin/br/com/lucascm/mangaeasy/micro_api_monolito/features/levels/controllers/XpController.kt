@@ -50,7 +50,7 @@ class XpController {
         @RequestBody body: earnXpDto,
     ) {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
+        val toggle = toggleService.getToggle(ToggleEnum.nivelAtivo).toBoolean()
         if (!toggle) {
             throw BusinessException("Nível está desativado")
         }

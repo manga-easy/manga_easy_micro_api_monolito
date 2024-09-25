@@ -161,7 +161,7 @@ class HostsMangasController {
     }
 
     private fun handleVersionApp(versionApp: String) {
-        val toggle = toggleService.getToggle<String>(ToggleEnum.currentVersionApp)
+        val toggle = toggleService.getToggle(ToggleEnum.currentVersionApp)
         //Não deixar atualizar o cache versões desatualizadas ou beta
         if (toggle != versionApp) throw BusinessException("Somente a versão atual pode atualizar o cache")
     }

@@ -66,7 +66,7 @@ class LevelController {
     ): ResultEntity {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
-            val toggle = toggleService.getToggle<Boolean>(ToggleEnum.nivelAtivo)
+            val toggle = toggleService.getToggle(ToggleEnum.nivelAtivo).toBoolean()
             if (!toggle) {
                 throw BusinessException("Nivel está desativado")
             }

@@ -10,12 +10,14 @@ import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import net.swiftzer.semver.SemVer
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 
 @Component
 class AppVersionFilter : Filter {
-    val toggleService: ToggleService = ToggleService()
+    @Autowired
+    lateinit var toggleService: ToggleService
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
