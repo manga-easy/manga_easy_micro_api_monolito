@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
@@ -62,6 +63,9 @@ class ProfileV1Controller {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find = profileService.findByUserId(userID)
+            if (body.name == null || body.name.trim().isEmpty()) {
+                throw BusinessException("Nome não pode ser vazio")
+            }
             val result = profileService.save(
                 find.copy(
                     biography = body.biography,

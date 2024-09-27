@@ -7,7 +7,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.
 import com.github.sonus21.rqueue.annotation.RqueueListener
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.Duration
 import java.util.*
 
 @Component
@@ -15,7 +14,7 @@ class CatalogViewConsumer {
     @Autowired
     lateinit var viewMangaRepository: CatalogViewRepository
 
-    @RqueueListener(QueueName.CATALOG_VIEW, numRetries = "3", concurrency = "1")
+    @RqueueListener(QueueName.CATALOG_VIEW, numRetries = "1", concurrency = "1")
     fun onMessage(view: CatalogsViewsConsumerDto) {
         val result = viewMangaRepository.findByCatalogIdAndUserId(view.catalogId, view.userId)
         if (result == null) {
@@ -27,6 +26,5 @@ class CatalogViewConsumer {
                 )
             )
         }
-        Thread.sleep(Duration.ofSeconds(5).toMillis())
     }
 }
