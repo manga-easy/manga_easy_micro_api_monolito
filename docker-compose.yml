@@ -46,6 +46,8 @@ services:
       CACHE_DB: ${CACHE_DB}
       TOGGLE_URL: ${TOGGLE_URL}
       BUCKET_CONFIG: ${BUCKET_CONFIG}
+      LOG_LEVEL: ${LOG_LEVEL}
+
     networks:
       - api_monolith
       - kong-net

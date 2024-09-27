@@ -1,21 +1,16 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.controllers
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewRatingStatistics
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services.ReviewService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/catalogs/{catalogId}/reviews")
@@ -23,12 +18,6 @@ import kotlin.jvm.optionals.getOrNull
 class ReviewController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
-
-    @Autowired
-    lateinit var catalogRepository: CatalogRepository
-
-    @Autowired
-    lateinit var reviewRepository: ReviewRepository
 
     @Autowired
     lateinit var reviewService: ReviewService
@@ -51,8 +40,6 @@ class ReviewController {
 
     @GetMapping("/v1/rating-statistics")
     fun getRatingStatistics(@PathVariable catalogId: String): ReviewRatingStatistics {
-        val review = reviewRepository.findByCatalogId(catalogId)
-        if (review.isEmpty()) throw BusinessException("Obra não tem avaliações")
         return reviewService.ratingStatisticsByCatalog(catalogId)
     }
 
@@ -76,16 +63,6 @@ class ReviewController {
         @PathVariable id: String,
         @AuthenticationPrincipal userAuth: UserAuth,
     ): ReviewEntity {
-        val review = reviewRepository.findById(id).getOrNull()
-            ?: throw BusinessException("Avaliação não encontrada")
-        return reviewRepository.save(
-            review.copy(
-                commentary = body.commentary,
-                rating = body.rating,
-                updatedAt = Date().time,
-                hasSpoiler = body.hasSpoiler,
-                hasUpdated = true
-            )
-        )
+        return reviewService.update(body, id)
     }
 }
