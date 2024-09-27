@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import kotlin.jvm.optionals.getOrNull
 
 @RestController
-@RequestMapping("/catalogs/{catalogId}/views")
+@RequestMapping("/catalogs/views/manga/{uniqueId}")
 @Tag(name = "Catalogs")
 class CatalogsViewsController {
     @Autowired
@@ -26,14 +25,14 @@ class CatalogsViewsController {
 
     @PostMapping("/v1")
     fun putView(
-        @PathVariable catalogId: String,
+        @PathVariable uniqueId: String,
         @AuthenticationPrincipal userAuth: UserAuth
     ) {
-        catalogRepository.findById(catalogId).getOrNull()
-            ?: throw BusinessException("Manga não encontrado: $catalogId")
+        val catalog = catalogRepository.findByUniqueid(uniqueId)
+            ?: throw BusinessException("Manga não encontrado: $uniqueId")
         messageService.sendViewManga(
             CatalogsViewsConsumerDto(
-                catalogId = catalogId,
+                catalogId = catalog.id!!,
                 userId = userAuth.userId
             )
         )
