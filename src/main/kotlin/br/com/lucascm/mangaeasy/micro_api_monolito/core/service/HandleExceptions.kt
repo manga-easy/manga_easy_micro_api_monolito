@@ -4,12 +4,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import io.sentry.Sentry
-import mu.KotlinLogging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 @Deprecated("Descontinuado")
 class HandleExceptions {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
     fun handleCatch(e: Exception): ResultEntity {
         if (e is BusinessException) {
             return ResultEntity(
@@ -20,7 +22,7 @@ class HandleExceptions {
             )
         }
         Sentry.captureException(e);
-        KotlinLogging.logger("HandleExceptions").catching(e)
+        log.error("HandleExceptions", e)
         throw e
     }
 }

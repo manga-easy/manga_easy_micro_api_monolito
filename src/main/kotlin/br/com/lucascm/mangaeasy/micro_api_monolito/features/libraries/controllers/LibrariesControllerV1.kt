@@ -1,9 +1,11 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.controllers
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
@@ -24,6 +26,9 @@ class LibrariesControllerV1 {
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
+
+    @Autowired
+    lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping
     @ResponseBody
@@ -64,6 +69,13 @@ class LibrariesControllerV1 {
         @AuthenticationPrincipal userAuth: UserAuth
     ): ResultEntity {
         try {
+            if (body.uniqueid.isEmpty()) {
+                throw BusinessException("UniqueId não pode ser vazio")
+            }
+            if (body.iduser.isEmpty()) {
+                body.iduser = userAuth.userId
+            }
+            handlerPermissionUser.handleIsOwnerToken(userAuth, body.iduser)
             val find = repository.findByUserIdAndUniqueid(
                 userId = body.iduser,
                 uniqueid = body.uniqueid

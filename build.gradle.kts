@@ -34,7 +34,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.6")
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.6")
     implementation("org.springframework.boot:spring-boot-starter-security:3.2.6")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.3.0")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.3.0")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.3.0")

@@ -34,7 +34,7 @@ data class ProfileV1Entity(
 ) {
     fun toV2(): ProfileEntity {
         return ProfileEntity(
-            id = _id?.toString(),
+            id = null,
             role = role,
             biography = biography,
             userId = userID,

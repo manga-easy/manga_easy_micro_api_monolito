@@ -27,7 +27,9 @@ class RedisConfig {
             RedisCacheName.RECOMMENDATIONS
                     to config(Duration.ofDays(1)),
             RedisCacheName.PROFILE
-                    to config(Duration.ofDays(1))
+                    to config(Duration.ofDays(1)),
+            RedisCacheName.TOGGLE
+                    to config(Duration.ofMinutes(5))
         )
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(config(Duration.ofHours(2)))

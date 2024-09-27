@@ -11,6 +11,7 @@ class RedisCacheName {
         const val REVIEW_RATING_STATISTICS = "review-rating-statistics"
         const val PROFILE = "profile"
         const val CATALOG = "catalog"
+        const val TOGGLE = "toggle"
     }
 
 }
