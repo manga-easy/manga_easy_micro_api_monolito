@@ -18,7 +18,7 @@ class RestResponseEntityExceptionHandler
     @ExceptionHandler(BusinessException::class)
     fun handleBusinessError(e: BusinessException): ResponseEntity<Any> {
         return ResponseEntity<Any>(
-            mapOf("message" to e.message),
+            mapOf("message" to e.message, "code" to e.code),
             HttpStatus.UNPROCESSABLE_ENTITY
         )
     }
