@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessCode
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
@@ -14,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ReviewService {
@@ -43,6 +45,10 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.REVIEW_RATING_STATISTICS, key = "#catalogId")
     fun ratingStatisticsByCatalog(catalogId: String): ReviewRatingStatistics {
+        val review = reviewRepository.findByCatalogId(catalogId)
+
+        if (review.isEmpty()) throw BusinessException("Obra não tem avaliações")
+
         val result = reviewRepository.ratingStatisticsByCatalog(catalogId)
         return ReviewRatingStatistics(
             rating = result["rating"] as Double,
@@ -75,7 +81,8 @@ class ReviewService {
         val profile = profileService.findByUserId(userId)
         if (profile.name == null || profile.name == "") {
             throw BusinessException(
-                "Defina um nome no seu perfil para poder realizar uma avaliação"
+                "Defina um nome no seu perfil para poder realizar uma avaliação",
+                BusinessCode.NOT_FOUND_NAME_PROFILE
             )
         }
         val review = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
@@ -96,6 +103,20 @@ class ReviewService {
                 rating = body.rating,
                 hasSpoiler = body.hasSpoiler,
                 hasUpdated = false
+            )
+        )
+    }
+
+    fun update(body: ReviewDto, id: String): ReviewEntity {
+        val review = reviewRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Avaliação não encontrada")
+        return reviewRepository.save(
+            review.copy(
+                commentary = body.commentary,
+                rating = body.rating,
+                updatedAt = Date().time,
+                hasSpoiler = body.hasSpoiler,
+                hasUpdated = true
             )
         )
     }
