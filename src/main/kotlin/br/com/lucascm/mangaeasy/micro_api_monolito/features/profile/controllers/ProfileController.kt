@@ -51,7 +51,7 @@ class ProfileController {
         @PathVariable id: String
     ): ProfileEntity {
         val find = getProfile(id, userAuth)
-        if (body.name == null || body.name == "") {
+        if (body.name == null || body.name.trim().isEmpty()) {
             throw BusinessException("Nome não pode ser vazio")
         }
         return profileService.save(

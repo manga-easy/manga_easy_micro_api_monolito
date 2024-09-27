@@ -63,7 +63,7 @@ class ProfileV1Controller {
         return try {
             handlerPermissionUser.handleIsOwnerToken(userAuth, userID)
             val find = profileService.findByUserId(userID)
-            if (body.name == null || body.name == "") {
+            if (body.name == null || body.name.trim().isEmpty()) {
                 throw BusinessException("Nome não pode ser vazio")
             }
             val result = profileService.save(
