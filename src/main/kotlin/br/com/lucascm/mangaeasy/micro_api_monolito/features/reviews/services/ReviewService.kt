@@ -79,7 +79,7 @@ class ReviewService {
 
     fun create(body: ReviewDto, catalogId: String, userId: String): ReviewEntity {
         val profile = profileService.findByUserId(userId)
-        if (profile.name == null || profile.name == "") {
+        if (profile.name == null || profile.name.trim().isEmpty()) {
             throw BusinessException(
                 "Defina um nome no seu perfil para poder realizar uma avaliação",
                 BusinessCode.NOT_FOUND_NAME_PROFILE
