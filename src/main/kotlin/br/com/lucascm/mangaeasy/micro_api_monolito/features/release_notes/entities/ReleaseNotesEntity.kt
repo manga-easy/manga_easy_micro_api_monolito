@@ -1,5 +1,8 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.entities
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.converters.FavoriteMangaListConverter
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FeatureEntityConverter
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FixEntityConverter
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
 
@@ -15,13 +18,15 @@ data class ReleaseNotesEntity(
     val version: String = "",
 
     val description: String? = null,
-
-    @Column(name = "created_at", nullable = false)
     val createdAt: Long = 0,
 
-    @OneToMany(mappedBy = "releaseNotes", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val fixes: MutableList<FixEntity> = mutableListOf(),
+    @Lob
+    @Convert(converter = FixEntityConverter::class)
+    @Column(name = "release_notes_fixes", columnDefinition = "json")
+    val fixes: List<FixEntity> = listOf(),
 
-    @OneToMany(mappedBy = "releaseNotes", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val features: MutableList<FeatureEntity> = mutableListOf()
+    @Lob
+    @Convert(converter = FeatureEntityConverter::class)
+    @Column(name = "release_notes_features", columnDefinition = "json")
+    val features: List<FeatureEntity> = listOf(),
 )
