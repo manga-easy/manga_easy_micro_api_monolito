@@ -29,7 +29,9 @@ class RedisConfig {
             RedisCacheName.PROFILE
                     to config(Duration.ofDays(1)),
             RedisCacheName.TOGGLE
-                    to config(Duration.ofMinutes(5))
+                    to config(Duration.ofMinutes(5)),
+            RedisCacheName.SUGGESTIVE_MANGA_NAME
+                    to config(Duration.ofDays(2))
         )
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(config(Duration.ofHours(2)))

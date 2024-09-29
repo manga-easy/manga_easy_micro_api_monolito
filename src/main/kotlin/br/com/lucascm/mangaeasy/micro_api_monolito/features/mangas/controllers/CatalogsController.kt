@@ -75,4 +75,9 @@ class CatalogsController {
     fun mostMangaWeekly(): CatalogEntity {
         return catalogService.mostMangaWeekly()
     }
+
+    @GetMapping("/v1/suggestive-name")
+    fun suggestiveName(@RequestParam name: String): List<String> {
+        return catalogService.suggestiveName(name)
+    }
 }
