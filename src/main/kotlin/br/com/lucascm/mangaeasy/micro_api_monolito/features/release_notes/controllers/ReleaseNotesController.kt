@@ -16,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/release-notes")
-@Tag(name = "ReleaseNotes")
+@Tag(name = "Release Notes")
 class ReleaseNotesController {
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
