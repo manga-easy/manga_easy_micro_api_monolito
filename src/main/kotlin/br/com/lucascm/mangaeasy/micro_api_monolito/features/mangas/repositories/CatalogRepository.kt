@@ -4,6 +4,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.Cata
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 
@@ -19,6 +20,14 @@ interface CatalogRepository : JpaSpecificationExecutor<CatalogEntity>, JpaReposi
         nativeQuery = true
     )
     fun deleteMangaInactive()
+
+    @Query(
+        """
+            SELECT name FROM `catalog` WHERE name LIKE CONCAT('%', :name, '%') LIMIT 10
+        """,
+        nativeQuery = true
+    )
+    fun findNames(@Param("name") name: String): List<String>
 
     @Query(
         """

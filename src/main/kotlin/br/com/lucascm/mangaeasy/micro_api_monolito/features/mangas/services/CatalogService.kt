@@ -120,6 +120,11 @@ class CatalogService {
         return result
     }
 
+    @Cacheable(RedisCacheName.SUGGESTIVE_MANGA_NAME)
+    fun suggestiveName(name: String): List<String> {
+        return catalogRepository.findNames(name)
+    }
+
     private fun updateTotals(catalog: CatalogEntity): CatalogEntity {
         val totalLikes = likeMangaRepository.countByCatalogId(catalog.id!!)
         val totalViews = viewMangaRepository.countByCatalogId(catalog.id)
@@ -130,7 +135,7 @@ class CatalogService {
 
         val rating = if (totalReviews.toInt() == 0) 0.0 else
             reviewRepository.ratingByCatalog(catalog.id)
-        
+
         return catalogRepository.save(
             catalog.copy(
                 ratio = rating,
