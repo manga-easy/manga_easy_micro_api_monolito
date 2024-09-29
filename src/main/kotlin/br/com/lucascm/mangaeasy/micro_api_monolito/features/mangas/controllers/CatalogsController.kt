@@ -78,6 +78,7 @@ class CatalogsController {
 
     @GetMapping("/v1/suggestive-name")
     fun suggestiveName(@RequestParam name: String): List<String> {
+        if (name.isEmpty() || name.length < 3) throw BusinessException("Nome muito curto para pesquisar")
         return catalogService.suggestiveName(name)
     }
 }
