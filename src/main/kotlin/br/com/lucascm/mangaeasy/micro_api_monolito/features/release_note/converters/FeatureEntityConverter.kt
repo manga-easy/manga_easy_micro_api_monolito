@@ -1,5 +1,5 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.entities.FeatureEntity
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.converters
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.entities.FeatureEntity
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter

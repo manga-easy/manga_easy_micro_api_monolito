@@ -1,13 +1,13 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.entities
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FeatureEntityConverter
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FixEntityConverter
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.converters.FeatureEntityConverter
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.converters.FixEntityConverter
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
 
 @Entity
-@Table(name = "release-notes")
-data class ReleaseNotesEntity(
+@Table(name = "release-note")
+data class ReleaseNoteEntity(
     @Id
     @UuidGenerator
     @Column(name = "id", updatable = false, unique = true, nullable = false)
@@ -21,11 +21,11 @@ data class ReleaseNotesEntity(
 
     @Lob
     @Convert(converter = FixEntityConverter::class)
-    @Column(name = "release_notes_fixes", columnDefinition = "json")
+    @Column(name = "release_note_fix", columnDefinition = "json")
     val fixes: List<FixEntity> = listOf(),
 
     @Lob
     @Convert(converter = FeatureEntityConverter::class)
-    @Column(name = "release_notes_features", columnDefinition = "json")
+    @Column(name = "release_note_feature", columnDefinition = "json")
     val features: List<FeatureEntity> = listOf(),
 )

@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.entities
 
 data class FixEntity(
     val title: String = "",
