@@ -30,7 +30,7 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
     fun list(catalogId: String, page: Int): List<ListReviewDto> {
-        val result = reviewRepository.findByCatalogId(
+        val result = reviewRepository.findByCatalogIdAndCommentaryIsNotNull(
             catalogId,
             PageRequest.of(page, 25)
         )
@@ -39,15 +39,15 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.LIST_REVIEW_LAST)
     fun listLast(catalogId: String): List<ListReviewDto> {
-        val result = reviewRepository.findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId)
+        val result = reviewRepository.findTop10ByCatalogIdAndCommentaryIsNotNullOrderByCreatedAtDesc(catalogId)
         return getInfo(result)
     }
 
     @Cacheable(RedisCacheName.REVIEW_RATING_STATISTICS, key = "#catalogId")
     fun ratingStatisticsByCatalog(catalogId: String): ReviewRatingStatistics {
-        val review = reviewRepository.findByCatalogId(catalogId)
+        val review = reviewRepository.countReviewsByCatalog(catalogId)
 
-        if (review.isEmpty()) throw BusinessException("Obra não tem avaliações")
+        if (review.toInt() == 0) throw BusinessException("Obra não tem avaliações")
 
         val result = reviewRepository.ratingStatisticsByCatalog(catalogId)
         return ReviewRatingStatistics(

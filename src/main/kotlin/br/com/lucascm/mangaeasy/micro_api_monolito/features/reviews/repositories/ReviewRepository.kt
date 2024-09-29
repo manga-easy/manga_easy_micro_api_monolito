@@ -13,7 +13,7 @@ interface ReviewRepository : JpaRepository<ReviewEntity, String> {
         userId: String,
     ): ReviewEntity?
 
-    fun findByCatalogId(
+    fun findByCatalogIdAndCommentaryIsNotNull(
         catalogId: String,
         pageable: Pageable? = null,
     ): List<ReviewEntity>
@@ -67,6 +67,6 @@ interface ReviewRepository : JpaRepository<ReviewEntity, String> {
         nativeQuery = true
     )
     fun ratingStatisticsByCatalog(@Param("catalogId") catalogId: String): Map<String, Any>
-    fun findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId: String): List<ReviewEntity>
+    fun findTop10ByCatalogIdAndCommentaryIsNotNullOrderByCreatedAtDesc(catalogId: String): List<ReviewEntity>
 
 }
