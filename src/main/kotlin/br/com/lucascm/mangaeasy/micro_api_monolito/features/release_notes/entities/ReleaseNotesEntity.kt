@@ -1,6 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.entities
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.converters.FavoriteMangaListConverter
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FeatureEntityConverter
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_notes.converters.FixEntityConverter
 import jakarta.persistence.*
