@@ -72,8 +72,7 @@ class ReviewService {
     ): ReviewEntity? {
         val result = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
             ?: return null
-        val totalLikes = likeReviewRepository.countByReviewId(catalogId)
-        return reviewRepository.save(result.copy(totalLikes = totalLikes))
+        return updateTotals(result)
 
     }
 
@@ -125,15 +124,19 @@ class ReviewService {
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
             val profile = profileService.findByUserId(review.userId)
-            val totalLike = likeReviewRepository.countByReviewId(review.catalogId)
             list.add(
                 ListReviewDto(
-                    review.copy(totalLikes = totalLike),
+                    updateTotals(review),
                     profile.name,
                     profile.picture
                 )
             )
         }
         return list
+    }
+
+    private fun updateTotals(review: ReviewEntity): ReviewEntity {
+        val totalLikes = likeReviewRepository.countByReviewId(review.id!!)
+        return reviewRepository.save(review.copy(totalLikes = totalLikes))
     }
 }

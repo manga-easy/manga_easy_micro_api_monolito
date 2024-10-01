@@ -49,11 +49,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up SSH
+      ###### DEV ######
+      - name: Set up SSH for DEV
+        if: github.ref == 'refs/heads/dev'
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TEST }}
 
-      - name: Pull new image and restart container
+      - name: Restart container DEV
+        if: github.ref == 'refs/heads/dev'
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_TEST }} "cd appwrite && sudo docker compose pull && sudo docker compose up -d"
+
+      ###### PROD ######
+      - name: Set up SSH for PROD
+        if: github.ref == 'refs/heads/main'
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+
+      - name: Restart container PROD
+        if: github.ref == 'refs/heads/main'
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_IP_PROD }} "cd appwrite && sudo docker compose pull && sudo docker compose up -d"
