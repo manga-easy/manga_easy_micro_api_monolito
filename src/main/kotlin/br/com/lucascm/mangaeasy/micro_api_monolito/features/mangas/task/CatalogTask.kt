@@ -34,7 +34,7 @@ class CatalogTask {
         val result = mangaDetailsRepository.findAll(PageRequest.of(page, 100))
         log.debug("------------------Page: $page, quantity: ${result.content.size}")
         for (item in result.content) {
-            if (item == null) continue
+            if (item == null || item.data.idHost == 9) continue
             updateCatalog(manga = item)
         }
         if (!result.isLast) chainDetailsCache(1 + page)

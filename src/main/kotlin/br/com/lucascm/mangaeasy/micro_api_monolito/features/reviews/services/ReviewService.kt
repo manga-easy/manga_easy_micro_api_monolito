@@ -1,5 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 
+import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessCode
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
@@ -14,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ReviewService {
@@ -28,7 +30,7 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
     fun list(catalogId: String, page: Int): List<ListReviewDto> {
-        val result = reviewRepository.findByCatalogId(
+        val result = reviewRepository.findByCatalogIdAndCommentaryIsNotNull(
             catalogId,
             PageRequest.of(page, 25)
         )
@@ -37,12 +39,16 @@ class ReviewService {
 
     @Cacheable(RedisCacheName.LIST_REVIEW_LAST)
     fun listLast(catalogId: String): List<ListReviewDto> {
-        val result = reviewRepository.findTop10ByCatalogIdOrderByCreatedAtDesc(catalogId)
+        val result = reviewRepository.findTop10ByCatalogIdAndCommentaryIsNotNullOrderByCreatedAtDesc(catalogId)
         return getInfo(result)
     }
 
     @Cacheable(RedisCacheName.REVIEW_RATING_STATISTICS, key = "#catalogId")
     fun ratingStatisticsByCatalog(catalogId: String): ReviewRatingStatistics {
+        val review = reviewRepository.countReviewsByCatalog(catalogId)
+
+        if (review.toInt() == 0) throw BusinessException("Obra não tem avaliações")
+
         val result = reviewRepository.ratingStatisticsByCatalog(catalogId)
         return ReviewRatingStatistics(
             rating = result["rating"] as Double,
@@ -66,16 +72,16 @@ class ReviewService {
     ): ReviewEntity? {
         val result = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
             ?: return null
-        val totalLikes = likeReviewRepository.countByReviewId(catalogId)
-        return reviewRepository.save(result.copy(totalLikes = totalLikes))
+        return updateTotals(result)
 
     }
 
     fun create(body: ReviewDto, catalogId: String, userId: String): ReviewEntity {
         val profile = profileService.findByUserId(userId)
-        if (profile.name == null || profile.name == "") {
+        if (profile.name == null || profile.name.trim().isEmpty()) {
             throw BusinessException(
-                "Defina um nome no seu perfil para poder realizar uma avaliação"
+                "Defina um nome no seu perfil para poder realizar uma avaliação",
+                BusinessCode.NOT_FOUND_NAME_PROFILE
             )
         }
         val review = reviewRepository.findByCatalogIdAndUserId(catalogId, userId)
@@ -100,19 +106,37 @@ class ReviewService {
         )
     }
 
+    fun update(body: ReviewDto, id: String): ReviewEntity {
+        val review = reviewRepository.findById(id).getOrNull()
+            ?: throw BusinessException("Avaliação não encontrada")
+        return reviewRepository.save(
+            review.copy(
+                commentary = body.commentary,
+                rating = body.rating,
+                updatedAt = Date().time,
+                hasSpoiler = body.hasSpoiler,
+                hasUpdated = true
+            )
+        )
+    }
+
     private fun getInfo(result: List<ReviewEntity>): List<ListReviewDto> {
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
             val profile = profileService.findByUserId(review.userId)
-            val totalLike = likeReviewRepository.countByReviewId(review.catalogId)
             list.add(
                 ListReviewDto(
-                    review.copy(totalLikes = totalLike),
+                    updateTotals(review),
                     profile.name,
                     profile.picture
                 )
             )
         }
         return list
+    }
+
+    private fun updateTotals(review: ReviewEntity): ReviewEntity {
+        val totalLikes = likeReviewRepository.countByReviewId(review.id!!)
+        return reviewRepository.save(review.copy(totalLikes = totalLikes))
     }
 }
