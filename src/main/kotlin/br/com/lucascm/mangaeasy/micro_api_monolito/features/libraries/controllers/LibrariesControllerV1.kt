@@ -6,15 +6,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.LibrariesV1Dto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.entities.UpdateLibraryDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.services.LibraryService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/v1/libraries")
@@ -22,7 +21,7 @@ import java.util.*
 @Tag(name = "Libraries")
 class LibrariesControllerV1 {
     @Autowired
-    lateinit var repository: LibrariesRepository
+    lateinit var libraryService: LibraryService
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
@@ -40,13 +39,13 @@ class LibrariesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                val find = repository.findByUserIdAndUniqueid(
+                val find = libraryService.findByUserIdAndUniqueId(
                     userId = userAuth.userId,
-                    uniqueid = uniqueId
+                    uniqueId = uniqueId
                 )
                 listOf(find)
             } else {
-                repository.findByUserId(
+                libraryService.findByUserId(
                     userId = userAuth.userId,
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
@@ -76,32 +75,28 @@ class LibrariesControllerV1 {
                 body.iduser = userAuth.userId
             }
             handlerPermissionUser.handleIsOwnerToken(userAuth, body.iduser)
-            val find = repository.findByUserIdAndUniqueid(
+            val find = libraryService.findByUserIdAndUniqueId(
                 userId = body.iduser,
-                uniqueid = body.uniqueid
+                uniqueId = body.uniqueid
             )
             val result = if (find == null) {
-                repository.save(
-                    LibrariesEntity(
-                        createdAt = Date().time,
-                        updatedAt = Date().time,
-                        userId = userAuth.userId,
+                libraryService.create(
+                    userAuth.userId,
+                    UpdateLibraryDto(
                         hostId = body.idhost ?: 0,
                         hasDeleted = body.isdeleted,
                         manga = body.manga!!,
-                        uniqueid = body.uniqueid,
                         status = body.status!!
                     )
                 )
             } else {
-                repository.save(
-                    find.copy(
-                        updatedAt = Date().time,
+                libraryService.update(
+                    find.id!!,
+                    UpdateLibraryDto(
                         status = body.status!!,
                         hasDeleted = body.isdeleted,
                         manga = body.manga!!,
-                        hostId = body.idhost ?: 0,
-                        uniqueid = body.uniqueid
+                        hostId = body.idhost ?: 0
                     )
                 )
             }

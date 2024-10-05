@@ -18,7 +18,7 @@ data class LibrariesV1Dto(
                 uid = entity.id,
                 idhost = entity.hostId,
                 iduser = entity.userId,
-                uniqueid = entity.uniqueid,
+                uniqueid = entity.uniqueId,
                 manga = entity.manga,
                 status = entity.status,
                 updatedat = entity.updatedAt,
