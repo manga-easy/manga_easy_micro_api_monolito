@@ -86,7 +86,8 @@ class LibrariesControllerV1 {
                         hostId = body.idhost ?: 0,
                         hasDeleted = body.isdeleted,
                         manga = body.manga!!,
-                        status = body.status!!
+                        status = body.status!!,
+                        uniqueId = body.uniqueid
                     )
                 )
             } else {
@@ -96,7 +97,8 @@ class LibrariesControllerV1 {
                         status = body.status!!,
                         hasDeleted = body.isdeleted,
                         manga = body.manga!!,
-                        hostId = body.idhost ?: 0
+                        hostId = body.idhost ?: 0,
+                        uniqueId = body.uniqueid
                     )
                 )
             }
