@@ -6,15 +6,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryV1Dto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.UpdateHistoryDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.services.HistoryService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/v1/histories")
@@ -22,7 +21,7 @@ import java.util.*
 @Tag(name = "Histories")
 class HistoriesControllerV1 {
     @Autowired
-    lateinit var repository: HistoriesRepository
+    lateinit var historyService: HistoryService
 
     @Autowired
     lateinit var handleExceptions: HandleExceptions
@@ -40,13 +39,13 @@ class HistoriesControllerV1 {
     ): ResultEntity {
         try {
             val result = if (uniqueId != null) {
-                val find = repository.findByUserIdAndUniqueId(
+                val find = historyService.findByUserIdAndUniqueId(
                     userId = userAuth.userId,
-                    uniqueid = uniqueId
+                    uniqueId = uniqueId
                 )
                 listOf(find)
             } else {
-                repository.findByUserId(
+                historyService.findByUserId(
                     userId = userAuth.userId,
                     pageable = PageRequest.of(offset ?: 0, limit ?: 25)
                 )
@@ -76,32 +75,29 @@ class HistoriesControllerV1 {
                 body.iduser = userAuth.userId
             }
             handlerPermissionUser.handleIsOwnerToken(userAuth, body.iduser)
-            val find = repository.findByUserIdAndUniqueId(
+            val find = historyService.findByUserIdAndUniqueId(
                 userId = userAuth.userId,
-                uniqueid = body.uniqueid
+                uniqueId = body.uniqueid
             )
             val result = if (find == null) {
-                repository.save(
-                    HistoryEntity(
-                        updatedAt = Date().time,
-                        createdAt = Date().time,
-                        userId = userAuth.userId,
+                historyService.create(
+                    userAuth.userId,
+                    UpdateHistoryDto(
                         uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
-                        isDeleted = body.isdeleted,
                         manga = body.manga,
-                        catalogId = null,
+                        hasDeleted = body.isdeleted
                     )
                 )
             } else {
-                repository.save(
-                    find.copy(
-                        updatedAt = Date().time,
+                historyService.update(
+                    find.id!!,
+                    UpdateHistoryDto(
                         uniqueId = body.uniqueid,
                         chaptersRead = body.chapterlidos ?: "",
                         currentChapter = body.currentchapter,
-                        isDeleted = body.isdeleted,
+                        hasDeleted = body.isdeleted,
                         manga = body.manga
                     )
                 )

@@ -19,7 +19,8 @@ data class LibrariesEntity(
 
     @Column(name = "user_id", nullable = false)
     val userId: String = "",
-    val uniqueid: String = "",
+    @Column(name = "uniqueid", nullable = false)
+    val uniqueId: String = "",
     val manga: String = "",
     val status: String = "",
 

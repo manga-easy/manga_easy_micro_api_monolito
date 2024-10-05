@@ -4,11 +4,11 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.H
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 interface HistoriesRepository : JpaRepository<HistoryEntity, String> {
-
-    fun findByUserIdAndUniqueId(userId: String, uniqueid: String): HistoryEntity?
+    fun findByUserIdAndUniqueIdOrderByUpdatedAtDesc(userId: String, uniqueId: String): Optional<List<HistoryEntity>>
 
     fun findByUserId(userId: String, pageable: Pageable): List<HistoryEntity>
 }

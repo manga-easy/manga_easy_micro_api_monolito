@@ -1,25 +1,22 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.controllers
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.HistoryEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.entities.UpdateHistoryDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.repositories.HistoriesRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.histories.services.HistoryService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/users/{userId}/histories")
 @Tag(name = "Histories")
 class HistoryController {
     @Autowired
-    lateinit var repository: HistoriesRepository
+    lateinit var historyService: HistoryService
 
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
@@ -32,7 +29,7 @@ class HistoryController {
         @AuthenticationPrincipal userAuth: UserAuth
     ): List<HistoryEntity> {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return repository.findByUserId(
+        return historyService.findByUserId(
             userId = userId,
             pageable = PageRequest.of(offset ?: 0, limit ?: 25)
         )
@@ -43,12 +40,12 @@ class HistoryController {
         @PathVariable uniqueId: String,
         @PathVariable userId: String,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): HistoryEntity {
+    ): HistoryEntity? {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return repository.findByUserIdAndUniqueId(
+        return historyService.findByUserIdAndUniqueId(
             userId = userId,
-            uniqueid = uniqueId
-        ) ?: throw BusinessException("Manga não encontrado")
+            uniqueId = uniqueId
+        )
     }
 
     @PutMapping("/v1/{historyId}")
@@ -58,22 +55,8 @@ class HistoryController {
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
-        if (body.uniqueId.isEmpty()) {
-            throw BusinessException("UniqueId não pode ser vazio")
-        }
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val result = repository.findById(historyId).getOrNull()
-            ?: throw BusinessException("Manga não encontrado")
-        return repository.save(
-            result.copy(
-                updatedAt = Date().time,
-                chaptersRead = body.chaptersRead,
-                currentChapter = body.currentChapter,
-                isDeleted = body.hasDeleted,
-                manga = body.manga,
-                uniqueId = body.uniqueId
-            )
-        )
+        return historyService.update(historyId, body)
     }
 
     @PostMapping("/v1")
@@ -82,29 +65,7 @@ class HistoryController {
         @RequestBody body: UpdateHistoryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): HistoryEntity {
-        if (body.uniqueId.isEmpty()) {
-            throw BusinessException("UniqueId não pode ser vazio")
-        }
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        val result = repository.findByUserIdAndUniqueId(
-            userId = userId,
-            uniqueid = body.uniqueId
-        )
-        if (result != null) {
-            throw BusinessException("Manga já cadastrado")
-        }
-        return repository.save(
-            HistoryEntity(
-                updatedAt = Date().time,
-                createdAt = Date().time,
-                userId = userAuth.userId,
-                uniqueId = body.uniqueId,
-                chaptersRead = body.chaptersRead,
-                currentChapter = body.currentChapter,
-                isDeleted = body.hasDeleted,
-                manga = body.manga,
-                catalogId = null,
-            )
-        )
+        return historyService.create(userId, body)
     }
 }
