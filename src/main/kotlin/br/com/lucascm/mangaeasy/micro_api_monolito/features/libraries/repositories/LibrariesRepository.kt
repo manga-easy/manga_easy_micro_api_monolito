@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 interface LibrariesRepository : JpaRepository<LibrariesEntity, String> {
 
-    fun findByUserIdAndUniqueid(userId: String, uniqueid: String): LibrariesEntity?
+    fun findByUserIdAndUniqueIdOrderByUpdatedAtDesc(userId: String, uniqueId: String): Optional<List<LibrariesEntity>>
 
     fun findByUserId(userId: String, pageable: Pageable): List<LibrariesEntity>
 

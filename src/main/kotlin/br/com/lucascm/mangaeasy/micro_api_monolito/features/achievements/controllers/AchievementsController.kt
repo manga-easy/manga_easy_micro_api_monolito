@@ -8,8 +8,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entitie
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.BucketAchievementsRepository
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -31,13 +37,61 @@ class AchievementsController {
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping("/v1")
-    fun list(@RequestParam available: Boolean?): List<AchievementsEntity> {
+    fun list(
+        @RequestParam reclaim: Boolean?,
+        @RequestParam page: Int?,
+        @RequestParam category: String?,
+        @RequestParam rarity: String?,
+        @RequestParam name: String?
+    ): List<AchievementsEntity> {
         return achievementsRepository.findAll(
-            Sort.by(
-                Sort.Direction.DESC,
-                AchievementsEntity::updatedAt.name
+            Specification(fun(
+                root: Root<AchievementsEntity>,
+                _: CriteriaQuery<*>,
+                builder: CriteriaBuilder,
+            ): Predicate? {
+                val predicates = mutableListOf<Predicate>()
+                if (reclaim != null) {
+                    predicates.add(
+                        builder.equal(
+                            root.get<Boolean>(AchievementsEntity::reclaim.name),
+                            reclaim
+                        )
+                    )
+                }
+                if (category != null) {
+                    predicates.add(
+                        builder.equal(
+                            root.get<String>(AchievementsEntity::category.name),
+                            category
+                        )
+                    )
+                }
+                if (rarity != null) {
+                    predicates.add(
+                        builder.equal(
+                            root.get<String>(AchievementsEntity::rarity.name),
+                            rarity
+                        )
+                    )
+                }
+                if (name != null) {
+                    predicates.add(
+                        builder.like(
+                            builder.lower(root.get(AchievementsEntity::name.name)),
+                            "%" + name.lowercase() + "%"
+                        )
+                    )
+                }
+                return builder.and(*predicates.toTypedArray())
+            }),
+            PageRequest.of(
+                page ?: 0, 25, Sort.by(
+                    Sort.Direction.DESC,
+                    AchievementsEntity::updatedAt.name
+                )
             )
-        )
+        ).content
     }
 
     @GetMapping("/v1/users/{userId}")
