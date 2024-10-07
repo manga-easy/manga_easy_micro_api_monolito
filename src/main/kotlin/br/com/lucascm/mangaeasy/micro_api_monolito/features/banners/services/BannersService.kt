@@ -1,10 +1,10 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.services
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.dtos.CreateBannerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.entities.BannersEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositories.BannersBucketRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositories.BannersRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.repositories.BucketRecommendationsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -16,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class BannersService {
     @Autowired
-    lateinit var bucketRecommendationsRepository: BucketRecommendationsRepository
+    lateinit var bannersBucketRepository: BannersBucketRepository
 
     @Autowired
     lateinit var bannersRepository: BannersRepository
@@ -25,8 +25,8 @@ class BannersService {
         if (!find.isPresent) throw BusinessException("Recomendação não encontrada")
         val entity = find.get()
         val imageResult: String?
-        bucketRecommendationsRepository.saveImage(entity.id!!, image)
-        imageResult = bucketRecommendationsRepository.getLinkImage(entity.id)
+        bannersBucketRepository.saveImage(entity.id!!, image)
+        imageResult = bannersBucketRepository.getLinkImage(entity.id)
         return bannersRepository.save(
             entity.copy(
                 image = imageResult,
@@ -79,7 +79,7 @@ class BannersService {
         val find = bannersRepository.findById(id)
         if (!find.isPresent) throw BusinessException("Recomendação não encontrada")
         val entity = find.get()
-        bucketRecommendationsRepository.deleteImage(entity.id!!)
+        bannersBucketRepository.deleteImage(entity.id!!)
         bannersRepository.deleteById(id)
     }
 }
