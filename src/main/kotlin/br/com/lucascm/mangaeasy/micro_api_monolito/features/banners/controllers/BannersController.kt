@@ -3,7 +3,7 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.BannersService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.services.BannersService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.dtos.CreateBannerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.entities.BannersEntity
 import io.swagger.v3.oas.annotations.tags.Tag
