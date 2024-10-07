@@ -3,8 +3,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositorie
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.buckets.BucketService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
 
+@Repository
 class BannersBucketRepository {
     @Autowired
     lateinit var bucketService: BucketService

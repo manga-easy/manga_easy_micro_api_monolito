@@ -1,6 +1,5 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.GenderEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
@@ -54,7 +53,7 @@ class CatalogTask {
                         createdAt = Date().time,
                         author = manga.data.autor,
                         synopsis = manga.data.sinopse,
-                        genres = convertGenders(manga.data.generos),
+                        genres = manga.data.generos.joinToString(separator = "<>"),
                         lastChapter = manga.data.capitulos.last().title,
                         ratio = 0.0,
                         scans = manga.data.scans,
@@ -70,7 +69,7 @@ class CatalogTask {
                         updatedAt = Date().time,
                         thumb = manga.data.capa,
                         lastChapter = manga.data.capitulos.last().title,
-                        genres = manga.data.generos.joinToString(separator = "<>", transform = { t -> t.title }),
+                        genres = manga.data.generos.joinToString(separator = "<>"),
                         scans = manga.data.scans,
                         synopsis = manga.data.sinopse,
                         year = manga.data.ano.toLongOrNull(),
@@ -81,10 +80,6 @@ class CatalogTask {
         } catch (e: Exception) {
             log.error(e.message, e)
         }
-    }
-
-    fun convertGenders(genders: List<GenderEntity>): String {
-        return genders.joinToString(separator = "<>", transform = { t -> t.title.replace(" ", "-") })
     }
 
     @Scheduled(cron = "0 0 4 * * *")
