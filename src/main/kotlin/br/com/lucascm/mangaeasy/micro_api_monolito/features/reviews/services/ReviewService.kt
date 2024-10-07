@@ -13,6 +13,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -35,6 +36,17 @@ class ReviewService {
             PageRequest.of(page, 25)
         )
         return getInfo(result)
+    }
+
+    fun list(page: Int): List<ListReviewDto> {
+        val result = reviewRepository.findAll(
+            PageRequest.of(
+                page,
+                25,
+                Sort.by(ReviewEntity::updatedAt.name).descending()
+            ),
+        )
+        return getInfo(result.content)
     }
 
     @Cacheable(RedisCacheName.LIST_REVIEW_LAST)

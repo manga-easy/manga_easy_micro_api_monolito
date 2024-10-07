@@ -7,7 +7,14 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.CreateHos
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.HostsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.HostsRepository
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -27,11 +34,50 @@ class HostsController {
     @GetMapping("/v1")
     fun list(
         @RequestParam status: String?,
+        @RequestParam page: Int?,
+        @RequestParam name: String?,
+        @RequestParam hostId: Int?
     ): List<HostsEntity> {
-        if (status != null) {
-            return repository.findByStatus(status)
-        }
-        return repository.findAll()
+        return repository.findAll(
+            Specification(fun(
+                root: Root<HostsEntity>,
+                _: CriteriaQuery<*>,
+                builder: CriteriaBuilder,
+            ): Predicate? {
+                val predicates = mutableListOf<Predicate>()
+                if (hostId != null) {
+                    predicates.add(
+                        builder.equal(
+                            root.get<String>(HostsEntity::hostId.name),
+                            hostId
+                        )
+                    )
+                }
+                if (status != null) {
+                    predicates.add(
+                        builder.equal(
+                            root.get<String>(HostsEntity::status.name),
+                            status
+                        )
+                    )
+                }
+                if (name != null) {
+                    predicates.add(
+                        builder.like(
+                            builder.lower(root.get(HostsEntity::name.name)),
+                            "%" + name.lowercase() + "%"
+                        )
+                    )
+                }
+                return builder.and(*predicates.toTypedArray())
+            }),
+            PageRequest.of(
+                page ?: 0, 25, Sort.by(
+                    Sort.Direction.DESC,
+                    HostsEntity::order.name
+                )
+            )
+        ).content
     }
 
     @GetMapping("/v1/{id}")
