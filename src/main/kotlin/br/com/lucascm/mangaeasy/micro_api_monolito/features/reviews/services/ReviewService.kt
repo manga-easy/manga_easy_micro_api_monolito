@@ -40,7 +40,11 @@ class ReviewService {
 
     fun list(page: Int): List<ListReviewDto> {
         val result = reviewRepository.findAll(
-            PageRequest.of(page, 25).withSort(Sort.by(Sort.Direction.DESC, ReviewEntity::updatedAt.name)),
+            PageRequest.of(
+                page,
+                25,
+                Sort.by(ReviewEntity::updatedAt.name).descending()
+            ),
         )
         return getInfo(result.content)
     }
