@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
