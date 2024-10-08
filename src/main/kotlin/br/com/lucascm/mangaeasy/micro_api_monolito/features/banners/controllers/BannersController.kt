@@ -3,35 +3,33 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.services.BannersService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.dtos.CreateBannerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.entities.BannersEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.banners.repositories.BannersRepository
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import kotlin.jvm.optionals.getOrNull
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/banners")
 @Tag(name = "Banners")
 class BannersController {
     @Autowired
-    lateinit var repository: BannersRepository
+    lateinit var bannersService: BannersService
 
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
     @GetMapping("/v1")
-    fun list(): List<BannersEntity> {
-        return repository.findAll()
+    fun list(@RequestParam page: Int?): List<BannersEntity> {
+        return bannersService.findAll(page ?: 0)
     }
 
     @GetMapping("/v1/{id}")
     fun getById(@PathVariable id: String): BannersEntity {
-        return repository.findById(id).getOrNull()
-            ?: throw BusinessException("Banner não encontrado")
+        return bannersService.findById(id)
     }
 
     @DeleteMapping("/v1/{id}")
@@ -40,7 +38,7 @@ class BannersController {
         @PathVariable id: String
     ) {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        return repository.deleteById(id)
+        return
     }
 
     @PostMapping("/v1")
@@ -49,14 +47,8 @@ class BannersController {
         @RequestBody body: CreateBannerDto
     ): BannersEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        return repository.save(
-            BannersEntity(
-                updatedAt = Date().time,
-                link = body.link,
-                image = body.image,
-                createdAt = Date().time
-            )
-        )
+        return bannersService.create(body)
+
     }
 
     @PutMapping("/v1/{id}")
@@ -66,17 +58,18 @@ class BannersController {
         @PathVariable id: String
     ): BannersEntity {
         handleValidatorWrite(userAuth, body)
-        val find = repository.findById(id)
-        if (!find.isPresent) {
-            throw BusinessException("Banner não encontrado")
-        }
-        val banner = find.get().copy(
-            updatedAt = Date().time,
-            link = body.link,
-            image = body.image
-        )
-        return repository.save(banner)
+        return bannersService.update(body, id)
 
+    }
+
+    @PutMapping("/v1/{id}/images")
+    fun uploadImage(
+        @RequestPart file: MultipartFile,
+        @PathVariable id: String,
+        @AuthenticationPrincipal userAuth: UserAuth,
+    ): BannersEntity {
+        handlerPermissionUser.handleIsAdmin(userAuth)
+        return bannersService.updateImage(id, file)
     }
 
     private fun handleValidatorWrite(@AuthenticationPrincipal userAuth: UserAuth, body: CreateBannerDto) {

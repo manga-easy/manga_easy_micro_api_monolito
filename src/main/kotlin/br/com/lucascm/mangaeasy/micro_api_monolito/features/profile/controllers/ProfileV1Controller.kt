@@ -6,10 +6,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteAchievement
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.FavoriteManga
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileV1Dto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.*
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.BucketProfileRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -145,7 +142,7 @@ class ProfileV1Controller {
     @ResponseBody
     fun updateFavorteAchievement(
         @AuthenticationPrincipal userAuth: UserAuth,
-        @RequestBody body: FavoriteAchievement,
+        @RequestBody body: FavoriteAchievementV1,
         @PathVariable userID: String
     ): ResultEntity {
         return try {
@@ -154,7 +151,12 @@ class ProfileV1Controller {
             val achievements = find.achievementsHighlight.toMutableList()
             achievements.removeIf { it.order == body.order }
             if (body.achievement != null) {
-                achievements.add(body)
+                achievements.add(
+                    FavoriteAchievement(
+                        body.order,
+                        body.achievement.toEntity()
+                    )
+                )
             }
             val result = profileService.save(
                 find.copy(

@@ -25,10 +25,17 @@ class ReleaseNoteController {
     lateinit var releaseNoteRepository: ReleaseNoteRepository
 
     @GetMapping("/v1/version/{version}")
-    fun list(
+    fun findByVersion(
         @PathVariable version: String
     ): ReleaseNoteEntity {
-        return releaseNoteRepository.findByVersion(version) ?:  throw BusinessException("Versão não encontrada")
+        return releaseNoteRepository.findByVersion(version) ?: throw BusinessException("Versão não encontrada")
+    }
+
+    @GetMapping("/v1/{id}")
+    fun findById(
+        @PathVariable id: String
+    ): ReleaseNoteEntity {
+        return releaseNoteRepository.findById(id).getOrNull() ?: throw BusinessException("Versão não encontrada")
     }
 
     @GetMapping("/v1")
