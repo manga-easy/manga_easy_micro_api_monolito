@@ -37,13 +37,6 @@ class ReleaseNoteController {
         return releaseNoteRepository.findById(id).getOrNull() ?: throw BusinessException("Versão não encontrada")
     }
 
-    @GetMapping("/v1/id/{id}")
-    fun listById(
-        @PathVariable id: String
-    ): ReleaseNoteEntity? {
-        return releaseNoteRepository.findById(id).getOrNull() ?:  throw BusinessException("Versão não encontrada")
-    }
-
     @GetMapping("/v1")
     fun list(@RequestParam page: Int?): List<ReleaseNoteEntity> {
         return releaseNoteRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page ?: 0, 25))
