@@ -4,7 +4,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessExcepti
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.dtos.ReleaseNoteDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.dtos.UpdateReleaseNoteDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.entities.ReleaseNoteEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.repositories.ReleaseNoteRepository
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -59,18 +58,23 @@ class ReleaseNoteController {
     @PutMapping("/v1/{id}")
     fun update(
         @AuthenticationPrincipal userAuth: UserAuth,
-        @RequestBody body: UpdateReleaseNoteDto,
+        @RequestBody body: ReleaseNoteDto,
         @PathVariable id: String
     ): ReleaseNoteEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
+        val existingReleaseNote = releaseNoteRepository.findByVersion(body.version)
+        if (existingReleaseNote != null && existingReleaseNote.version != body.version) {
+            throw BusinessException("Versão já tem nota de atualização")
+        }
         val releaseNote = releaseNoteRepository.findById(id).getOrNull()
             ?: throw BusinessException("Nota de atualização não encontrada")
 
         return releaseNoteRepository.save(
             releaseNote.copy(
+                version = body.version,
+                description = body.description,
                 features = body.features,
                 fixes = body.fixes,
-                description = body.description,
             )
         )
     }
