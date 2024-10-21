@@ -3,12 +3,10 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.release_note.entities.ReleaseNoteEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.entities.StaffEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.repositories.StaffRepository
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,14 +16,15 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
-import kotlin.jvm.optionals.toList
 
 @RestController
 @RequestMapping("/staff")
 @Tag(name = "Staff")
 class StaffController {
+    companion object {
+        private const val STAFF_NOT_FOUND_MESSAGE = "Membro da equipe não encontrado."
+    }
+
     @Autowired
     lateinit var handlerPermissionUser: HandlerPermissionUser
 
@@ -42,7 +41,7 @@ class StaffController {
         @PathVariable id: String
     ): StaffEntity {
         return staffRepository.findById(id).orElseThrow {
-            BusinessException("Membro da equipe não encontrado.")
+            BusinessException(STAFF_NOT_FOUND_MESSAGE)
         }
     }
 
@@ -51,7 +50,7 @@ class StaffController {
         @PathVariable userId: String
     ): StaffEntity {
         return staffRepository.findByUserId(userId).orElseThrow {
-            BusinessException("Membro da equipe não encontrado para o userId fornecido.")
+            BusinessException(STAFF_NOT_FOUND_MESSAGE)
         }
     }
 
@@ -81,7 +80,7 @@ class StaffController {
         val staffEntity = staffRepository.findByUserId(userId)
 
         if (staffEntity.isEmpty) {
-            throw BusinessException("Membro da equipe não encontrado.")
+            throw BusinessException(STAFF_NOT_FOUND_MESSAGE)
         }
 
         return staffRepository.delete(staffEntity.get())
@@ -96,7 +95,7 @@ class StaffController {
         handlerPermissionUser.handleIsAdmin(userAuth)
 
         val existingStaff = staffRepository.findByUserId(body.userId).orElseThrow {
-            BusinessException("Membro da equipe não encontrado.")
+            BusinessException(STAFF_NOT_FOUND_MESSAGE)
         }
 
         val updatedStaff = existingStaff.copy(
