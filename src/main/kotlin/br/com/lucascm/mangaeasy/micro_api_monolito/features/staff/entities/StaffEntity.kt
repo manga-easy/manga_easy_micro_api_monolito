@@ -21,7 +21,7 @@ data class StaffEntity(
     val updatedAt: Long = 0,
 
     @Column(name = "type")
-    val type: StaffType? = null,
+    val type: StaffType,
 
     @Column(name = "user_id", nullable = false, unique = true)
     val userId: String = ""
