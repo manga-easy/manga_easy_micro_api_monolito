@@ -3,19 +3,14 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.controllers
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.dtos.ListStaffDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.entities.StaffEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.repositories.StaffRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.staff.services.StaffService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/staff")
@@ -31,9 +26,12 @@ class StaffController {
     @Autowired
     lateinit var staffRepository: StaffRepository
 
+    @Autowired
+    lateinit var staffService: StaffService
+
     @GetMapping("/v1")
-    fun list(): List<StaffEntity> {
-        return staffRepository.findAll()
+    fun list(): List<ListStaffDto> {
+        return staffService.findAll()
     }
 
     @GetMapping("/v1/{id}")

@@ -23,7 +23,7 @@ interface CatalogRepository : JpaSpecificationExecutor<CatalogEntity>, JpaReposi
 
     @Query(
         """
-            SELECT name FROM `catalog` WHERE name LIKE CONCAT('%', :name, '%') LIMIT 10
+            SELECT name FROM `catalog` WHERE name LIKE CONCAT('%', :name, '%') LIMIT 6
         """,
         nativeQuery = true
     )
