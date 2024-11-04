@@ -35,7 +35,7 @@ class PermissionsController {
         @PathVariable userId: String
     ): PermissionsEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        return repository.findByUserId(userId)
+        return repository.findByUserId(userId).getOrNull()
             ?: throw BusinessException("Permissão Não encontrado")
     }
 
@@ -52,7 +52,7 @@ class PermissionsController {
     ): PermissionsEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
         val permission = repository.findByUserId(body.userId)
-        if (permission != null) {
+        if (permission.isPresent) {
             throw BusinessException("O usuario ja tem um nivel de permissão")
         }
         if (body.value >= 90) {
@@ -74,7 +74,7 @@ class PermissionsController {
         @RequestBody body: CreatePermissionDto
     ): PermissionsEntity {
         handlerPermissionUser.handleIsAdmin(userAuth)
-        val permission = repository.findByUserId(body.userId)
+        val permission = repository.findByUserId(body.userId).getOrNull()
             ?: throw BusinessException("O registro não encontrado")
 
         val permissionUpdated = permission.copy(
