@@ -3,7 +3,6 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.core.service
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
-import io.sentry.Sentry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -21,7 +20,6 @@ class HandleExceptions {
                 message = e.message
             )
         }
-        Sentry.captureException(e);
         log.error("HandleExceptions", e)
         throw e
     }

@@ -42,7 +42,6 @@ class RedisConfig {
     private fun config(duration: Duration): RedisCacheConfiguration =
         RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(duration)
-            .disableCachingNullValues()
             .serializeValuesWith(SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer()))
 
 }
