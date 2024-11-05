@@ -1,7 +1,6 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.core.configs
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
-import io.sentry.Sentry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -25,7 +24,6 @@ class RestResponseEntityExceptionHandler
 
     @ExceptionHandler(Exception::class)
     fun handleInternalServerError(e: Exception): ResponseEntity<Any> {
-        Sentry.captureException(e)
         log.error("Exception", e)
         return ResponseEntity<Any>(
             mapOf("message" to "Ocorreu um erro no serviço"),
