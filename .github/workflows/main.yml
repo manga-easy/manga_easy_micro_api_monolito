@@ -7,7 +7,7 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+   runs-on: self-hosted
 
     steps:
       - name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       ###### DEV ######
