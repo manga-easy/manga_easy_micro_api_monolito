@@ -47,7 +47,16 @@ services:
       TOGGLE_URL: ${TOGGLE_URL}
       BUCKET_CONFIG: ${BUCKET_CONFIG}
       LOG_LEVEL: ${LOG_LEVEL}
-
+      OTEL_LOG_LEVEL: debug
+      OTEL_RESOURCE_ATTRIBUTES: deployment.environment=test
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://lucas1:4318
+    entrypoint:
+      [
+        'java',
+        '-javaagent:/app/opentelemetry-javaagent.jar',
+        '-jar',
+        'application.jar'
+      ]
     networks:
       - api_monolith
       - kong-net
@@ -55,6 +64,7 @@ services:
       - ./adc.json:/app/src/main/resources/adc.json
       - ./config:/app/src/main/resources/config
       - ./profile.pem:/app/src/main/resources/profile.pem
+      - ./opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
     ports:
       - "8080:8080"
   mongo:
@@ -71,7 +81,7 @@ services:
     ports:
       - "27017:27017"
   cache:
-    image: redis:6.2.16-alpine
+    image: redis:6.2-alpine
     container_name: redisdb
     restart: always
     ports:

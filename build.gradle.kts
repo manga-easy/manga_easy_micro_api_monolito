@@ -35,7 +35,7 @@ dependencies {
     implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.42.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.1")
     implementation("net.swiftzer.semver:semver:2.0.0")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springdoc:springdoc-openapi-starter-common:2.6.0")
     implementation("com.github.sonus21:rqueue-spring:3.2.0-RELEASE")
 }
