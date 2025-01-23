@@ -36,7 +36,8 @@ class HostsController {
         @RequestParam status: String?,
         @RequestParam page: Int?,
         @RequestParam name: String?,
-        @RequestParam hostId: Int?
+        @RequestParam hostId: Int?,
+        @RequestParam languages: String?
     ): List<HostsEntity> {
         return repository.findAll(
             Specification(fun(
@@ -45,6 +46,14 @@ class HostsController {
                 builder: CriteriaBuilder,
             ): Predicate? {
                 val predicates = mutableListOf<Predicate>()
+                languages?.split("<>")?.forEach {
+                    predicates.add(
+                        builder.like(
+                            builder.lower(root.get("language")),
+                            "%" + it.lowercase() + "%"
+                        )
+                    )
+                }
                 if (hostId != null) {
                     predicates.add(
                         builder.equal(
@@ -102,7 +111,8 @@ class HostsController {
                 urlApi = body.urlApi,
                 hostId = body.hostId,
                 status = body.status,
-                order = body.order
+                order = body.order,
+                language = body.language
             )
         )
     }
@@ -126,7 +136,8 @@ class HostsController {
                 urlApi = body.urlApi,
                 hostId = body.hostId,
                 status = body.status,
-                order = body.order
+                order = body.order,
+                language = body.language
             )
         )
     }
@@ -143,6 +154,9 @@ class HostsController {
         }
         if (body.hostId == 0) {
             throw BusinessException("O campo hostId não pode ser 0")
+        }
+        if (body.language.isEmpty()) {
+            throw BusinessException("O campo langManga não pode ser vazio")
         }
     }
 }

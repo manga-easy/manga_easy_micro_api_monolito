@@ -1,18 +1,18 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.LangManga
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.LatestMangaEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaEntity
 
-class HostMangaLastUpdatedDto(
+@Deprecated("Remover 0.18 -> 0.20")
+class LatestMangaDto(
+    val idhost: Int,
     val versionApp: String,
-    val data: List<MangaEntity>,
-    val langManga: LangManga?,
+    val data: List<MangaEntity>
 ) {
-    fun toEntity(hostId: Int): LatestMangaEntity {
+    fun toEntity(): LatestMangaEntity {
         return LatestMangaEntity(
             data = data,
-            id = LatestMangaEntity.getId(hostId, langManga),
+            id = "$idhost",
         )
     }
 }

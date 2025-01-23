@@ -5,5 +5,6 @@ data class MangaEntity(
     val title: String = "",
     val href: String = "",
     val capa: String = "",
-    val idHost: Int = 0
+    val idHost: Int = 0,
+    val langManga: LangManga? = null,
 )

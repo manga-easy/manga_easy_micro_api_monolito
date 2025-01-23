@@ -25,4 +25,5 @@ data class HostsEntity(
     val createdAt: Long = 0,
     @Column(name = "updated_at", nullable = false)
     val updatedAt: Long = 0,
+    val language: String = "",
 )

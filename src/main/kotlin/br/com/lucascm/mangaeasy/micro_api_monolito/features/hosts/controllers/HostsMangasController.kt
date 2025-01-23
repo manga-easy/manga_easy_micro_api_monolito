@@ -7,9 +7,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.HostManga
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.HostMangaDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.HostMangaLastUpdatedDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.HostMangaSearchDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.DetailsEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.ImageChapterEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.*
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.ContentChapterRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.HostMangaSearchRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.LatestMangaRepository
@@ -43,8 +41,12 @@ class HostsMangasController {
     lateinit var toggleService: ToggleService
 
     @GetMapping("/mangas/v1/last-updated")
-    fun getLastUpdated(@PathVariable hostId: Int): List<MangaEntity> {
-        val result = repository.findById("$hostId").getOrNull()
+    fun getLastUpdated(
+        @PathVariable hostId: Int,
+        @RequestParam langManga: LangManga? = null
+    ): List<MangaEntity> {
+        val id = LatestMangaEntity.getId(hostId = hostId, langManga = langManga)
+        val result = repository.findById(id).getOrNull()
             ?: throw BusinessException(CACHE_NOT_FOUND)
         return result.data
     }
@@ -65,8 +67,14 @@ class HostsMangasController {
     fun getManga(
         @PathVariable hostId: Int,
         @PathVariable uniqueId: String,
+        @RequestParam langManga: LangManga? = null
     ): DetailsEntity {
-        val result = mangaDetailsRepository.findById("$hostId<>$uniqueId")
+        val id = MangaDetailsEntity.getId(
+            hostId = hostId,
+            uniqueId = uniqueId,
+            langManga = langManga
+        )
+        val result = mangaDetailsRepository.findById(id)
         if (!result.isPresent) {
             throw BusinessException(CACHE_NOT_FOUND)
         }
@@ -103,8 +111,15 @@ class HostsMangasController {
         @PathVariable hostId: Int,
         @PathVariable uniqueId: String,
         @PathVariable chapterId: String,
+        @RequestParam langManga: LangManga? = null
     ): List<ImageChapterEntity> {
-        val result = contentChapterRepository.findById("$hostId<>$uniqueId<>$chapterId")
+        val id = ContentChapterEntity.getId(
+            hostId,
+            uniqueId,
+            chapterId,
+            langManga
+        )
+        val result = contentChapterRepository.findById(id)
         if (!result.isPresent) {
             throw BusinessException(CACHE_NOT_FOUND)
         }
@@ -135,9 +150,15 @@ class HostsMangasController {
     @GetMapping("/mangas/v1/search")
     fun getSearch(
         @PathVariable hostId: Int,
-        @RequestParam search: String
+        @RequestParam search: String,
+        @RequestParam langManga: LangManga? = null
     ): List<MangaEntity> {
-        val result = hostMangaSearchRepository.findById("$hostId<>$search").getOrNull()
+        val id = HostMangaSearchEntity.getId(
+            hostId = hostId,
+            search = search,
+            langManga = langManga
+        )
+        val result = hostMangaSearchRepository.findById(id).getOrNull()
             ?: throw BusinessException(CACHE_NOT_FOUND)
         return result.data
     }
