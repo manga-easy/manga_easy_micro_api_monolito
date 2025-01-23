@@ -6,5 +6,5 @@ data class CreateHostDto(
     val name: String = "",
     val urlApi: String = "",
     val status: String = "",
-    val language: String = "",
+    val languages: String = "",
 )

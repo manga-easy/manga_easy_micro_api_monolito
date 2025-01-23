@@ -4,7 +4,9 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.Ca
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
 
+@Repository
 interface CatalogViewRepository : JpaRepository<CatalogViewEntity, Long> {
     fun findByCatalogIdAndUserId(catalogId: String, userId: String): CatalogViewEntity?
 

@@ -12,13 +12,13 @@ import java.util.*
 @Component
 class CatalogViewConsumer {
     @Autowired
-    lateinit var viewMangaRepository: CatalogViewRepository
+    lateinit var catalogViewRepository: CatalogViewRepository
 
     @RqueueListener(QueueName.CATALOG_VIEW, numRetries = "1", concurrency = "1")
     fun onMessage(view: CatalogsViewsConsumerDto) {
-        val result = viewMangaRepository.findByCatalogIdAndUserId(view.catalogId, view.userId)
+        val result = catalogViewRepository.findByCatalogIdAndUserId(view.catalogId, view.userId)
         if (result == null) {
-            viewMangaRepository.save(
+            catalogViewRepository.save(
                 CatalogViewEntity(
                     userId = view.userId,
                     catalogId = view.catalogId,

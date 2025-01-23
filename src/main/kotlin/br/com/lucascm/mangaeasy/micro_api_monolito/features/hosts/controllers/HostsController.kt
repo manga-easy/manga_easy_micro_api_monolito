@@ -49,7 +49,7 @@ class HostsController {
                 languages?.split("<>")?.forEach {
                     predicates.add(
                         builder.like(
-                            builder.lower(root.get("language")),
+                            builder.lower(root.get(HostsEntity::languages.name)),
                             "%" + it.lowercase() + "%"
                         )
                     )
@@ -112,7 +112,7 @@ class HostsController {
                 hostId = body.hostId,
                 status = body.status,
                 order = body.order,
-                language = body.language
+                languages = body.languages
             )
         )
     }
@@ -137,7 +137,7 @@ class HostsController {
                 hostId = body.hostId,
                 status = body.status,
                 order = body.order,
-                language = body.language
+                languages = body.languages
             )
         )
     }
@@ -155,8 +155,8 @@ class HostsController {
         if (body.hostId == 0) {
             throw BusinessException("O campo hostId não pode ser 0")
         }
-        if (body.language.isEmpty()) {
-            throw BusinessException("O campo langManga não pode ser vazio")
+        if (body.languages.isEmpty()) {
+            throw BusinessException("O campo languages não pode ser vazio")
         }
     }
 }
