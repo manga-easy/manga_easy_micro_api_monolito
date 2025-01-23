@@ -5,7 +5,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnu
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsV1Dto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.services.RecommendationsService
 import io.swagger.v3.oas.annotations.tags.Tag

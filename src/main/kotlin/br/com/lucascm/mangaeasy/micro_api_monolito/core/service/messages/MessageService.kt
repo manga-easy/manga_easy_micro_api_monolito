@@ -1,7 +1,7 @@
 package br.com.lucascm.mangaeasy.micro_api_monolito.core.service.messages
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpConsumerDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.CatalogsViewsConsumerDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.dtos.CatalogsViewsConsumerDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.notifications.entities.NotificationsEntity
 import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer
 import org.springframework.beans.factory.annotation.Autowired

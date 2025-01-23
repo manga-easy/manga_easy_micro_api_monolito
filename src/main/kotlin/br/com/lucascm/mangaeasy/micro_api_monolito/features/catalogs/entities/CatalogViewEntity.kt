@@ -1,10 +1,10 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities
 
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "catalog-like")
-data class CatalogLikeEntity(
+@Table(name = "catalog-view")
+data class CatalogViewEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,

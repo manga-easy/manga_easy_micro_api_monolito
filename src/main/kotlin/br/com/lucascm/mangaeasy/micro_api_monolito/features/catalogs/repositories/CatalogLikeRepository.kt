@@ -1,6 +1,6 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories
 
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogLikeEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogLikeEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

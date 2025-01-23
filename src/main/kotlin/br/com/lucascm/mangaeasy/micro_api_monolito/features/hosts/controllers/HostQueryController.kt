@@ -5,12 +5,13 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.toggle.ToggleService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.ContentChapterDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.LatestMangaDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos.MangaDetailsDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.LangManga
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.ContentChapterRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.LatestMangaRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.ContentChapterDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.LatestMangaDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.MangaDetailsDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -37,7 +38,10 @@ class HostQueryController {
 
     @GetMapping("/latest-manga")
     @ResponseBody
-    fun getManga(@RequestParam idHost: Int)
+    fun getManga(
+        @RequestParam idHost: Int,
+        @RequestParam langManga: LangManga
+    )
             : ResultEntity {
         return try {
             val result = repository.findById("$idHost")
