@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.LatestMangaEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaEntity
@@ -7,7 +7,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.Manga
 class LatestMangaDto(
     val idhost: Int,
     val versionApp: String,
-    val data: List<MangaEntity>,
+    val data: List<MangaEntity>
 ) {
     fun toEntity(): LatestMangaEntity {
         return LatestMangaEntity(

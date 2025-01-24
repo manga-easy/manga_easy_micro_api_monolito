@@ -12,4 +12,14 @@ data class ContentChapterEntity(
     val data: List<ImageChapterEntity>,
     @TimeToLive(unit = TimeUnit.DAYS)
     var time: Long = 30,
-)
+) {
+    companion object {
+        fun getId(hostId: Int, uniqueId: String, chapterId: String, langManga: LangManga?): String {
+            var id = "$hostId<>$uniqueId<>$chapterId"
+            if (langManga != null) {
+                id += "<>$langManga"
+            }
+            return id
+        }
+    }
+}

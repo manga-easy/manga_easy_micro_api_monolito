@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

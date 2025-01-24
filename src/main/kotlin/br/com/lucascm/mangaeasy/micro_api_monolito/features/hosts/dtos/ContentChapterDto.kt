@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.ContentChapterEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.ImageChapterEntity

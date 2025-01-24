@@ -1,9 +1,9 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.task
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.task
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.repositories.MangaDetailsRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest

@@ -12,4 +12,14 @@ data class LatestMangaEntity(
     val data: List<MangaEntity>,
     @TimeToLive(unit = TimeUnit.HOURS)
     var time: Long = 12,
-)
+) {
+    companion object {
+        fun getId(hostId: Int, langManga: LangManga?): String {
+            var id = "$hostId"
+            if (langManga != null) {
+                id += "<>$langManga"
+            }
+            return id
+        }
+    }
+}

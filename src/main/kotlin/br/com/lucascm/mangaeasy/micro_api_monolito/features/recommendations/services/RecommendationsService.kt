@@ -2,8 +2,8 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.ser
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.CreateRecommendationDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.recommendations.entities.RecommendationsEntity

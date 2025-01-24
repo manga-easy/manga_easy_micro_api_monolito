@@ -1,10 +1,10 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.services
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogLikeRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogViewRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogLikeRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogViewRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery

@@ -1,11 +1,11 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.ResultEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.StatusResultEnum
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandleExceptions
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.services.CatalogService
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.services.CatalogService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*

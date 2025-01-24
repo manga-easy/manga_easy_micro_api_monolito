@@ -13,7 +13,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.XpCo
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.entities.earnXpDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.RankingRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.XpRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest

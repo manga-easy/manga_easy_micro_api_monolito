@@ -1,4 +1,4 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.dtos
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.DetailsEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.hosts.entities.MangaDetailsEntity
@@ -8,7 +8,7 @@ class MangaDetailsDto(
     val idhost: Int,
     val uniqueid: String,
     val versionApp: String = "0.14.0",
-    val data: DetailsEntity,
+    val data: DetailsEntity
 ) {
     fun toEntity(): MangaDetailsEntity {
         return MangaDetailsEntity(

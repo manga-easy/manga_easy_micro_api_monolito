@@ -12,5 +12,6 @@ data class DetailsEntity(
     val ano: String,
     val scans: String,
     val status: String,
-    val idHost: Int
+    val idHost: Int,
+    val langManga: LangManga? = null,
 )

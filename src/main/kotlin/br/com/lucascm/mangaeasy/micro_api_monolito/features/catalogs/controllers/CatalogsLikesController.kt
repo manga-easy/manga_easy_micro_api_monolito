@@ -1,12 +1,12 @@
-package br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.controllers
+package br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.controllers
 
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.UserAuth
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.service.HandlerPermissionUser
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.dtos.FoundLikeCatalogDto
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.entities.CatalogLikeEntity
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.mangas.repositories.CatalogLikeRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.dtos.FoundLikeCatalogDto
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.entities.CatalogLikeEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogLikeRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.catalogs.repositories.CatalogRepository
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal

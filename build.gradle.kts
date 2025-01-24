@@ -25,7 +25,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security:3.2.6")
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.3.0")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.3.0")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.3.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.3.3")
     implementation(enforcedPlatform("com.oracle.oci.sdk:oci-java-sdk-bom:3.44.1"))
     implementation("com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3:3.42.0")
@@ -35,7 +34,7 @@ dependencies {
     implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.42.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.1")
     implementation("net.swiftzer.semver:semver:2.0.0")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springdoc:springdoc-openapi-starter-common:2.6.0")
     implementation("com.github.sonus21:rqueue-spring:3.2.0-RELEASE")
 }
