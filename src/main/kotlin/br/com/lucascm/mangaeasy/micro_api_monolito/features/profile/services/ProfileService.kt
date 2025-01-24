@@ -5,7 +5,6 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.levels.repositories.
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.libraries.repositories.LibrariesRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.entities.ProfileEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileRepository
-import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.repositories.ProfileV1Repository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UserRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,9 +18,6 @@ import java.util.*
 class ProfileService {
     @Autowired
     lateinit var profileRepository: ProfileRepository
-
-    @Autowired
-    lateinit var profileV1Repository: ProfileV1Repository
 
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
@@ -39,11 +35,6 @@ class ProfileService {
     fun findByUserId(userId: String): ProfileEntity {
         var profile = profileRepository.findByUserId(userId)
         if (profile == null) {
-            val resultV1 = profileV1Repository.findByUserID(userId)
-            profile = resultV1?.toV2()
-            if (profile != null) return profileRepository.save(profile)
-        }
-        if (profile == null) {
             profile = createProfile(userId)
             return profileRepository.save(profile)
         }
@@ -54,10 +45,6 @@ class ProfileService {
         val result = profileRepository.findById(id)
         if (result.isPresent) {
             return updateTotals(result.get())
-        }
-        val resultV1 = profileV1Repository.findById(id)
-        if (resultV1.isPresent) {
-            return updateTotals(resultV1.get().toV2())
         }
         return null
     }
