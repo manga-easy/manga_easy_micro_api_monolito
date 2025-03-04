@@ -48,15 +48,15 @@ class LibraryController {
         )
     }
 
-    @PutMapping("/v1/{id}")
+    @PutMapping("/v1/{libraryId}")
     fun update(
         @PathVariable userId: String,
-        @PathVariable id: String,
+        @PathVariable libraryId: String,
         @RequestBody body: UpdateLibraryDto,
         @AuthenticationPrincipal userAuth: UserAuth
     ): LibrariesEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return libraryService.update(id, body)
+        return libraryService.update(libraryId, body)
     }
 
     @PostMapping("/v1")
@@ -67,5 +67,15 @@ class LibraryController {
     ): LibrariesEntity {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
         return libraryService.create(userId, body)
+    }
+
+    @DeleteMapping("/v1/{libraryId}")
+    fun delete(
+        @PathVariable userId: String,
+        @PathVariable libraryId: String,
+        @AuthenticationPrincipal userAuth: UserAuth
+    ) {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        libraryService.deleteById(libraryId)
     }
 }

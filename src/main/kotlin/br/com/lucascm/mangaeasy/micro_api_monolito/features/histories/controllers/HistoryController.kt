@@ -59,13 +59,13 @@ class HistoryController {
         return historyService.update(historyId, body)
     }
 
-    @PostMapping("/v1")
-    fun create(
+    @DeleteMapping("/v1/{historyId}")
+    fun delete(
         @PathVariable userId: String,
-        @RequestBody body: UpdateHistoryDto,
+        @PathVariable historyId: String,
         @AuthenticationPrincipal userAuth: UserAuth
-    ): HistoryEntity {
+    ) {
         handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
-        return historyService.create(userId, body)
+        historyService.deleteById(historyId)
     }
 }

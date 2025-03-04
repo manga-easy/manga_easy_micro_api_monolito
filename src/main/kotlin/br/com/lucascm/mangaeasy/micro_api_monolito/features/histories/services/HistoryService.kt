@@ -75,4 +75,15 @@ class HistoryService {
             )
         )
     }
+
+    fun deleteById(historyId: String) {
+        val result = historiesRepository.findById(historyId).getOrNull()
+            ?: throw BusinessException("Manga não encontrado")
+        historiesRepository.save(
+            result.copy(
+                updatedAt = Date().time,
+                isDeleted = true,
+            )
+        )
+    }
 }

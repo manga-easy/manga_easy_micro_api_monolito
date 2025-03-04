@@ -73,4 +73,15 @@ class LibraryService {
             )
         )
     }
+
+    fun deleteById(libraryId: String) {
+        val result = librariesRepository.findById(libraryId).getOrNull()
+            ?: throw BusinessException("Manga não encontrado")
+        librariesRepository.save(
+            result.copy(
+                updatedAt = Date().time,
+                hasDeleted = true,
+            )
+        )
+    }
 }

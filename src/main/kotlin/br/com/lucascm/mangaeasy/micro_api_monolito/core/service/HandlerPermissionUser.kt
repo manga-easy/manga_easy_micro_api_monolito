@@ -20,8 +20,8 @@ class HandlerPermissionUser {
     }
 
     //Verificar se o usuario do token é o mesmo da url, caso for admin ele faz oque quiser
-    fun handleIsOwnerToken(userAuth: UserAuth, userIdUrl: String) {
-        if (userIdUrl == userAuth.userId) {
+    fun handleIsOwnerToken(userAuth: UserAuth, userId: String) {
+        if (userId == userAuth.userId) {
             return
         }
         handleIsAdmin(userAuth)
