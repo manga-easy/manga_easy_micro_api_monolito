@@ -3,6 +3,8 @@ package br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.services
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessCode
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.BusinessException
 import br.com.lucascm.mangaeasy.micro_api_monolito.core.entities.RedisCacheName
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.entities.AchievementsEntity
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.achievements.repositories.AchievementsRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.profile.services.ProfileService
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ListReviewDto
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewDto
@@ -10,6 +12,7 @@ import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.dtos.ReviewR
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.entities.ReviewEntity
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewLikeRepository
 import br.com.lucascm.mangaeasy.micro_api_monolito.features.reviews.repositories.ReviewRepository
+import br.com.lucascm.mangaeasy.micro_api_monolito.features.users.repositories.UsersAchievementsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
@@ -20,6 +23,14 @@ import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ReviewService {
+    companion object {
+        const val COPPER = "61b12f7a0ff25"
+        const val SILVER = "61b12fddd7201"
+        const val GOLD = "61b1302ef0d76"
+        const val PLATINUM = "61b130768bd07"
+        const val IRON = "627daca5e13281a2e330"
+    }
+
     @Autowired
     lateinit var reviewRepository: ReviewRepository
 
@@ -28,6 +39,11 @@ class ReviewService {
 
     @Autowired
     lateinit var likeReviewRepository: ReviewLikeRepository
+
+    @Autowired
+    lateinit var usersAchievementsRepository: UsersAchievementsRepository
+
+    lateinit var achievementsRepository: AchievementsRepository
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
     fun list(catalogId: String, page: Int): List<ListReviewDto> {
@@ -136,11 +152,14 @@ class ReviewService {
         val list = mutableListOf<ListReviewDto>()
         for (review in result) {
             val profile = profileService.findByUserId(review.userId)
+            val achievement = getAchievementDonate(review.userId)
             list.add(
                 ListReviewDto(
-                    updateTotals(review),
-                    profile.name,
-                    profile.picture
+                    review = updateTotals(review),
+                    userImage = profile.name,
+                    userName = profile.picture,
+                    achievementId = achievement?.id,
+                    achievementImage = achievement?.url
                 )
             )
         }
@@ -150,5 +169,40 @@ class ReviewService {
     private fun updateTotals(review: ReviewEntity): ReviewEntity {
         val totalLikes = likeReviewRepository.countByReviewId(review.id!!)
         return reviewRepository.save(review.copy(totalLikes = totalLikes))
+    }
+
+    private fun getAchievementDonate(userId: String): AchievementsEntity? {
+        val achievements = usersAchievementsRepository.findAllByUserId(userId)
+        if (achievements.isEmpty()) {
+            return null
+        }
+        var achievementId: String? = null
+        for (achievement in achievements) {
+            if (achievement.achievementId == PLATINUM) {
+                achievementId = achievement.achievementId
+                break
+            }
+            if (achievement.achievementId == GOLD) {
+                achievementId = achievement.achievementId
+                break
+            }
+            if (achievement.achievementId == SILVER) {
+                achievementId = achievement.achievementId
+                break
+            }
+            if (achievement.achievementId == IRON) {
+                achievementId = achievement.achievementId
+                break
+            }
+            if (achievement.achievementId == COPPER) {
+                achievementId = achievement.achievementId
+                break
+            }
+        }
+        if (achievementId == null) {
+            return null
+        }
+        val response = achievementsRepository.findById(achievementId)
+        return response.getOrNull()
     }
 }
