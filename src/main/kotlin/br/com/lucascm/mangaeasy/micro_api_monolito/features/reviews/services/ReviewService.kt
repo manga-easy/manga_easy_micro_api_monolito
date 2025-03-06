@@ -43,6 +43,7 @@ class ReviewService {
     @Autowired
     lateinit var usersAchievementsRepository: UsersAchievementsRepository
 
+    @Autowired
     lateinit var achievementsRepository: AchievementsRepository
 
     @Cacheable(RedisCacheName.LIST_REVIEW)
@@ -156,8 +157,8 @@ class ReviewService {
             list.add(
                 ListReviewDto(
                     review = updateTotals(review),
-                    userImage = profile.name,
-                    userName = profile.picture,
+                    userImage = profile.picture,
+                    userName = profile.name,
                     achievementId = achievement?.id,
                     achievementImage = achievement?.url
                 )
