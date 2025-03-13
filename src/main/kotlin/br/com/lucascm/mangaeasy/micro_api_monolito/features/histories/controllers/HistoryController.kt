@@ -48,6 +48,16 @@ class HistoryController {
         )
     }
 
+    @PostMapping("/v1")
+    fun create(
+        @PathVariable userId: String,
+        @RequestBody body: UpdateHistoryDto,
+        @AuthenticationPrincipal userAuth: UserAuth
+    ): HistoryEntity {
+        handlerPermissionUser.handleIsOwnerToken(userAuth, userId)
+        return historyService.create(userId, body)
+    }
+
     @PutMapping("/v1/{historyId}")
     fun update(
         @PathVariable userId: String,
